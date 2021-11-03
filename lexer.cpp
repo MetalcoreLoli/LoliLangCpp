@@ -29,8 +29,6 @@ bool loli::Lexer::IsKeyword(const std::string& value) {
     return _symbolsTable.contains(value);
 }
 
-// first value is tail, second is head
-// second will be empty string if word und head don't match
 std::string loli::Lexer::LexWord (
         const std::string& word, 
         const std::string& context,
@@ -91,18 +89,6 @@ loli::Token loli::Lexer::Indentifier() {
     _current --;
     return Token(Forma::INDENTIFIER, identi, 0);
 }
-/*
- *
- * std::string lt = "<";
- * p
-    std::string lt = "<";
-    if (PeekNext() == '='&& !IsEnd()) {
-        lt += MoveToNext().Peek();
-        res.push_back(_symbolsTable[lt]);
-    } else {
-        res.push_back(_symbolsTable[lt]);
-    }
- * */
 
 loli::Token loli::Lexer::Match2(char current, char next) {
     std::string key = std::string(1, current);
