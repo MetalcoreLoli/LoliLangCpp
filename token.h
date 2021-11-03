@@ -32,6 +32,7 @@ namespace loli {
        RETURN,
        IMPORT,
        LAMBDA_ARROW,
+       STRING_LIT,
        SIZE_OF_FORMA
     };
 
@@ -63,6 +64,7 @@ namespace loli {
        "RETURN",
        "IMPORT",
        "LAMBDA_ARROW",
+       "STRING_LIT",
     };
     static_assert (
             sizeof(FormaAsStr)/sizeof(FormaAsStr[0]) == (size_t)Forma::SIZE_OF_FORMA, 

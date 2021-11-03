@@ -108,6 +108,17 @@ loli::Token loli::Lexer::Match2OneOf(char current, char a, char b) {
     return _symbolsTable[key];
 }
 
+loli::Token loli::Lexer::StringLit() {
+    char current = MoveToNext().Peek();
+    std::string val = "";
+
+    while (current != '"' || IsEnd()) {
+        val += current;
+        current = MoveToNext().Peek();
+    }
+    return {Forma::STRING_LIT, val, 0};
+}
+
 std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
     std::vector<loli::Token> res{};
     _source = value;
@@ -156,6 +167,9 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
             } break;
             case ';': {
                 res.push_back(Token(Forma::SEMI, ";", 0));
+            } break;
+            case '"': {
+                res.push_back(StringLit());
             } break;
             default: 
                 if (IsDigit(current)) {

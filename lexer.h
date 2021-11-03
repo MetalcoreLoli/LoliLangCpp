@@ -56,6 +56,7 @@ namespace loli {
 
         Token Match2(char current, char next);
         Token Match2OneOf(char current, char a, char b);
+        Token StringLit();
         Token Number();
         Token Indentifier();
         Token Keyword(const std::string* word);
