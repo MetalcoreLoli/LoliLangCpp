@@ -6,7 +6,7 @@ int main () {
     std::string code = 
         "import 'io' \n"
         "func main => \n"
-        "     println \"Hello, world\";\n";
+        "     println \"Hello, world\";";
     auto tokens = lex.lineToTokens (code);
     for (auto& token : tokens) {
         std::cout << token.asString() << std::endl;

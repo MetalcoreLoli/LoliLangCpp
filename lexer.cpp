@@ -112,7 +112,7 @@ loli::Token loli::Lexer::StringLit() {
     char current = MoveToNext().Peek();
     std::string val = "";
 
-    while (current != '"' || IsEnd()) {
+    while (current != '"' && !IsEnd()) {
         val += current;
         current = MoveToNext().Peek();
     }
