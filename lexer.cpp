@@ -98,6 +98,16 @@ loli::Token loli::Lexer::Match2(char current, char next) {
     return _symbolsTable[key];
 }
 
+loli::Token loli::Lexer::Match2OneOf(char current, char a, char b) {
+    std::string key = std::string(1, current);
+    if (PeekNext() == b && !IsEnd()) {
+        key += MoveToNext().Peek();
+    } else if (PeekNext() == a && !IsEnd()) {
+        key += MoveToNext().Peek();
+    } 
+    return _symbolsTable[key];
+}
+
 std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
     std::vector<loli::Token> res{};
     _source = value;
@@ -105,6 +115,8 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
     char current = Peek();
     while (!IsEnd()) {
         switch (current) {
+            case '\n': break;
+            case '\t': break;
             case ' ': break;
             case '+': {
                     res.push_back(Token(loli::Forma::ADD, "+", 0));
@@ -125,7 +137,7 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
                     res.push_back(Match2(current, '='));
             } break;
             case '=':  {
-                    res.push_back(Match2(current, '='));
+                    res.push_back(Match2OneOf(current, '=', '>'));
             } break;
             case '(': {
                 res.push_back(Token(Forma::LPAREN, "(", 0));

@@ -30,6 +30,8 @@ namespace loli {
        TRUE,
        FALSE,
        RETURN,
+       IMPORT,
+       LAMBDA_ARROW,
        SIZE_OF_FORMA
     };
 
@@ -59,12 +61,12 @@ namespace loli {
        "TRUE",
        "FALSE",
        "RETURN",
+       "IMPORT",
+       "LAMBDA_ARROW",
     };
     static_assert (
             sizeof(FormaAsStr)/sizeof(FormaAsStr[0]) == (size_t)Forma::SIZE_OF_FORMA, 
             "new forma was introduced, but it haven't string value");
-
-
 
     class Token {
     private:

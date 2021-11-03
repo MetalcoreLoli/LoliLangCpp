@@ -18,6 +18,7 @@ namespace loli {
             {"true", Token(Forma::TRUE, "true", 0)},
             {"false", Token(Forma::FALSE, "false", 0)},
             {"return", Token(Forma::RETURN, "return", 0)},
+            {"import", Token(Forma::IMPORT, "import", 0)},
             {"+", Token(Forma::ADD, "+", 0)}, 
             {"-", Token(Forma::SUB, "-", 0)},
             {"*", Token(Forma::MUL, "*", 0)}, 
@@ -33,6 +34,7 @@ namespace loli {
             {"<", Token(Forma::LT, "<", 0)}, 
             {"==", Token(Forma::EQ, "==", 0)}, 
             {">=", Token(Forma::GT_EQ, ">=", 0)}, 
+            {"=>", Token(Forma::LAMBDA_ARROW, "=>", 0)},
             {"<=", Token(Forma::LT_EQ, "<=", 0)} 
         };
 
@@ -53,6 +55,7 @@ namespace loli {
         Lexer& MoveToNext();
 
         Token Match2(char current, char next);
+        Token Match2OneOf(char current, char a, char b);
         Token Number();
         Token Indentifier();
         Token Keyword(const std::string* word);
