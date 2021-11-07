@@ -19,6 +19,13 @@ namespace loli {
             {"false", Token(Forma::FALSE, "false", 0)},
             {"return", Token(Forma::RETURN, "return", 0)},
             {"import", Token(Forma::IMPORT, "import", 0)},
+            {"for", Token(Forma::FOR_, "for", 0)},
+            {"class", Token(Forma::CLASS, "class", 0)},
+            {"nil", Token(Forma::NIL, "nil",0)},
+            {"and",Token(Forma::AND, "and", 0)},
+            {"or",Token(Forma::OR, "or", 0)},
+            {"while",Token(Forma::WHILE, "while", 0)},
+            {".",Token(Forma::DOT, ".", 0)},
             {"+", Token(Forma::ADD, "+", 0)}, 
             {"-", Token(Forma::SUB, "-", 0)},
             {"*", Token(Forma::MUL, "*", 0)}, 
@@ -50,7 +57,8 @@ namespace loli {
 
         utils::Maybe<std::string*> TryKeyword(); 
 
-        std::string LexWord(const std::string& word, const std::string& context, size_t start);
+        std::string LexWord(
+                const std::string& word, const std::string& context, size_t start);
 
         Lexer& MoveToNext();
 

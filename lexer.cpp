@@ -171,6 +171,12 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
             case '"': {
                 res.push_back(StringLit());
             } break;
+            case '!': {
+                res.push_back(Match2(_current, '='));
+            } break;
+            case '.': { 
+                res.push_back({Forma::DOT, ".", 0});
+            } break;
             default: 
                 if (IsDigit(current)) {
                     res.push_back(Number());
@@ -185,5 +191,6 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
         } 
         current = MoveToNext().Peek();
     }
+    res.push_back({Forma::EOF_, "", 0});
     return res;
 }

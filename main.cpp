@@ -8,7 +8,7 @@ int main () {
         "func main => \n"
         "     println \"Hello, world\";";
     auto tokens = lex.lineToTokens (code);
-    for (auto& token : tokens) {
+    for (const auto& token : tokens) {
         std::cout << token.asString() << std::endl;
     }
     return EXIT_SUCCESS;
