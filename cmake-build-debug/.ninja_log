@@ -1,5 +1,0 @@
-# ninja log v5
-1	717	1638541801844446539	CMakeFiles/app.dir/token.cpp.o	bb212f01d5a7e0dc
-0	973	1638541802107776763	CMakeFiles/app.dir/expression.cpp.o	6e588d69409b699c
-1	1473	1638541802607770859	CMakeFiles/app.dir/lexer.cpp.o	8319acd298898d0
-1	1712	1638541802847768025	CMakeFiles/app.dir/main.cpp.o	ce855e532553e7e4

@@ -1,5 +1,9 @@
 .cache
 .cache/*
+cmake-build-debug
+cmake-build-debug/*
+.idea/
+.idea/*
 build
 build/*
 *.json

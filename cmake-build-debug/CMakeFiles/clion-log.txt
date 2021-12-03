@@ -1,4 +1,0 @@
-cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/opt/clion/bin/ninja/linux/ninja -G Ninja /home/danielf/Projects/cpp/loliLang
--- Configuring done
--- Generating done
--- Build files have been written to: /home/danielf/Projects/cpp/loliLang/cmake-build-debug
