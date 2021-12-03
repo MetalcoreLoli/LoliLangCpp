@@ -10,11 +10,11 @@ namespace loli {
     class NumberExpression;
     class BinaryExpression;
     
-    typedef void* TYPE;
     struct IVisitor {
         virtual std::shared_ptr<void> visitBinaryExpression (BinaryExpression& value) = 0;
         virtual std::shared_ptr<void> visitNumberExpression (NumberExpression& value) = 0;
     };
+
 
     struct Expression {
         virtual std::shared_ptr<void> visit (IVisitor * visitor) = 0;
