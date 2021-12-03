@@ -6,6 +6,8 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
 add_executable(app 
     ./utils.h
+    ./lexy.h
+    ./lexy.cpp
     ./expression.h
     ./expression.cpp
     ./token.h
