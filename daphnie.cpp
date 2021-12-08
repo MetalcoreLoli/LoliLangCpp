@@ -1,6 +1,7 @@
 #include "daphnie.h"
 #include "expression.h"
 #include "token.h"
+#include <ranges>
 #include <stdexcept>
 
 
@@ -13,7 +14,8 @@ bool loli::Daphnie::IsMatchTo (loli::Forma value, loli::Forma to) {
 }
 
 loli::Token loli::Daphnie::Peek() const {
-    return _source[_current];
+    if (!IsEnd()) return _source[_current];
+    return *(_source.end() - 1);
 }
 
 loli::Token loli::Daphnie::PeekNext() const {
@@ -68,8 +70,12 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 
     auto name = *(identifiers.end() - 1);
     auto body = MoveToNext().growTree();
-    auto expr = new loli::LambdaExpression(name, body);
-    return expr;
+
+    if (identifiers.size() > 1) {
+        auto args = std::vector<IdentifierExpression>(identifiers.begin(), identifiers.end() - 1);
+        return new loli::LambdaExpression(name, args, body);
+    }
+    return new loli::LambdaExpression(name, body);
 }
 
 loli::Expression* loli::Daphnie::NumberExpression (std::stack<Expression*> &expressionsStack) {

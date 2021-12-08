@@ -1,0 +1,3 @@
+/home/danielf/Projects/cpp/loliLang/cmake-build-debug-coverage/CMakeFiles/rebuild_cache.dir
+/home/danielf/Projects/cpp/loliLang/cmake-build-debug-coverage/CMakeFiles/edit_cache.dir
+/home/danielf/Projects/cpp/loliLang/cmake-build-debug-coverage/CMakeFiles/app.dir
