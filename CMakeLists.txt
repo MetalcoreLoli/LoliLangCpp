@@ -14,4 +14,6 @@ add_executable(app
     ./token.cpp
     ./lexer.h
     ./lexer.cpp
+    ./daphnie.h
+    ./daphnie.cpp
     ./main.cpp)

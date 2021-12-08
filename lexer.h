@@ -7,6 +7,7 @@
 
 #include "./token.h"
 #include "./utils.h"
+#include <memory>
 
 namespace loli {
     class Lexer {

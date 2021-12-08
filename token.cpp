@@ -6,7 +6,7 @@ loli::Token& loli::Token::lexeme(const std::string& value) {
     return *this;
 }
 
-loli::Token& loli::Token::literal(const std::any& value) {
+loli::Token& loli::Token::literal(const std::shared_ptr<void> value) {
     _literal = value;
     return *this;
 }
@@ -19,7 +19,7 @@ std::string& loli::Token::lexeme  () const {
     return const_cast<std::string&>(_lexeme);
 }
 
-std::any loli::Token::literal () const {
+std::shared_ptr<void> loli::Token::literal () const {
     return _literal;
 }
 
@@ -28,7 +28,7 @@ loli::Forma  loli::Token::forma   () const {
 }
 
 loli::Token::Token() {}
-loli::Token::Token(loli::Forma forma, const std::string& lexeme, std::any literal) {
+loli::Token::Token(loli::Forma forma, const std::string& lexeme, std::shared_ptr<void> literal) {
     _forma = forma;
     _lexeme = lexeme;
     _literal = literal;

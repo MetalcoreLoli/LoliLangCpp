@@ -1,7 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
-#include <any>
 #include <string>
+#include <memory>
 
 namespace loli {
     enum class Forma {
@@ -90,21 +90,21 @@ namespace loli {
 
     class Token {
     private:
-        std::string _lexeme;
-        std::any    _literal; 
-        Forma       _forma;
+        std::string             _lexeme;
+        std::shared_ptr<void>   _literal;
+        Forma                   _forma;
     
     public:
         Token();
-        Token (Forma forma, const std::string& lexeme, std::any literal);
+        Token (Forma forma, const std::string& lexeme, std::shared_ptr<void> literal);
 
 
         std::string& lexeme  () const;
-        std::any     literal () const;
+        std::shared_ptr<void> literal () const;
         Forma        forma   () const;
 
         Token& lexeme  (const std::string& value);
-        Token& literal (const std::any& value);
+        Token& literal (const std::shared_ptr<void> value);
         Token& forma   (const Forma value);
 
         std::string asString() const;

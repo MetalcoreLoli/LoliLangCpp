@@ -75,7 +75,7 @@ loli::Token loli::Lexer::Number() {
         current = MoveToNext().Peek();
     }
     _current--;
-    return Token(loli::Forma::NUM, tail, std::stoi(tail));
+    return Token(loli::Forma::NUM, tail, std::make_shared<float>(std::stoi(tail)));
 }
 
 loli::Token loli::Lexer::Indentifier() {

@@ -1,7 +1,6 @@
 #include "./expression.h"
 
 
-
 loli::Expression* loli::BinaryExpression::left  () const {
     return _left;
 }
@@ -25,9 +24,29 @@ loli::BinaryExpression::BinaryExpression(const std::string& operand, loli::Expre
     _operand = operand;
 }
 
-
-
 loli::NumberExpression::NumberExpression(float value)  {
     _value = value;
 }
 float loli::NumberExpression::value() const { return _value; }
+
+loli::IdentifierExpression::IdentifierExpression(const std::string& value) {
+    _value = value;
+}
+
+loli::LambdaExpression::LambdaExpression(loli::IdentifierExpression& identifier, loli::Expression* body) {
+    _idetifier = identifier;
+    _body  = body;
+}
+
+loli::LambdaExpression::LambdaExpression(
+        loli::IdentifierExpression& identifier, 
+        std::vector<IdentifierExpression>& args, 
+        loli::Expression* body) {
+    _idetifier = identifier;
+    _args = args;
+    _body = body;
+
+}
+loli::StringExpression::StringExpression(const std::string& value)  {
+    _value = value;
+}
