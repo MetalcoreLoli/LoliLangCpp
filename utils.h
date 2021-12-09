@@ -1,6 +1,8 @@
 #ifndef LOLI_UTILS_H
 #define LOLI_UTILS_H
 
+#include <memory>
+
 #include <type_traits>
 namespace loli::utils {
     template <typename T>
@@ -25,5 +27,15 @@ namespace loli::utils {
             Value (value);
         };
     };
+
+    template<typename T>
+    using Link = std::shared_ptr<T>;
+    
+    template<typename T, typename ... Args>
+    constexpr Link<T> newLink(Args&& ... args) {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    using GenericLink = Link<void>;
 };
 #endif

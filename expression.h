@@ -6,7 +6,11 @@
 #include <memory>
 #include <vector>
 
+
+#include "utils.h"
+
 namespace loli {
+    using namespace utils;
     class Expression;
     class IdentifierExpression;
     class NumberExpression;
@@ -15,15 +19,15 @@ namespace loli {
     class StringExpression;
     
     struct IVisitor {
-        virtual std::shared_ptr<void> visitBinaryExpression (BinaryExpression& value) = 0;
-        virtual std::shared_ptr<void> visitNumberExpression (NumberExpression& value) = 0;
-        virtual std::shared_ptr<void> visitLambdaExpression (LambdaExpression& value) = 0;
-        virtual std::shared_ptr<void> visitIdentifierExpression (IdentifierExpression& value) = 0;
-        virtual std::shared_ptr<void> visitStringExpression (StringExpression& value) = 0;
+        virtual GenericLink visitBinaryExpression (BinaryExpression& value) = 0;
+        virtual GenericLink visitNumberExpression (NumberExpression& value) = 0;
+        virtual GenericLink visitLambdaExpression (LambdaExpression& value) = 0;
+        virtual GenericLink visitIdentifierExpression (IdentifierExpression& value) = 0;
+        virtual GenericLink visitStringExpression (StringExpression& value) = 0;
     };
 
     struct Expression {
-        virtual std::shared_ptr<void> visit (IVisitor * visitor) = 0;
+        virtual GenericLink visit (IVisitor * visitor) = 0;
     };
 
     class StringExpression : public Expression {
@@ -32,7 +36,7 @@ namespace loli {
         public:
             std::string& value() const { return const_cast<std::string&>(_value); }
 
-            std::shared_ptr<void> visit (IVisitor* visitor) override {
+            GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitStringExpression(*this);
             }
             explicit StringExpression (const std::string& value) ;
@@ -43,7 +47,7 @@ namespace loli {
             float _value;
         public:
             float value() const ;
-            std::shared_ptr<void> visit (IVisitor* visitor) override {
+            GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitNumberExpression(*this);
             }
             explicit NumberExpression (float value) ;
@@ -65,7 +69,7 @@ namespace loli {
             BinaryExpression& left  (Expression* value);
             BinaryExpression& right (Expression* value);
 
-            std::shared_ptr<void> visit (IVisitor* visitor) override {
+            GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitBinaryExpression(*this);
             }
 
@@ -77,7 +81,7 @@ namespace loli {
             std::string _value;
 
         public:
-            std::shared_ptr<void> visit (IVisitor* visitor) override {
+            GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitIdentifierExpression(*this);
             }
 
@@ -94,7 +98,7 @@ namespace loli {
             std::vector<IdentifierExpression> _args{};
 
         public:
-            std::shared_ptr<void> visit (IVisitor* visitor) override {
+            GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitLambdaExpression(*this);
             }
 
