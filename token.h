@@ -5,7 +5,7 @@
 
 namespace loli {
     enum class Forma {
-       ADD = 0,
+       ADD =0,
        SUB,
        MUL,
        DIV,
@@ -44,6 +44,17 @@ namespace loli {
        EOF_,
        SIZE_OF_FORMA
     };
+    inline Forma operator |(Forma a, Forma b) {
+        return static_cast<loli::Forma>(static_cast<int>(a) | static_cast<int>(b));
+    }
+
+    inline Forma operator &(Forma a, Forma b) {
+        return static_cast<loli::Forma>(static_cast<int>(a) & static_cast<int>(b));
+    }
+
+    inline Forma operator ^(Forma a, Forma b) {
+        return static_cast<loli::Forma>(static_cast<int>(a) ^ static_cast<int>(b));
+    }
 
     static const char* FormaAsStr[] = {
        "ADD",
@@ -85,7 +96,7 @@ namespace loli {
        "EOF_",
     };
     static_assert (
-            sizeof(FormaAsStr)/sizeof(FormaAsStr[0]) == (size_t)Forma::SIZE_OF_FORMA, 
+            sizeof(FormaAsStr)/sizeof(FormaAsStr[0]) == (size_t)Forma::SIZE_OF_FORMA,
             "new forma was introduced, but it haven't string value");
 
     class Token {

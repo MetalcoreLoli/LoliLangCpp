@@ -52,11 +52,15 @@ class ASTAsString : public loli::IVisitor {
 int main () {
     loli::Lexer lex;
     std::string code = 
-        "helloWorld => \"Hello, world\";";
+        "add a b => a + b;";
+    
+    std::cout << std::string(35, '-') << std::endl;
     auto tokens = lex.lineToTokens (code);
     for (const auto& token : tokens) {
         std::cout << token.asString() << std::endl;
     }
+    std::cout << std::string(35, '-') << std::endl;
+    
     ASTAsString ast;
 
     loli::Daphnie daphnie{tokens};
@@ -64,6 +68,5 @@ int main () {
     auto pp = daphnie.growTree();
     auto result = *std::static_pointer_cast<std::string>(pp->visit(&ast));
     std::cout << result << std::endl;
-
     return EXIT_SUCCESS;
 }

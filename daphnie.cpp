@@ -1,7 +1,6 @@
 #include "daphnie.h"
 #include "expression.h"
 #include "token.h"
-#include <ranges>
 #include <stdexcept>
 
 
@@ -10,7 +9,8 @@ bool loli::Daphnie::IsBinary (loli::Token value) const {
 }
 
 bool loli::Daphnie::IsMatchTo (loli::Forma value, loli::Forma to) {
-    return ((int)to & (int)value) == (int)value;
+    if (value == Forma::ADD) return 0;
+    return (to & value) == value;
 }
 
 loli::Token loli::Daphnie::Peek() const {
@@ -45,6 +45,9 @@ loli::Expression* loli::Daphnie::growTree () {
         else if (IsMatchTo (current.forma(), loli::Forma::LAMBDA_ARROW)) {
             expressionsStack.push (LambdaExpression(expressionsStack));
         } 
+        else if (current.forma() == Forma::ADD || IsMatchTo(current.forma(), _binaryOps)) {
+            expressionsStack.push(BinaryExpression(expressionsStack));
+        }
         current = MoveToNext().Peek();
     }
     auto result = expressionsStack.top();
@@ -53,7 +56,14 @@ loli::Expression* loli::Daphnie::growTree () {
 }
 
 loli::Expression* loli::Daphnie::BinaryExpression (std::stack<Expression*> &expressionsStack) {
-    return nullptr;
+    auto current = Peek();
+    if (expressionsStack.empty()) {
+        throw std::runtime_error{"there is nothing to work with"};
+    }
+    auto identifier = expressionsStack.top();
+    expressionsStack.pop();
+    std::string op = current.lexeme();
+    return new class BinaryExpression (op, MoveToNext().growTree(), identifier);
 }
 
 loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expressionsStack) {

@@ -17,7 +17,8 @@ namespace loli {
 
         size_t _current{};
         std::vector<Token> _source {};
-        
+
+        loli::Forma _binaryOps;         
         loli::Token Peek() const;
         loli::Token PeekNext() const;
 
@@ -38,6 +39,7 @@ namespace loli {
         Expression* growTree();
 
         explicit Daphnie(const std::vector<Token>& source) : _source(source) {
+            _binaryOps = Forma::ADD | Forma::SUB | Forma::MUL | Forma::DIV;
         }
     };
 };
