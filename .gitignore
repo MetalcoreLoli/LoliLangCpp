@@ -2,6 +2,8 @@
 .cache/*
 cmake-build-debug
 cmake-build-debug/*
+cmake-build-debug-coverage
+cmake-build-debug-coverage/*
 .idea/
 .idea/*
 build
