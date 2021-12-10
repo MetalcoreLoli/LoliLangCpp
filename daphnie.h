@@ -18,12 +18,12 @@ namespace loli {
         size_t _current{};
         std::vector<Token> _source {};
 
-        loli::Forma _binaryOps;         
+        std::vector<loli::Forma> _binaryOps{};         
         loli::Token Peek() const;
         loli::Token PeekNext() const;
 
         bool IsBinary (loli::Token value) const;
-        bool IsMatchTo (loli::Forma value, loli::Forma to);
+        bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to);
         
         Daphnie& MoveToNext();
         
@@ -39,7 +39,10 @@ namespace loli {
         Expression* growTree();
 
         explicit Daphnie(const std::vector<Token>& source) : _source(source) {
-            _binaryOps = Forma::ADD | Forma::SUB | Forma::MUL | Forma::DIV;
+            _binaryOps.push_back(loli::Forma::ADD);
+            _binaryOps.push_back(loli::Forma::SUB);
+            _binaryOps.push_back(loli::Forma::MUL);
+            _binaryOps.push_back(loli::Forma::DIV);
         }
     };
 };

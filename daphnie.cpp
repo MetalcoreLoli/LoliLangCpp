@@ -1,6 +1,7 @@
 #include "daphnie.h"
 #include "expression.h"
 #include "token.h"
+#include "utils.h"
 #include <stdexcept>
 
 
@@ -8,9 +9,8 @@ bool loli::Daphnie::IsBinary (loli::Token value) const {
     return Peek().forma() == value.forma();
 }
 
-bool loli::Daphnie::IsMatchTo (loli::Forma value, loli::Forma to) {
-    if (value == Forma::ADD) return 0;
-    return (to & value) == value;
+bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
+    return std::find(to.begin(), to.end(), value) != to.end();
 }
 
 loli::Token loli::Daphnie::Peek() const {
@@ -36,18 +36,26 @@ loli::Expression* loli::Daphnie::growTree () {
     auto current = Peek();
     std::stack <Expression*> expressionsStack{};
     while (!IsEnd()) {
-        if (IsMatchTo(current.forma(), loli::Forma::INDENTIFIER)) {
+        if (IsMatchTo(current.forma(), {loli::Forma::INDENTIFIER})) {
             expressionsStack.push(new loli::IdentifierExpression(current.lexeme()));
         }
         else if (current.forma() == loli::Forma::STRING_LIT) {
             expressionsStack.push (StringExpression(expressionsStack));
         }
-        else if (IsMatchTo (current.forma(), loli::Forma::LAMBDA_ARROW)) {
+        else if (IsMatchTo (current.forma(), {loli::Forma::LAMBDA_ARROW})) {
             expressionsStack.push (LambdaExpression(expressionsStack));
         } 
-        else if (current.forma() == Forma::ADD || IsMatchTo(current.forma(), _binaryOps)) {
+        else if (IsMatchTo(current.forma(), _binaryOps)) {
             expressionsStack.push(BinaryExpression(expressionsStack));
         }
+        else if (IsMatchTo(current.forma(), {loli::Forma::NUM})) {
+            expressionsStack.push(NumberExpression(expressionsStack));
+        }
+        //else {
+        //    std::string message = "unknown lexeme: \"";
+        //    message.append(current.lexeme()).append("\"");
+        //    throw std::runtime_error{message};
+        //}
         current = MoveToNext().Peek();
     }
     auto result = expressionsStack.top();
@@ -90,7 +98,7 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::NumberExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto expr = new loli::NumberExpression(*std::static_pointer_cast<float>(current.literal()));
+    auto expr = new loli::NumberExpression(loli::unwarp<void, float>(current.literal()));
     expressionsStack.push(expr);
     return expr;
 }

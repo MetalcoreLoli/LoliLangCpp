@@ -1,9 +1,11 @@
+#include <cstddef>
 #include <iostream>
 #include <string>
 #include "./lexer.h"
 #include "daphnie.h"
 #include "expression.h"
 #include "lexy.h"
+#include "utils.h"
 
 class ASTAsString : public loli::IVisitor {
     loli::GenericLink visitBinaryExpression(loli::BinaryExpression& expression) override {
@@ -11,10 +13,8 @@ class ASTAsString : public loli::IVisitor {
         auto rightValue = *std::static_pointer_cast<std::string>(expression.right()->visit(this));
         std::string result = "(";
         result
-            .append(expression.operand())
-            .append(" ")
-            .append(leftValue)
-            .append(" ")
+            .append(expression.operand()).append(" ")
+            .append(leftValue).append(" ")
             .append(rightValue).append(")");
         return loli::newLink<std::string>(result);
     }
@@ -29,8 +29,8 @@ class ASTAsString : public loli::IVisitor {
         std::string body = *std::static_pointer_cast<std::string>(value.body()->visit(this));
         res.append(name);
         if (!value.args().empty()) {
-            for (const auto& arg : value.args()) {
-                res.append(" ").append(arg.value());
+            for (auto arg = value.args().end() - 1; arg != value.args().begin() - 1; arg--) {
+                res.append(" ").append(arg->value());
             }
         }   
         res.append (") ").append(body).append(")");
@@ -52,10 +52,11 @@ class ASTAsString : public loli::IVisitor {
 int main () {
     loli::Lexer lex;
     std::string code = 
-        "add a b => a + b;";
+        "someFunc n => n*6 + 5 / 99 -9;";
     
     std::cout << code << std::endl;
     std::cout << std::string(35, '-') << std::endl;
+
     auto tokens = lex.lineToTokens (code);
     for (const auto& token : tokens) {
         std::cout << token.asString() << std::endl;
@@ -66,8 +67,7 @@ int main () {
 
     loli::Daphnie daphnie{tokens};
 
-    auto pp = daphnie.growTree();
-    auto result = *std::static_pointer_cast<std::string>(pp->visit(&ast));
+    auto result = loli::unwarp<void, std::string>(daphnie.growTree()->visit(&ast));
     std::cout << result << std::endl;
     return EXIT_SUCCESS;
 }

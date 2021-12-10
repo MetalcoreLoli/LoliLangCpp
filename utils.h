@@ -22,7 +22,6 @@ namespace loli::utils {
             return _value != nullptr;            
         }
 
-
         Maybe(T value) {
             Value (value);
         };
@@ -31,11 +30,17 @@ namespace loli::utils {
     template<typename T>
     using Link = std::shared_ptr<T>;
     
+    using GenericLink = Link<void>;
+    using RawGenericLink = void*;
+
     template<typename T, typename ... Args>
     constexpr Link<T> newLink(Args&& ... args) {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }
 
-    using GenericLink = Link<void>;
+    template<typename TFrom, typename TTo>
+    constexpr TTo unwarp (Link<TFrom> link) {
+        return *std::static_pointer_cast<TTo> (link);
+    }
 };
 #endif
