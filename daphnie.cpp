@@ -121,7 +121,7 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::NumberExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto expr = new loli::NumberExpression(loli::unwarp<void, float>(current.literal()));
+    auto expr = new loli::NumberExpression(loli::unwrap<void, float>(current.literal()));
     expressionsStack.push(expr);
     return expr;
 }
@@ -146,7 +146,7 @@ loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& ex
 
 loli::Expression* loli::Daphnie::BoolExpression(std::stack<Expression*>& expressionsStack) {
     auto current = Peek();
-    return new loli::BoolExpression(loli::unwarp<void, bool>(current.literal()));
+    return new loli::BoolExpression(loli::unwrap<void, bool>(current.literal()));
 }
 
 loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressionsStack) {

@@ -62,8 +62,8 @@ namespace loli {
     class BinaryExpression : public Expression {
         private:
             std::string _operand;
-            Expression* _left;
-            Expression* _right;
+            Expression* _left{};
+            Expression* _right{};
 
         public:
             [[nodiscard]] Expression* left  () const;
@@ -140,7 +140,7 @@ namespace loli {
         public:
             [[nodiscard]] Expression* expression () const { return _expression; }
         
-            loli::GenericLink visit (IVisitor * visitor) {
+            loli::GenericLink visit (IVisitor * visitor) override {
                 return visitor->visitGroupingExpression(*this);
             }
 
@@ -153,7 +153,7 @@ namespace loli {
         public:
 
 
-            loli::GenericLink visit (IVisitor * visitor) {
+            loli::GenericLink visit (IVisitor * visitor) override {
                 return visitor->visitBoolExpression(*this);
             }
 

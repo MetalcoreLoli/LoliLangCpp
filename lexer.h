@@ -49,10 +49,10 @@ namespace loli {
         size_t _current{};
         std::string _source;
         
-        char Peek() const;
-        char PeekNext() const;
+        [[nodiscard]] char Peek() const;
+        [[nodiscard]] char PeekNext() const;
         
-        bool IsEnd() const;
+        [[nodiscard]] bool IsEnd() const;
         bool IsDigit(char symbol);
         bool IsKeyword(const std::string& value);
 

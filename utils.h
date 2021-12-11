@@ -18,11 +18,11 @@ namespace loli::utils {
             return *this;
         }
 
-        bool HasValue() const {
+        [[nodiscard]] bool HasValue() const {
             return _value != nullptr;            
         }
 
-        Maybe(T value) {
+        explicit Maybe(T value) {
             Value (value);
         };
     };
@@ -39,7 +39,7 @@ namespace loli::utils {
     }
 
     template<typename TFrom, typename TTo>
-    constexpr TTo unwarp (Link<TFrom> link) {
+    constexpr TTo unwrap (Link<TFrom> link) {
         return *std::static_pointer_cast<TTo> (link);
     }
 };

@@ -50,9 +50,9 @@ class ASTAsString : public loli::IVisitor {
 
     loli::GenericLink visitIfExpression (loli::IfExpression& value) override {
         std::string res = "(if ";
-        auto condition = loli::unwarp<void, std::string>(value.condition()->visit(this));
-        auto then      = loli::unwarp<void, std::string>(value.then()->visit(this));
-        auto els       = loli::unwarp<void, std::string>(value.els()->visit(this));
+        auto condition = loli::unwrap<void, std::string>(value.condition()->visit(this));
+        auto then      = loli::unwrap<void, std::string>(value.then()->visit(this));
+        auto els       = loli::unwrap<void, std::string>(value.els()->visit(this));
 
         res
             .append(condition).append(" ")
@@ -92,7 +92,7 @@ int main (int argc, char** argv) {
 
     loli::Daphnie daphnie{tokens};
 
-    auto result = loli::unwarp<void, std::string>(daphnie.growTree()->visit(&ast));
+    auto result = loli::unwrap<void, std::string>(daphnie.growTree()->visit(&ast));
     std::cout << result << std::endl;
     return EXIT_SUCCESS;
 }
