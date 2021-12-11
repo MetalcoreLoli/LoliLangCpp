@@ -40,7 +40,7 @@ namespace loli {
         private:
             std::string _value;
         public:
-            std::string& value() const { return const_cast<std::string&>(_value); }
+            [[nodiscard]] std::string& value() const { return const_cast<std::string&>(_value); }
 
             GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitStringExpression(*this);
@@ -52,7 +52,7 @@ namespace loli {
         private:
             float _value;
         public:
-            float value() const ;
+            [[nodiscard]] float value() const ;
             GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitNumberExpression(*this);
             }
@@ -66,10 +66,10 @@ namespace loli {
             Expression* _right;
 
         public:
-            Expression* left  () const;
-            Expression* right () const;
+            [[nodiscard]] Expression* left  () const;
+            [[nodiscard]] Expression* right () const;
 
-            std::string& operand() const { return const_cast<std::string&>(_operand); }
+            [[nodiscard]] std::string& operand() const { return const_cast<std::string&>(_operand); }
 
 
             BinaryExpression& left  (Expression* value);
@@ -91,9 +91,9 @@ namespace loli {
                 return visitor->visitIdentifierExpression(*this);
             }
 
-            std::string value() const { return _value; }
+            [[nodiscard]] std::string value() const { return _value; }
             explicit IdentifierExpression (const std::string& value);
-            IdentifierExpression () {}
+            IdentifierExpression () = default;
 
     };
 
@@ -108,9 +108,9 @@ namespace loli {
                 return visitor->visitLambdaExpression(*this);
             }
 
-            std::vector<IdentifierExpression>& args() const { return const_cast<std::vector<IdentifierExpression>&>(_args); }
-            IdentifierExpression& identifier() const { return const_cast<IdentifierExpression&>(_idetifier); }
-            Expression*           body () const { return _body; }
+            [[nodiscard]] std::vector<IdentifierExpression>& args() const { return const_cast<std::vector<IdentifierExpression>&>(_args); }
+            [[nodiscard]] IdentifierExpression& identifier() const { return const_cast<IdentifierExpression&>(_idetifier); }
+            [[nodiscard]] Expression*           body () const { return _body; }
 
             LambdaExpression(IdentifierExpression& identifier, Expression* body);
             LambdaExpression(IdentifierExpression& identifier, std::vector<IdentifierExpression>& args, Expression* body);
@@ -126,9 +126,9 @@ namespace loli {
                 return visitor->visitIfExpression(*this);
             }
 
-            Expression* condition() const { return _condition; }
-            Expression* then () const { return _then; }
-            Expression* els () const { return _else; }
+            [[nodiscard]] Expression* condition() const { return _condition; }
+            [[nodiscard]] Expression* then () const { return _then; }
+            [[nodiscard]] Expression* els () const { return _else; }
 
             IfExpression(Expression* condition, Expression* then, Expression* els) 
                 : _condition(condition), _then(then), _else(els) {}
@@ -138,7 +138,7 @@ namespace loli {
         private:
             Expression* _expression;
         public:
-            Expression* expression () const { return _expression; }
+            [[nodiscard]] Expression* expression () const { return _expression; }
         
             loli::GenericLink visit (IVisitor * visitor) {
                 return visitor->visitGroupingExpression(*this);
@@ -157,7 +157,7 @@ namespace loli {
                 return visitor->visitBoolExpression(*this);
             }
 
-            bool value () const { return _value; }
+            [[nodiscard]] bool value () const { return _value; }
             explicit BoolExpression (bool value) : _value(value) {}
     };
 };

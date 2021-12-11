@@ -110,15 +110,15 @@ namespace loli {
         Token (Forma forma, const std::string& lexeme, std::shared_ptr<void> literal);
 
 
-        std::string& lexeme  () const;
-        std::shared_ptr<void> literal () const;
-        Forma        forma   () const;
+        [[nodiscard]] std::string& lexeme  () const;
+        [[nodiscard]] std::shared_ptr<void> literal () const;
+        [[nodiscard]] Forma        forma   () const;
 
         Token& lexeme  (const std::string& value);
-        Token& literal (const std::shared_ptr<void> value);
-        Token& forma   (const Forma value);
+        Token& literal (std::shared_ptr<void> value);
+        Token& forma   (Forma value);
 
-        std::string asString() const;
+        [[nodiscard]] std::string asString() const;
     };
 };
 #endif

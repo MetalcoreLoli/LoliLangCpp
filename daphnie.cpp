@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 
-bool loli::Daphnie::IsBinary (loli::Token value) const {
+bool loli::Daphnie::IsBinary (const loli::Token& value) const {
     return IsMatchTo(value.forma(), _binaryOps);
 }
 
@@ -101,10 +101,10 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
     if (expressionsStack.empty()) {
         throw std::runtime_error{"there is no name und body for lambda"};
     }
-    std::vector<IdentifierExpression> identifiers{};
+    std::vector<class IdentifierExpression> identifiers{};
     
     while (!expressionsStack.empty()) {
-        auto identifier = static_cast<IdentifierExpression*>(expressionsStack.top());
+        auto identifier = dynamic_cast<class IdentifierExpression*>(expressionsStack.top());
         expressionsStack.pop();
         identifiers.push_back(*identifier);
     }
@@ -113,7 +113,7 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
     auto body = MoveToNext().growTree();
 
     if (identifiers.size() > 1) {
-        auto args = std::vector<IdentifierExpression>(identifiers.begin(), identifiers.end() - 1);
+        auto args = std::vector<class IdentifierExpression>(identifiers.begin(), identifiers.end() - 1);
         return new loli::LambdaExpression(name, args, body);
     }
     return new loli::LambdaExpression(name, body);
@@ -132,9 +132,9 @@ loli::Expression* loli::Daphnie::StringExpression (std::stack<Expression*> &expr
     return expr;
 }
 
-loli::Expression* loli::Daphnie::IndentifierExpression (std::stack<Expression*> &expressionsStack) {
+loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto expr =new IdentifierExpression(current.lexeme()); 
+    auto expr =new class IdentifierExpression(current.lexeme());
     return expr;
 }
 
@@ -146,8 +146,7 @@ loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& ex
 
 loli::Expression* loli::Daphnie::BoolExpression(std::stack<Expression*>& expressionsStack) {
     auto current = Peek();
-    auto res = current.forma() == loli::Forma::TRUE? true : false; 
-    return new loli::BoolExpression(res);
+    return new loli::BoolExpression(loli::unwarp<void, bool>(current.literal()));
 }
 
 loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressionsStack) {

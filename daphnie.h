@@ -20,22 +20,22 @@ namespace loli {
         std::vector<Token> _source {};
 
         std::vector<loli::Forma> _binaryOps{};         
-        loli::Token Peek() const;
-        loli::Token PeekNext() const;
+        [[nodiscard]] loli::Token Peek() const;
+        [[nodiscard]] loli::Token PeekNext() const;
 
-        bool IsBinary (loli::Token value) const;
-        bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) const;
+        [[nodiscard]] bool IsBinary (const loli::Token& value) const;
+        [[nodiscard]] bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) const;
         
         Daphnie& MoveToNext();
         Daphnie& MoveToNextBy(size_t steps);
         
-        bool IsEnd() const;
+        [[nodiscard]] bool IsEnd() const;
 
         Expression* BinaryExpression (std::stack<Expression*> &expressionsStack);
         Expression* NumberExpression (std::stack<Expression*> &expressionsStack);
         Expression* StringExpression (std::stack<Expression*> &expressionsStack);
         Expression* LambdaExpression (std::stack<Expression*> &expressionsStack);
-        Expression* IndentifierExpression (std::stack<Expression*> &expressionsStack);
+        Expression* IdentifierExpression (std::stack<Expression*> &expressionsStack);
         Expression* GroupingExpression (std::stack<Expression*>& expressionsStack);
         Expression* IfExpression (std::stack<Expression*>& expressionsStack);
         Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
