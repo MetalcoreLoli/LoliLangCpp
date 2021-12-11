@@ -157,13 +157,17 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     }
 
     auto condition = MoveToNext().GroupingExpression(expressionsStack);
-    auto then      = MoveToNextBy(2).growTree(); 
+    if (IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::RPAREN, loli::Forma::EOF_, loli::Forma::SEMI})) {
+        throw std::runtime_error{"there is no 'then' branch"};
+    }
+    auto then      = growTree(); 
     //auto then    = new loli::IdentifierExpression("'THEN BRANCH IS NOT IMPLEMENTED'"); 
 
-    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::ELSE})) {
+    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::ELSE}) || 
+         IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is no else branch"};
     }
-    auto els       = MoveToNextBy(2).growTree();
+    auto els       = growTree();
     
     return new loli::IfExpression(condition, then, els);
 }
