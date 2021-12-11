@@ -1,6 +1,6 @@
 #include "lexy.h"
 
-std::shared_ptr<void> loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
+loli::GenericLink loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
     if (value.operand() == "+") {
         auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
         auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
@@ -24,18 +24,29 @@ std::shared_ptr<void> loli::Lexy::visitBinaryExpression (loli::BinaryExpression&
     return nullptr;
 }
 
-std::shared_ptr<void> loli::Lexy::visitNumberExpression (loli::NumberExpression& value) {
+loli::GenericLink loli::Lexy::visitNumberExpression (loli::NumberExpression& value) {
     return std::make_shared<float>(value.value());
 }
 
-std::shared_ptr<void> loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
+loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
     return nullptr;
 }
 
-std::shared_ptr<void> loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
+loli::GenericLink loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
     return nullptr;
 }
 
-std::shared_ptr<void> loli::Lexy::visitStringExpression (loli::StringExpression& value) {
+loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& value) {
+    return nullptr;
+}
+
+loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
+    return nullptr;
+}
+
+loli::GenericLink loli::Lexy::visitGroupingExpression (loli::GroupingExpression& value) {
+    return nullptr;
+}
+loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) {
     return nullptr;
 }

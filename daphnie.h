@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <stack>
+#include <assert.h>
 
 #include "./token.h"
 #include "./utils.h"
@@ -23,9 +24,10 @@ namespace loli {
         loli::Token PeekNext() const;
 
         bool IsBinary (loli::Token value) const;
-        bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to);
+        bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) const;
         
         Daphnie& MoveToNext();
+        Daphnie& MoveToNextBy(size_t steps);
         
         bool IsEnd() const;
 
@@ -34,6 +36,9 @@ namespace loli {
         Expression* StringExpression (std::stack<Expression*> &expressionsStack);
         Expression* LambdaExpression (std::stack<Expression*> &expressionsStack);
         Expression* IndentifierExpression (std::stack<Expression*> &expressionsStack);
+        Expression* GroupingExpression (std::stack<Expression*>& expressionsStack);
+        Expression* IfExpression (std::stack<Expression*>& expressionsStack);
+        Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
     
     public:
         Expression* growTree();
@@ -43,6 +48,7 @@ namespace loli {
             _binaryOps.push_back(loli::Forma::SUB);
             _binaryOps.push_back(loli::Forma::MUL);
             _binaryOps.push_back(loli::Forma::DIV);
+            _binaryOps.push_back(loli::Forma::EQ);
         }
     };
 };

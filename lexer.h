@@ -3,11 +3,11 @@
 #include <cstddef>
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include <map>
 
 #include "./token.h"
 #include "./utils.h"
-#include <memory>
 
 namespace loli {
     class Lexer {
@@ -16,8 +16,8 @@ namespace loli {
             {"func", Token(Forma::FUNC, "func", 0)},
             {"if",   Token(Forma::IF,   "if", 0)},
             {"else", Token(Forma::ELSE, "else", 0)},
-            {"true", Token(Forma::TRUE, "true", 0)},
-            {"false", Token(Forma::FALSE, "false", 0)},
+            {"true", Token(Forma::TRUE, "true", utils::newLink<bool>(true))},
+            {"false", Token(Forma::FALSE, "false", utils::newLink<bool>(false))},
             {"return", Token(Forma::RETURN, "return", 0)},
             {"import", Token(Forma::IMPORT, "import", 0)},
             {"for", Token(Forma::FOR_, "for", 0)},

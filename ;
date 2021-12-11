@@ -18,8 +18,6 @@ namespace loli {
     class LambdaExpression;
     class StringExpression;
     class IfExpression;
-    class GroupingExpression;
-    class BoolExpression;
     
     struct IVisitor {
         virtual GenericLink visitBinaryExpression (BinaryExpression& value) = 0;
@@ -28,8 +26,6 @@ namespace loli {
         virtual GenericLink visitIdentifierExpression (IdentifierExpression& value) = 0;
         virtual GenericLink visitStringExpression (StringExpression& value) = 0;
         virtual GenericLink visitIfExpression (IfExpression& value) = 0;
-        virtual GenericLink visitGroupingExpression (GroupingExpression& value) = 0;
-        virtual GenericLink visitBoolExpression (BoolExpression& value) = 0;
     };
 
     struct Expression {
@@ -132,33 +128,6 @@ namespace loli {
 
             IfExpression(Expression* condition, Expression* then, Expression* els) 
                 : _condition(condition), _then(then), _else(els) {}
-    };
-
-    class GroupingExpression : public Expression {
-        private:
-            Expression* _expression;
-        public:
-            Expression* expression () const { return _expression; }
-        
-            loli::GenericLink visit (IVisitor * visitor) {
-                return visitor->visitGroupingExpression(*this);
-            }
-
-            explicit GroupingExpression (Expression* expr) : _expression(expr){}
-    };
-
-    class BoolExpression : public Expression {
-        private:
-            bool _value = false;
-        public:
-
-
-            loli::GenericLink visit (IVisitor * visitor) {
-                return visitor->visitBoolExpression(*this);
-            }
-
-            bool value () const { return _value; }
-            explicit BoolExpression (bool value) : _value(value) {}
     };
 };
 #endif// __EXPRESSION_H__ 

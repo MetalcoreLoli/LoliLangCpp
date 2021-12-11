@@ -5,11 +5,14 @@
 
 namespace loli {
     struct Lexy : IVisitor {
-        std::shared_ptr<void> visitBinaryExpression (BinaryExpression& value) override;
-        std::shared_ptr<void> visitNumberExpression (NumberExpression& value) override;
-        std::shared_ptr<void> visitLambdaExpression (LambdaExpression& value)  override;
-        std::shared_ptr<void> visitIdentifierExpression (IdentifierExpression& value) override;
-        std::shared_ptr<void> visitStringExpression (StringExpression& value) override;
+        loli::GenericLink visitBinaryExpression (BinaryExpression& value) override;
+        loli::GenericLink visitNumberExpression (NumberExpression& value) override;
+        loli::GenericLink visitLambdaExpression (LambdaExpression& value)  override;
+        loli::GenericLink visitIdentifierExpression (IdentifierExpression& value) override;
+        loli::GenericLink visitStringExpression (StringExpression& value) override;
+        loli::GenericLink visitIfExpression (IfExpression& value) override;
+        loli::GenericLink visitGroupingExpression (GroupingExpression& value) override;
+        loli::GenericLink visitBoolExpression (BoolExpression& value) override;
     };
 };
 #endif // __LEXY_H__

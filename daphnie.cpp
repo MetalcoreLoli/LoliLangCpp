@@ -6,10 +6,10 @@
 
 
 bool loli::Daphnie::IsBinary (loli::Token value) const {
-    return Peek().forma() == value.forma();
+    return IsMatchTo(value.forma(), _binaryOps);
 }
 
-bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
+bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) const {
     return std::find(to.begin(), to.end(), value) != to.end();
 }
 
@@ -27,9 +27,13 @@ bool loli::Daphnie::IsEnd() const {
     return _current >= _source.size() || _source[_current].forma() == Forma::EOF_;
 }
 
-loli::Daphnie& loli::Daphnie::MoveToNext() {
-    _current++;
+loli::Daphnie& loli::Daphnie::MoveToNextBy(size_t steps) {
+    _current += steps;
     return *this;
+}
+
+loli::Daphnie& loli::Daphnie::MoveToNext() {
+    return MoveToNextBy(1);
 }
 
 loli::Expression* loli::Daphnie::growTree () {
@@ -39,23 +43,42 @@ loli::Expression* loli::Daphnie::growTree () {
         if (IsMatchTo(current.forma(), {loli::Forma::INDENTIFIER})) {
             expressionsStack.push(new loli::IdentifierExpression(current.lexeme()));
         }
-        else if (current.forma() == loli::Forma::STRING_LIT) {
+        else if (IsMatchTo(current.forma(), {loli::Forma::STRING_LIT})) {
             expressionsStack.push (StringExpression(expressionsStack));
         }
         else if (IsMatchTo (current.forma(), {loli::Forma::LAMBDA_ARROW})) {
             expressionsStack.push (LambdaExpression(expressionsStack));
         } 
-        else if (IsMatchTo(current.forma(), _binaryOps)) {
+        else if (IsBinary(current)) {
             expressionsStack.push(BinaryExpression(expressionsStack));
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::NUM})) {
             expressionsStack.push(NumberExpression(expressionsStack));
         }
-        //else {
-        //    std::string message = "unknown lexeme: \"";
-        //    message.append(current.lexeme()).append("\"");
-        //    throw std::runtime_error{message};
-        //}
+        else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
+            //TODO: what should i do with semi ?
+        }
+        else if (IsMatchTo(current.forma(), {loli::Forma::IF})) {
+            expressionsStack.push(IfExpression(expressionsStack));
+        }
+        else if (IsMatchTo(current.forma(), {loli::Forma::LPAREN})) {
+            expressionsStack.push(GroupingExpression(expressionsStack));
+        }
+        else if (IsMatchTo(current.forma(), {loli::Forma::RPAREN})) {
+            _current--;
+            break;
+        }
+        else if (IsMatchTo(current.forma(), {loli::Forma::ELSE})) {
+            throw std::runtime_error{"'else' statement is not implemented"};
+        }
+        else if (IsMatchTo(current.forma(), {loli::Forma::TRUE, loli::Forma::FALSE})) {
+            expressionsStack.push(BoolExpression(expressionsStack));
+        }
+        else {
+            std::string message = "unknown lexeme: \"";
+            message.append(current.lexeme()).append("\"");
+            throw std::runtime_error{message};
+        }
         current = MoveToNext().Peek();
     }
     auto result = expressionsStack.top();
@@ -113,4 +136,30 @@ loli::Expression* loli::Daphnie::IndentifierExpression (std::stack<Expression*> 
     auto current = Peek();
     auto expr =new IdentifierExpression(current.lexeme()); 
     return expr;
+}
+
+loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& expressionsStack) {
+    auto current = Peek();
+    auto res = MoveToNext().growTree();
+    return new loli::GroupingExpression(res);
+}
+
+loli::Expression* loli::Daphnie::BoolExpression(std::stack<Expression*>& expressionsStack) {
+    auto current = Peek();
+    auto res = current.forma() == loli::Forma::TRUE? true : false; 
+    return new loli::BoolExpression(res);
+}
+
+loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressionsStack) {
+    auto next = PeekNext();
+    if (!IsMatchTo(next.forma(), {loli::Forma::LPAREN})) {
+        throw std::runtime_error{"there is no '(' after 'if' statement"};
+    }
+
+    auto condition = MoveToNext().GroupingExpression(expressionsStack);
+    auto then      =  MoveToNext().MoveToNext().growTree(); 
+    //auto then    = new loli::IdentifierExpression("'THEN BRANCH IS NOT IMPLEMENTED'"); 
+    auto els       = new loli::IdentifierExpression("'ELSE BRANCH IS NOT IMPLEMENTED'");
+    
+    return new loli::IfExpression(condition, then, els);
 }

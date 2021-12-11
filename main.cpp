@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <iostream>
 #include <string>
+
 #include "./lexer.h"
 #include "daphnie.h"
 #include "expression.h"
@@ -46,22 +47,46 @@ class ASTAsString : public loli::IVisitor {
         res.append (value.value()).append("\"");
         return loli::newLink<std::string>(res);
     }
+
+    loli::GenericLink visitIfExpression (loli::IfExpression& value) override {
+        std::string res = "(if ";
+        auto condition = loli::unwarp<void, std::string>(value.condition()->visit(this));
+        auto then      = loli::unwarp<void, std::string>(value.then()->visit(this));
+        auto els       = loli::unwarp<void, std::string>(value.els()->visit(this));
+
+        res
+            .append(condition).append(" ")
+            .append(then)     .append(" ")
+            .append(els)      .append(")");
+        return loli::newLink<std::string> (res);
+    }
+
+    loli::GenericLink visitGroupingExpression (loli::GroupingExpression& value) override {
+        return value.expression()->visit(this);
+    }
+    loli::GenericLink visitBoolExpression (loli::BoolExpression& value) override {
+        return loli::newLink<std::string>(std::to_string(value.value()));
+    }
 };
 
 
-int main () {
+int main (int argc, char** argv) {
     loli::Lexer lex;
     std::string code = 
-        "someFunc n => n*6 + 5 / 99 -9;";
+        "someFunc n => if (2 == 0) 789";
+
+    if (argc > 1 && argv != nullptr) {
+        code = argv[1];
+    }
     
     std::cout << code << std::endl;
-    std::cout << std::string(35, '-') << std::endl;
+    std::cout << std::string(30, '-') << std::endl;
 
     auto tokens = lex.lineToTokens (code);
     for (const auto& token : tokens) {
         std::cout << token.asString() << std::endl;
     }
-    std::cout << std::string(35, '-') << std::endl;
+    std::cout << std::string(30, '-') << std::endl;
     
     ASTAsString ast;
 
