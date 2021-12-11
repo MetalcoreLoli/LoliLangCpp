@@ -69,7 +69,8 @@ loli::Expression* loli::Daphnie::growTree () {
             break;
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::ELSE})) {
-            throw std::runtime_error{"'else' statement is not implemented"};
+            _current--;
+            break;
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::TRUE, loli::Forma::FALSE})) {
             expressionsStack.push(BoolExpression(expressionsStack));
@@ -156,9 +157,13 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     }
 
     auto condition = MoveToNext().GroupingExpression(expressionsStack);
-    auto then      =  MoveToNext().MoveToNext().growTree(); 
+    auto then      = MoveToNextBy(2).growTree(); 
     //auto then    = new loli::IdentifierExpression("'THEN BRANCH IS NOT IMPLEMENTED'"); 
-    auto els       = new loli::IdentifierExpression("'ELSE BRANCH IS NOT IMPLEMENTED'");
+
+    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::ELSE})) {
+        throw std::runtime_error{"there is no else branch"};
+    }
+    auto els       = MoveToNextBy(2).growTree();
     
     return new loli::IfExpression(condition, then, els);
 }
