@@ -182,10 +182,13 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
                     res.push_back(Number());
                 } else {
                     auto keyword = TryKeyword();
-                    if (!keyword.HasValue())
+                    if (!keyword.HasValue()) {
                         res.push_back(Indentifier());
-                    else 
+                    }
+                    else { 
                         res.push_back(Keyword(keyword.Value()));
+                        _current--;
+                    }
                 }
                 break;
         } 
