@@ -37,17 +37,15 @@ loli::Daphnie& loli::Daphnie::MoveToNext() {
 }
 
 loli::Expression* loli::Daphnie::AnyRules (std::stack<Expression*>& expressionsStack) {
-    Expression* res = nullptr;
     for (auto& rule: _rules) {
        auto temp = rule.ValidateOn(Peek().forma(), expressionsStack);
        if (temp.HasValue()) {
-           res = temp.Value();
-           return res;
+           return temp.Value();
        } else {
            continue;
        }
     }
-    return res;
+    return nullptr;
 }
 
 loli::Expression* loli::Daphnie::growTree () {
