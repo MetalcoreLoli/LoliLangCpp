@@ -5,11 +5,11 @@
 #include <stdexcept>
 
 
-bool loli::Daphnie::IsBinary (const loli::Token& value) const {
+bool loli::Daphnie::IsBinary (const loli::Token& value) {
     return IsMatchTo(value.forma(), _binaryOps);
 }
 
-bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) const {
+bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
     return std::find(to.begin(), to.end(), value) != to.end();
 }
 
@@ -36,33 +36,29 @@ loli::Daphnie& loli::Daphnie::MoveToNext() {
     return MoveToNextBy(1);
 }
 
+loli::Expression* loli::Daphnie::AnyRules (std::stack<Expression*>& expressionsStack) {
+    Expression* res = nullptr;
+    for (auto& rule: _rules) {
+       auto temp = rule.ValidateOn(Peek().forma(), expressionsStack);
+       if (temp.HasValue()) {
+           res = temp.Value();
+       } else {
+           continue;
+       }
+    }
+    return res;
+}
+
 loli::Expression* loli::Daphnie::growTree () {
     auto current = Peek();
     std::stack <Expression*> expressionsStack{};
     while (!IsEnd()) {
-        if (IsMatchTo(current.forma(), {loli::Forma::INDENTIFIER})) {
-            expressionsStack.push(new loli::IdentifierExpression(current.lexeme()));
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::STRING_LIT})) {
-            expressionsStack.push (StringExpression(expressionsStack));
-        }
-        else if (IsMatchTo (current.forma(), {loli::Forma::LAMBDA_ARROW})) {
-            expressionsStack.push (LambdaExpression(expressionsStack));
-        } 
-        else if (IsBinary(current)) {
-            expressionsStack.push(BinaryExpression(expressionsStack));
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::NUM})) {
-            expressionsStack.push(NumberExpression(expressionsStack));
+        auto res = AnyRules(expressionsStack);
+        if (res != nullptr) {
+            expressionsStack.push(res);
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
             //TODO: what should i do with semi ?
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::IF})) {
-            expressionsStack.push(IfExpression(expressionsStack));
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::LPAREN})) {
-            expressionsStack.push(GroupingExpression(expressionsStack));
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::RPAREN})) {
             _current--;
@@ -71,9 +67,6 @@ loli::Expression* loli::Daphnie::growTree () {
         else if (IsMatchTo(current.forma(), {loli::Forma::ELSE})) {
             _current--;
             break;
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::TRUE, loli::Forma::FALSE})) {
-            expressionsStack.push(BoolExpression(expressionsStack));
         }
         else {
             std::string message = "unknown lexeme: \"";
