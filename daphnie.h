@@ -84,7 +84,7 @@ namespace loli {
             _binaryOps.push_back(loli::Forma::DIV);
             _binaryOps.push_back(loli::Forma::EQ);
 
-            _rules.push_back(RuleOfExpressionInterpretaion(_binaryOps, &Daphnie::IsMatchTo, &Daphnie::BinaryExpression, this));
+            _rules.emplace_back(_binaryOps, &Daphnie::IsMatchTo, &Daphnie::BinaryExpression, this);
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::NUM}, &Daphnie::IsMatchTo, &Daphnie::NumberExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::STRING_LIT}, &Daphnie::IsMatchTo, &Daphnie::StringExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LAMBDA_ARROW}, &Daphnie::IsMatchTo, &Daphnie::LambdaExpression, this));

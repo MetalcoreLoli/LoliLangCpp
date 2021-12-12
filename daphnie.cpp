@@ -42,6 +42,7 @@ loli::Expression* loli::Daphnie::AnyRules (std::stack<Expression*>& expressionsS
        auto temp = rule.ValidateOn(Peek().forma(), expressionsStack);
        if (temp.HasValue()) {
            res = temp.Value();
+           return res;
        } else {
            continue;
        }
