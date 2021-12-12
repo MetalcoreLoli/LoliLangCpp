@@ -61,11 +61,7 @@ loli::Expression* loli::Daphnie::growTree () {
         else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
             //TODO: what should i do with semi ?
         }
-        else if (IsMatchTo(current.forma(), {loli::Forma::RPAREN})) {
-            _current--;
-            break;
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::ELSE})) {
+        else if (IsMatchTo(current.forma(), {loli::Forma::RPAREN, loli::Forma::ELSE})) {
             _current--;
             break;
         }
