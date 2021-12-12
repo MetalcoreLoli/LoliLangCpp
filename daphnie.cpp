@@ -142,6 +142,9 @@ loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &
 loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& expressionsStack) {
     auto current = Peek();
     auto res = MoveToNext().growTree();
+    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::RPAREN})) {
+        throw std::runtime_error {"there is no ')'"};
+    }
     return new loli::GroupingExpression(res);
 }
 
@@ -157,7 +160,7 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     }
 
     auto condition = MoveToNext().GroupingExpression(expressionsStack);
-    if (IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::RPAREN, loli::Forma::EOF_, loli::Forma::SEMI})) {
+    if (IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is no 'then' branch"};
     }
     auto then      = growTree(); 
