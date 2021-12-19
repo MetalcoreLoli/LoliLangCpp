@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
-#include "../src/daphnie.h"
-#include "../src/lexer.h"
+#include <loliLang/common.h>
 
-TEST(test_suite_name, test_name) {
+TEST(DaphnieTests, test_name) {
     loli::Lexer lex;
     std::string code = "(1+1*7)";
     auto tokens = lex.lineToTokens (code);
