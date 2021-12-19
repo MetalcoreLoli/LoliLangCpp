@@ -25,8 +25,10 @@ namespace loli {
 
         [[nodiscard]] loli::Token Peek() const;
         [[nodiscard]] loli::Token PeekNext() const;
+        [[nodiscard]] loli::Token PeekPrev() const;
 
         [[nodiscard]] bool IsBinary (const loli::Token& value);
+        [[nodiscard]] bool IsClosing (const loli::Token& value);
         [[nodiscard]] bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to);
         
         Daphnie& MoveToNext();

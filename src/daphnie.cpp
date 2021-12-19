@@ -8,6 +8,9 @@
 bool loli::Daphnie::IsBinary (const loli::Token& value) {
     return IsMatchTo(value.forma(), _binaryOps);
 }
+bool loli::Daphnie::IsClosing(const loli::Token& value) {
+    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::ELSE});
+}
 
 bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
     return std::find(to.begin(), to.end(), value) != to.end();
@@ -19,12 +22,15 @@ loli::Token loli::Daphnie::Peek() const {
 }
 
 loli::Token loli::Daphnie::PeekNext() const {
-    if (!IsEnd()) return _source[_current + 1];
+    return _source[_current + 1];
+}
+loli::Token loli::Daphnie::PeekPrev() const {
+    if (_current - 1 >= 0) return _source[_current - 1];
     return Peek();
 }
         
 bool loli::Daphnie::IsEnd() const {
-    return _current >= _source.size() || _source[_current].forma() == Forma::EOF_;
+    return _current >= _source.size() ||  _source[_current].forma() == Forma::EOF_;
 }
 
 loli::Daphnie& loli::Daphnie::MoveToNextBy(size_t steps) {
@@ -59,8 +65,13 @@ loli::Expression* loli::Daphnie::growTree () {
         else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
             //TODO: what should i do with semi ?
         }
-        else if (IsMatchTo(current.forma(), {loli::Forma::RPAREN, loli::Forma::ELSE})) {
-            _current--;
+        else if (IsClosing(current)) {
+            if (expressionsStack.empty()) {
+                std::string message = "expressionStack is empty. something went wrong with reading expressions before";
+                message.append(" '").append(current.lexeme()).append("'")
+                .append(" or '").append(PeekPrev().lexeme()).append("'");
+                throw std::runtime_error{message};
+            }
             break;
         }
         else {
@@ -69,6 +80,11 @@ loli::Expression* loli::Daphnie::growTree () {
             throw std::runtime_error{message};
         }
         current = MoveToNext().Peek();
+    }
+    if (expressionsStack.empty()) {
+        std::string message = "expressionStack is empty. something bad happens before";
+        message.append(" '").append(current.lexeme()).append("'");
+        throw std::runtime_error{message};
     }
     auto result = expressionsStack.top();
     expressionsStack.pop();
@@ -83,7 +99,11 @@ loli::Expression* loli::Daphnie::BinaryExpression (std::stack<Expression*> &expr
     auto identifier = expressionsStack.top();
     expressionsStack.pop();
     std::string op = current.lexeme();
-    return new class BinaryExpression (op, MoveToNext().growTree(), identifier);
+    auto left = MoveToNext().growTree();
+    if (IsClosing(Peek())) {
+        _current--;
+    }
+    return new class BinaryExpression (op, left, identifier);
 }
 
 loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expressionsStack) {
@@ -111,7 +131,6 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 loli::Expression* loli::Daphnie::NumberExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
     auto expr = new loli::NumberExpression(loli::unwrap<void, float>(current.literal()));
-    expressionsStack.push(expr);
     return expr;
 }
 
@@ -129,8 +148,15 @@ loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &
 
 loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& expressionsStack) {
     auto current = Peek();
-    auto res = MoveToNext().growTree();
-    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::RPAREN})) {
+    if (IsMatchTo(current.forma(), {Forma::LPAREN})) {
+        MoveToNext();
+    }
+    if (IsMatchTo(Peek().forma(), {loli::Forma::RPAREN, loli::Forma::EOF_, loli::Forma::SEMI})) {
+        throw std::runtime_error{"there is nothing to group"};
+    }
+    auto res = growTree();
+    auto c = Peek();
+    if (!IsMatchTo(c.forma(), {loli::Forma::RPAREN})) {
         throw std::runtime_error {"there is no ')'"};
     }
     return new loli::GroupingExpression(res);
@@ -148,17 +174,16 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     }
 
     auto condition = MoveToNext().GroupingExpression(expressionsStack);
-    if (IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
+    if (IsMatchTo(Peek().forma(), {Forma::RPAREN}) && IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is no 'then' branch"};
     }
-    auto then      = growTree(); 
-    //auto then    = new loli::IdentifierExpression("'THEN BRANCH IS NOT IMPLEMENTED'"); 
+    auto then      = growTree();
 
-    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::ELSE}) || 
-         IsMatchTo(MoveToNextBy(2).Peek().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
+    if (!IsMatchTo(Peek().forma(), {loli::Forma::ELSE}) ||
+         IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is no else branch"};
     }
-    auto els       = growTree();
+    auto els       = MoveToNext().growTree();
     
     return new loli::IfExpression(condition, then, els);
 }
