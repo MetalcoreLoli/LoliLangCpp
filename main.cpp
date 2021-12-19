@@ -75,7 +75,7 @@ int main (int argc, char** argv) {
     std::string code = 
         "someFunc n => if (2 == 0) 789";
 
-    if (argc > 1 && argv != nullptr) {
+    if (argv != nullptr && argc > 1) {
         code = argv[1];
     }
     
@@ -88,11 +88,16 @@ int main (int argc, char** argv) {
     }
     std::cout << std::string(30, '-') << std::endl;
     
-    ASTAsString ast;
+    try {
+        ASTAsString ast;
 
-    loli::Daphnie daphnie{tokens};
+        loli::Daphnie daphnie{tokens};
 
-    auto result = loli::unwrap<void, std::string>(daphnie.growTree()->visit(&ast));
-    std::cout << result << std::endl;
+        auto result = loli::unwrap<void, std::string>(daphnie.growTree()->visit(&ast));
+        std::cout << result << std::endl;
+    } 
+    catch (const std::exception& ex) {
+        std::cout << "ERROR: " << ex.what() << std::endl;
+    }
     return EXIT_SUCCESS;
 }
