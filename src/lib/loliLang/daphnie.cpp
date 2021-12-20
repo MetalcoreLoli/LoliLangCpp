@@ -179,11 +179,11 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
         throw std::runtime_error{"there is no '(' after 'if' statement"};
     }
 
-    auto condition = MoveToNext().GroupingExpression(expressionsStack);
+    auto condition = MoveToNext().growTree();
     if (IsMatchTo(Peek().forma(), {Forma::RPAREN}) && IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is no 'then' branch"};
     }
-    auto then      = growTree();
+    auto then      = MoveToNext().growTree();
 
     if (!IsMatchTo(Peek().forma(), {loli::Forma::ELSE}) ||
          IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
