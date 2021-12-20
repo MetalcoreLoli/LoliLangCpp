@@ -13,6 +13,7 @@ namespace loli {
         loli::GenericLink visitIfExpression (IfExpression& value) override;
         loli::GenericLink visitGroupingExpression (GroupingExpression& value) override;
         loli::GenericLink visitBoolExpression (BoolExpression& value) override;
+        loli::GenericLink visitUnaryExpression (UnaryExpression& value) override;
     };
 };
 #endif // __LEXY_H__

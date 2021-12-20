@@ -65,8 +65,15 @@ namespace loli {
         loli::GenericLink visitGroupingExpression (loli::GroupingExpression& value) override {
             return value.expression()->visit(this);
         }
+        
         loli::GenericLink visitBoolExpression (loli::BoolExpression& value) override {
             return loli::newLink<std::string>(std::to_string(value.value()));
+        }
+
+        loli::GenericLink visitUnaryExpression (loli::UnaryExpression& value) override {
+            std::string res = "(" + value.operand()+" ";
+            res.append(std::to_string(value.value())).append(")");
+            return loli::newLink<std::string>(res);
         }
     };
 

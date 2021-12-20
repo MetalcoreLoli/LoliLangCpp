@@ -28,6 +28,10 @@ loli::GenericLink loli::Lexy::visitNumberExpression (loli::NumberExpression& val
     return std::make_shared<float>(value.value());
 }
 
+loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
+    throw std::runtime_error {"The Lexy::visitUnaryExpression is not implemented yet."};
+}
+
 loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
     return nullptr;
 }

@@ -38,6 +38,7 @@ namespace loli {
 
         Expression* AnyRules (std::stack<Expression*>& expressionsStack);
 
+        Expression* UnaryExpression  (std::stack<Expression*> &expressionsStack);
         Expression* BinaryExpression (std::stack<Expression*> &expressionsStack);
         Expression* NumberExpression (std::stack<Expression*> &expressionsStack);
         Expression* StringExpression (std::stack<Expression*> &expressionsStack);

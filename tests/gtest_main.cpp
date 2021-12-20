@@ -11,6 +11,28 @@ class DaphnieTests : public ::testing::Test {
 
 };
 
+TEST_F(DaphnieTests, BinaryExpression_OnePlusSevenMulNine_ReturnsValidSting) {
+    std::string code = "1+7*9";
+    loli::Daphnie d {_lex.lineToTokens(code)};
+    
+    // act
+    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+
+    // assert
+    ASSERT_STREQ(result.c_str(), "(+ (* 9.000000 7.000000) 1.000000)");
+}
+
+TEST_F(DaphnieTests, UnaryExpression_MinusOne_ReturnsValidBinaryTree) {
+    std::string code = "-1";
+    loli::Daphnie d {_lex.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ(result.c_str(), "(- 1.000000)");
+}
+
 TEST_F (DaphnieTests, GroupingExpression_WithTwoBinaryExpressionInside_ReturnsValidString) {
     std::string code = "(1+1*7)";
     auto tokens = _lex.lineToTokens (code);

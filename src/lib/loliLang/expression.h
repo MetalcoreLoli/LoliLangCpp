@@ -20,6 +20,7 @@ namespace loli {
     class IfExpression;
     class GroupingExpression;
     class BoolExpression;
+    class UnaryExpression;
     
     struct IVisitor {
         virtual GenericLink visitBinaryExpression (BinaryExpression& value) = 0;
@@ -30,6 +31,7 @@ namespace loli {
         virtual GenericLink visitIfExpression (IfExpression& value) = 0;
         virtual GenericLink visitGroupingExpression (GroupingExpression& value) = 0;
         virtual GenericLink visitBoolExpression (BoolExpression& value) = 0;
+        virtual GenericLink visitUnaryExpression (UnaryExpression& value) = 0;
     };
 
     struct Expression {
@@ -159,6 +161,24 @@ namespace loli {
 
             [[nodiscard]] bool value () const { return _value; }
             explicit BoolExpression (bool value) : _value(value) {}
+    };
+
+    class UnaryExpression : public Expression {
+        private:
+            std::string _operand;
+            NumberExpression *_value;
+        
+        public:
+
+            GenericLink visit (IVisitor* visitor) override {
+                return visitor->visitUnaryExpression(*this);
+            }
+
+            [[nodiscard]] float value() const { return _value->value(); }
+            [[nodiscard]] std::string operand() const { return _operand; }
+
+            explicit UnaryExpression(const std::string& operand, NumberExpression* value) 
+                : _operand(operand), _value(value) {}
     };
 };
 #endif// __EXPRESSION_H__ 

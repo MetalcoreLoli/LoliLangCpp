@@ -94,7 +94,7 @@ loli::Expression* loli::Daphnie::growTree () {
 loli::Expression* loli::Daphnie::BinaryExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
     if (expressionsStack.empty()) {
-        throw std::runtime_error{"there is nothing to work with"};
+        return UnaryExpression(expressionsStack);
     }
     auto identifier = expressionsStack.top();
     expressionsStack.pop();
@@ -108,7 +108,7 @@ loli::Expression* loli::Daphnie::BinaryExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expressionsStack) {
     if (expressionsStack.empty()) {
-        throw std::runtime_error{"there is no name und body for lambda"};
+        throw std::runtime_error {"there is nothing to work with"};
     }
     std::vector<class IdentifierExpression> identifiers{};
     
@@ -126,6 +126,12 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
         return new loli::LambdaExpression(name, args, body);
     }
     return new loli::LambdaExpression(name, body);
+}
+
+loli::Expression* loli::Daphnie::UnaryExpression (std::stack<Expression*> &expressionsStack) {
+    auto current = Peek();
+    auto number = static_cast<class NumberExpression*>(MoveToNext().growTree());
+    return new class UnaryExpression(current.lexeme(), number);
 }
 
 loli::Expression* loli::Daphnie::NumberExpression (std::stack<Expression*> &expressionsStack) {
