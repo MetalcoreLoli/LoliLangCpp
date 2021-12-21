@@ -114,7 +114,7 @@ TEST_F (DaphnieTests, GroupingExpression_WithIfStatment_ReturnsValidString) {
     loli::Daphnie d{tokens};
 
     std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
-    std::string expect = "(if 1 1 0)";
+    std::string expect = "(if 1 1 (- (- 1.000000) 4.000000))";
 
     EXPECT_STREQ(result.c_str(), expect.c_str());
 }
