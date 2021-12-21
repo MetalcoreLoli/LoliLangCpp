@@ -1,5 +1,6 @@
 #include "daphnie.h"
 #include "expression.h"
+#include "loliLang/exceptions.h"
 #include "token.h"
 #include "utils.h"
 #include <stdexcept>
@@ -57,22 +58,13 @@ loli::Expression* loli::Daphnie::AnyRules (std::stack<Expression*>& expressionsS
 loli::Expression* loli::Daphnie::growTree () {
     auto current = Peek();
     std::stack <Expression*> expressionsStack{};
-    while (!IsEnd()) {
+    while (!IsEnd() && !IsClosing(current)) {
         auto res = AnyRules(expressionsStack);
         if (res != nullptr) {
             expressionsStack.push(res);
         }
         else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
             //TODO: what should i do with semi ?
-        }
-        else if (IsClosing(current)) {
-            if (expressionsStack.empty()) {
-                std::string message = "expressionStack is empty. something went wrong with reading expressions before";
-                message.append(" '").append(current.lexeme()).append("'")
-                .append(" or '").append(PeekPrev().lexeme()).append("'");
-                throw std::runtime_error{message};
-            }
-            break;
         }
         else {
             std::string message = "unknown lexeme: \"";
@@ -82,8 +74,9 @@ loli::Expression* loli::Daphnie::growTree () {
         current = MoveToNext().Peek();
     }
     if (expressionsStack.empty()) {
-        std::string message = "expressionStack is empty. something bad happens before";
-        message.append(" '").append(current.lexeme()).append("'");
+        std::string message = "expressionStack is empty. something went wrong with reading expressions before";
+        message.append(" '").append(current.lexeme()).append("'")
+                .append(" or '").append(PeekPrev().lexeme()).append("'");
         throw std::runtime_error{message};
     }
     auto result = expressionsStack.top();
@@ -130,7 +123,7 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::UnaryExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto number = static_cast<class NumberExpression*>(MoveToNext().growTree());
+    auto number = dynamic_cast<class NumberExpression*>(MoveToNext().growTree());
     return new class UnaryExpression(current.lexeme(), number);
 }
 
@@ -174,22 +167,26 @@ loli::Expression* loli::Daphnie::BoolExpression(std::stack<Expression*>& express
 }
 
 loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressionsStack) {
-    auto next = PeekNext();
-    if (!IsMatchTo(next.forma(), {loli::Forma::LPAREN})) {
+    auto current = MoveToNext().Peek();
+    if (!IsMatchTo(current.forma(), {loli::Forma::LPAREN})) {
         throw std::runtime_error{"there is no '(' after 'if' statement"};
     }
-
-    auto condition = MoveToNext().growTree();
-    if (IsMatchTo(Peek().forma(), {Forma::RPAREN}) && IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
-        throw std::runtime_error{"there is no 'then' branch"};
-    }
-    auto then      = MoveToNext().growTree();
-
-    if (!IsMatchTo(Peek().forma(), {loli::Forma::ELSE}) ||
-         IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_, loli::Forma::SEMI})) {
-        throw std::runtime_error{"there is no else branch"};
-    }
-    auto els       = MoveToNext().growTree();
     
-    return new loli::IfExpression(condition, then, els);
+    if (IsClosing(PeekNext())) {
+        throw std::logic_error{"there is no 'condition', the next token is '" + PeekNext().lexeme()+"'"};
+    }
+    
+    auto condition = GroupingExpression(expressionsStack);
+    if (IsClosing(PeekNext()) || IsMatchTo(PeekNext().forma(), {loli::Forma::EOF_})){
+        throw std::invalid_argument {"there is no 'then' branch after '" + Peek().lexeme() + "' or before '" + PeekNext().lexeme()+"'"};
+    }
+    
+    auto thenBranch = MoveToNext().growTree();
+
+    if (!IsClosing(Peek()) || IsEnd()) {
+        throw  loli::ElseBranchException {"there is no 'else' branch"};
+    }
+    auto elseBranch = MoveToNext().growTree();
+    
+    return new loli::IfExpression(condition, thenBranch, elseBranch);
 }

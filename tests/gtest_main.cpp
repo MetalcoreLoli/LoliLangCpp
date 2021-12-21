@@ -1,6 +1,7 @@
+#include <exception>
+#include <stdexcept>
 #include <gtest/gtest.h>
 #include <loliLang/common.h>
-#include <stdexcept>
 
 class DaphnieTests : public ::testing::Test {
     protected:
@@ -34,13 +35,24 @@ TEST_F(DaphnieTests, UnaryExpression_MinusOne_ReturnsValidBinaryTree) {
     ASSERT_STREQ(result.c_str(), "(- 1.000000)");
 }
 
+TEST_F(DaphnieTests, UnaryExpression_NegativeOneMinusFourInsideGrouping_ReturnsValidBinaryTree) {
+    std::string code = "(-1-4)";
+    loli::Daphnie d {_lex.lineToTokens(code)};
+
+    //act
+    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ(result.c_str(), "(- 4.000000 (- 1.000000))");
+}
+
 TEST_F (DaphnieTests, GroupingExpression_WithTwoBinaryExpressionInside_ReturnsValidString) {
-    std::string code = "(1+1*7)";
+    std::string code = "(1+7*1)";
     auto tokens = _lex.lineToTokens (code);
     loli::Daphnie d{tokens};
 
     std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
-    std::string expect ="(+ (* 7.000000 1.000000) 1.000000)"; 
+    std::string expect ="(+ (* 1.000000 7.000000) 1.000000)"; 
 
     EXPECT_STREQ(result.c_str(), expect.c_str());
 }
@@ -71,29 +83,38 @@ TEST_F (DaphnieTests, IfExpression_WithMissingRparen_ThrowsRuntimeError) {
     EXPECT_ANY_THROW(d.growTree()->visit(&_ast));
 }
 
-TEST_F (DaphnieTests, IfExpression_WithMissingThenBranch_ThrowsRuntimeError) {
+TEST_F (DaphnieTests, IfExpression_WithoutCondition_ThrowsLogicError) {
+    loli::Daphnie d {_lex.lineToTokens("if ()")};
+
+    ASSERT_THROW(d.growTree(), std::logic_error);
+}
+
+
+TEST_F (DaphnieTests, IfExpression_WithMissingThenBranch_ThrowsInvalidArgument) {
     std::string code = "if (true) ";
     auto tokens = _lex.lineToTokens(code);
     loli::Daphnie d{tokens};
 
-    ASSERT_THROW(d.growTree(), std::runtime_error);
+    ASSERT_THROW(d.growTree(), std::invalid_argument);
 }
 
-TEST_F (DaphnieTests, IfExpression_WithMissingElseBranch_ThrowsRuntimeError) {
+TEST_F (DaphnieTests, IfExpression_WithMissingElseBranch_ThrowsElseBranchException) {
     std::string code = "if (true) (1+7)";
     auto tokens = _lex.lineToTokens(code);
     loli::Daphnie d{tokens};
 
-    ASSERT_THROW(d.growTree(), std::runtime_error);
+    ASSERT_THROW(
+            d.growTree(),
+            loli::ElseBranchException);
 }
 
 TEST_F (DaphnieTests, GroupingExpression_WithIfStatment_ReturnsValidString) {
-    std::string code = "if (true) (true) else (false)";
+    std::string code = "if (true) (true) else (4-(-1))";
     auto tokens = _lex.lineToTokens (code);
     loli::Daphnie d{tokens};
 
     std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
-    std::string expect = "(if (1) 1 0)";
+    std::string expect = "(if 1 1 0)";
 
     EXPECT_STREQ(result.c_str(), expect.c_str());
 }

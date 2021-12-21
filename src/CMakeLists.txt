@@ -12,6 +12,8 @@ add_library (
     lib/loliLang/daphnie.h
     lib/loliLang/daphnie.cpp
     lib/loliLang/ast.cpp
+    lib/loliLang/exceptions.h
+    lib/loliLang/exceptions.cpp
     lib/loliLang/common.h
     )
 
