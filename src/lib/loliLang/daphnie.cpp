@@ -123,7 +123,11 @@ loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::UnaryExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto number = dynamic_cast<class NumberExpression*>(MoveToNext().growTree());
+    if (!IsMatchTo(MoveToNext().Peek().forma(), {loli::Forma::NUM})) {
+        std::string c = Peek().asString();
+        throw std::invalid_argument{"'"+c+"' is not a number"};
+    }
+    auto number = dynamic_cast<class NumberExpression*> (NumberExpression(expressionsStack));
     return new class UnaryExpression(current.lexeme(), number);
 }
 
