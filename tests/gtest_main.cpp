@@ -78,6 +78,35 @@ TEST_F(DaphnieTests, GroupingExpression_WithoutRparen_ThrowsRuntimeError) {
     ASSERT_THROW(d.growTree(), std::runtime_error);
 }
 
+
+TEST_F(DaphnieTests, GroupingExpression_EmptyLCURL_ThrowsRuntimeError) {
+    std::string code = "{}";
+    auto tokens = _lex.lineToTokens(code);
+    loli::Daphnie d {tokens};
+
+    //act
+    ASSERT_THROW(d.growTree(), std::runtime_error);
+}
+
+TEST_F(DaphnieTests, GroupingExpression_WithoutLCURL_ThrowsRuntimeError) {
+    std::string code = "{";
+    auto tokens = _lex.lineToTokens(code);
+    loli::Daphnie d {tokens};
+
+    ASSERT_THROW(d.growTree(),std::runtime_error);
+}
+
+TEST_F(DaphnieTests, UnaryExpression_NegativeOneMinusFourInsideLCurlGrouping_ReturnsValidBinaryTree) {
+    std::string code = "{-1-4}";
+    loli::Daphnie d {_lex.lineToTokens(code)};
+
+    //act
+    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ(result.c_str(), "(- 4.000000 (- 1.000000))");
+}
+
 TEST_F (DaphnieTests, IfExpression_WithMissingRparen_ThrowsRuntimeError) {
     std::string code = "if(";
     auto tokens = _lex.lineToTokens (code);

@@ -9,8 +9,9 @@
 bool loli::Daphnie::IsBinary (const loli::Token& value) {
     return IsMatchTo(value.forma(), _binaryOps);
 }
+
 bool loli::Daphnie::IsClosing(const loli::Token& value) {
-    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::ELSE});
+    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::RCURL, loli::Forma::ELSE});
 }
 
 bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
@@ -151,16 +152,16 @@ loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &
 
 loli::Expression* loli::Daphnie::GroupingExpression (std::stack<Expression*>& expressionsStack) {
     auto current = Peek();
-    if (IsMatchTo(current.forma(), {Forma::LPAREN})) {
+    if (IsMatchTo(current.forma(), {Forma::LPAREN, Forma::LCURL})) {
         MoveToNext();
     }
-    if (IsMatchTo(Peek().forma(), {loli::Forma::RPAREN, loli::Forma::EOF_, loli::Forma::SEMI})) {
+    if (IsMatchTo(Peek().forma(), {loli::Forma::RPAREN, loli::Forma::RCURL, loli::Forma::EOF_, loli::Forma::SEMI})) {
         throw std::runtime_error{"there is nothing to group"};
     }
     auto res = growTree();
     auto c = Peek();
-    if (!IsMatchTo(c.forma(), {loli::Forma::RPAREN})) {
-        throw std::runtime_error {"there is no ')'"};
+    if (!IsMatchTo(c.forma(), {loli::Forma::RPAREN, loli::Forma::RCURL})) {
+        throw std::runtime_error {"there is no ')' or '}'"};
     }
     return new loli::GroupingExpression(res);
 }

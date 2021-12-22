@@ -1,0 +1,53 @@
+[==========] Running 21 tests from 2 test suites.
+[----------] Global test environment set-up.
+[----------] 7 tests from ASTAsStringTests
+[ RUN      ] ASTAsStringTests.Visit_WithValidIfExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidIfExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidBinaryExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidBinaryExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidUnaryExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidUnaryExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidIdentifierExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidIdentifierExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidLambdaExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidLambdaExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidGroupingExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidGroupingExpression_ReturnsValidASTAsStringValue (0 ms)
+[ RUN      ] ASTAsStringTests.Visit_WithValidLCurlGroupingExpression_ReturnsValidASTAsStringValue
+[       OK ] ASTAsStringTests.Visit_WithValidLCurlGroupingExpression_ReturnsValidASTAsStringValue (0 ms)
+[----------] 7 tests from ASTAsStringTests (1 ms total)
+
+[----------] 14 tests from DaphnieTests
+[ RUN      ] DaphnieTests.BinaryExpression_OnePlusSevenMulNine_ReturnsValidSting
+[       OK ] DaphnieTests.BinaryExpression_OnePlusSevenMulNine_ReturnsValidSting (0 ms)
+[ RUN      ] DaphnieTests.UnaryExpression_MinusOne_ReturnsValidBinaryTree
+[       OK ] DaphnieTests.UnaryExpression_MinusOne_ReturnsValidBinaryTree (0 ms)
+[ RUN      ] DaphnieTests.UnaryExpression_NegativeOneMinusFourInsideGrouping_ReturnsValidBinaryTree
+[       OK ] DaphnieTests.UnaryExpression_NegativeOneMinusFourInsideGrouping_ReturnsValidBinaryTree (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_WithTwoBinaryExpressionInside_ReturnsValidString
+[       OK ] DaphnieTests.GroupingExpression_WithTwoBinaryExpressionInside_ReturnsValidString (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_Empty_ThrowsRuntimeError
+[       OK ] DaphnieTests.GroupingExpression_Empty_ThrowsRuntimeError (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_WithoutRparen_ThrowsRuntimeError
+[       OK ] DaphnieTests.GroupingExpression_WithoutRparen_ThrowsRuntimeError (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_EmptyLCURL_ThrowsRuntimeError
+[       OK ] DaphnieTests.GroupingExpression_EmptyLCURL_ThrowsRuntimeError (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_WithoutLCURL_ThrowsRuntimeError
+[       OK ] DaphnieTests.GroupingExpression_WithoutLCURL_ThrowsRuntimeError (0 ms)
+[ RUN      ] DaphnieTests.UnaryExpression_NegativeOneMinusFourInsideLCurlGrouping_ReturnsValidBinaryTree
+[       OK ] DaphnieTests.UnaryExpression_NegativeOneMinusFourInsideLCurlGrouping_ReturnsValidBinaryTree (0 ms)
+[ RUN      ] DaphnieTests.IfExpression_WithMissingRparen_ThrowsRuntimeError
+[       OK ] DaphnieTests.IfExpression_WithMissingRparen_ThrowsRuntimeError (0 ms)
+[ RUN      ] DaphnieTests.IfExpression_WithoutCondition_ThrowsLogicError
+[       OK ] DaphnieTests.IfExpression_WithoutCondition_ThrowsLogicError (0 ms)
+[ RUN      ] DaphnieTests.IfExpression_WithMissingThenBranch_ThrowsInvalidArgument
+[       OK ] DaphnieTests.IfExpression_WithMissingThenBranch_ThrowsInvalidArgument (0 ms)
+[ RUN      ] DaphnieTests.IfExpression_WithMissingElseBranch_ThrowsElseBranchException
+[       OK ] DaphnieTests.IfExpression_WithMissingElseBranch_ThrowsElseBranchException (0 ms)
+[ RUN      ] DaphnieTests.GroupingExpression_WithIfStatment_ReturnsValidString
+[       OK ] DaphnieTests.GroupingExpression_WithIfStatment_ReturnsValidString (0 ms)
+[----------] 14 tests from DaphnieTests (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 21 tests from 2 test suites ran. (4 ms total)
+[  PASSED  ] 21 tests.

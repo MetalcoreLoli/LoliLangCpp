@@ -30,7 +30,7 @@ namespace loli {
         [[nodiscard]] bool IsBinary (const loli::Token& value);
         [[nodiscard]] bool IsClosing (const loli::Token& value);
         [[nodiscard]] bool IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to);
-        
+
         Daphnie& MoveToNext();
         Daphnie& MoveToNextBy(size_t steps);
         
@@ -93,7 +93,7 @@ namespace loli {
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LAMBDA_ARROW, loli::Forma::DEFINE}, &Daphnie::IsMatchTo, &Daphnie::LambdaExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::INDENTIFIER}, &Daphnie::IsMatchTo, &Daphnie::IdentifierExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::IF}, &Daphnie::IsMatchTo, &Daphnie::IfExpression, this));
-            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LPAREN}, &Daphnie::IsMatchTo, &Daphnie::GroupingExpression, this));
+            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LPAREN, loli::Forma::LCURL}, &Daphnie::IsMatchTo, &Daphnie::GroupingExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::TRUE, loli::Forma::FALSE}, &Daphnie::IsMatchTo, &Daphnie::BoolExpression, this));
         }
     };
