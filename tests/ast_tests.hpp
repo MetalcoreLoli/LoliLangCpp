@@ -63,4 +63,16 @@ TEST_F (ASTAsStringTests, Visit_WithValidIdentifierExpression_ReturnsValidASTAsS
     ASSERT_STREQ(result.c_str(), expect.c_str());
 }
 
+TEST_F (ASTAsStringTests, Visit_WithValidLambdaExpression_ReturnsValidASTAsStringValue) {
+    std::string code = "add => if (true) false else false";
+    loli::Daphnie d {_lexy.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string expect = "(define (add) (if 1 0 0))";
+    
+    //assert
+    ASSERT_STREQ(result.c_str(), expect.c_str());
+}
+
 #endif
