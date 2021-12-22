@@ -3,6 +3,9 @@
 #include <gtest/gtest.h>
 #include <loliLang/common.h>
 
+
+#include "ast_tests.hpp"
+
 class DaphnieTests : public ::testing::Test {
     protected:
         loli::Lexer _lex{};
