@@ -75,39 +75,17 @@ namespace loli {
             res.append(std::to_string(value.value())).append(")");
             return loli::newLink<std::string>(res);
         }
+
+        loli::GenericLink visitClassExpression (loli::ClassExpression& value) override {
+            std::string res = "(class ("+value.name()+")";
+
+            //properties
+            for (auto& property: value.properties()) {
+                res.append(" ").append(loli::unwrap<void, std::string>(property->visit(this)));
+            }
+
+            return loli::newLink<std::string>(res.append(")"));
+        }
     };
 
 }
-
-
-//int main (int argc, char** argv) {
-//    loli::Lexer lex;
-//    std::string code = 
-//        "if (true) (1+4)+7 else 1";
-//
-//    if (argv != nullptr && argc > 1) {
-//        code = argv[1];
-//    }
-//    
-//    std::cout << code << std::endl;
-//    std::cout << std::string(30, '-') << std::endl;
-//
-//    auto tokens = lex.lineToTokens (code);
-//    for (const auto& token : tokens) {
-//        std::cout << token.asString() << std::endl;
-//    }
-//    std::cout << std::string(30, '-') << std::endl;
-//
-//    ASTAsString ast;
-//
-//    loli::Daphnie daphnie{tokens};
-//
-//    auto result = loli::unwrap<void, std::string>(daphnie.growTree()->visit(&ast));
-//    std::cout << result << std::endl;
-//    try {
-//    }
-//    catch (const std::exception& ex) {
-//        std::cout << "ERROR: " << ex.what() << std::endl;
-//    }
-//    return EXIT_SUCCESS;
-//}

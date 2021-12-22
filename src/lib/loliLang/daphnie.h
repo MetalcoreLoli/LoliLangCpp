@@ -47,6 +47,7 @@ namespace loli {
         Expression* GroupingExpression (std::stack<Expression*>& expressionsStack);
         Expression* IfExpression (std::stack<Expression*>& expressionsStack);
         Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
+        Expression* ClassExpression (std::stack<Expression*>& expressionsStack);
 
         class RuleOfExpressionInterpretaion {
             private:
@@ -90,6 +91,7 @@ namespace loli {
             _rules.emplace_back(_binaryOps, &Daphnie::IsMatchTo, &Daphnie::BinaryExpression, this);
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::NUM}, &Daphnie::IsMatchTo, &Daphnie::NumberExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::STRING_LIT}, &Daphnie::IsMatchTo, &Daphnie::StringExpression, this));
+            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::CLASS}, &Daphnie::IsMatchTo, &Daphnie::ClassExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LAMBDA_ARROW, loli::Forma::DEFINE}, &Daphnie::IsMatchTo, &Daphnie::LambdaExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::INDENTIFIER}, &Daphnie::IsMatchTo, &Daphnie::IdentifierExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::IF}, &Daphnie::IsMatchTo, &Daphnie::IfExpression, this));

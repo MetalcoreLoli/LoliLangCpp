@@ -195,3 +195,15 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     
     return new loli::IfExpression(condition, thenBranch, elseBranch);
 }
+
+loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expressionsStack) {
+    if (IsClosing(PeekNext()) ||!IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER})) {
+        throw std::logic_error{"there is no name for class"};
+    }
+    auto name = MoveToNext().IdentifierExpression(expressionsStack);
+
+    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::SEMI, loli::Forma::LCURL})) {
+        throw std::invalid_argument{"there is no ';' or '{'"};
+    }
+    throw std::runtime_error{"loli::Daphnie::ClassExpression is not implemented"};
+}
