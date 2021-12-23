@@ -200,10 +200,17 @@ loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expre
     if (IsClosing(PeekNext()) ||!IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER})) {
         throw std::logic_error{"there is no name for class"};
     }
-    auto name = MoveToNext().IdentifierExpression(expressionsStack);
+    auto name = dynamic_cast<loli::IdentifierExpression*>(MoveToNext().IdentifierExpression(expressionsStack));
 
     if (!IsMatchTo(PeekNext().forma(), {loli::Forma::SEMI, loli::Forma::LCURL})) {
         throw std::invalid_argument{"there is no ';' or '{'"};
     }
-    throw std::runtime_error{"loli::Daphnie::ClassExpression is not implemented"};
+
+    // TODO: implement class body parsing
+    if (IsMatchTo(PeekNext().forma(), {loli::Forma::LCURL})) {
+        throw std::runtime_error {"class body is not implemented"};
+    }
+
+
+    return new loli::ClassExpression(name->value());
 }

@@ -201,6 +201,8 @@ namespace loli {
                     const std::string& name,
                     std::vector<Link<LambdaExpression>> properties) 
                 : _name(name), _properties(std::move(properties)) {}
+            explicit ClassExpression (const std::string& name)
+                : _name(name) {}
     };
 };
 #endif// __EXPRESSION_H__ 
