@@ -86,6 +86,16 @@ namespace loli {
 
             return loli::newLink<std::string>(res.append(")"));
         }
+
+        loli::GenericLink visitBodyExpression (loli::BodyExpression& value) override {
+            std::string res = "(with ";
+
+            for (auto& line : value.lines()) {
+                res.append(loli::unwrap<void, std::string>(value.visit(this)));
+            }
+
+            return loli::newLink<std::string>(res.append(")"));
+        }
     };
 
 }
