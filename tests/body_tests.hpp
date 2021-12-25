@@ -13,12 +13,18 @@ class BodyTests : public ::testing::Test {
         loli::ASTAsString _ast{};
 };
 
-TEST_F (BodyTests, BodyExpression_WithoutEndWord_ThrowsRuntimeError) {
+TEST_F (BodyTests, BodyExpression_WithoutEndWord_ThrowsSyntaxErrorExceptionWithCustomMessage) {
     std::string code = "with";
     loli::Daphnie d{_lex.lineToTokens(code)};
 
     //act und assert 
-    ASSERT_THROW(d.growTree(), std::runtime_error);
+    ASSERT_THROW(d.growTree(), loli::SyntaxErrorException);
+
+    try {
+        d.growTree();
+    } catch (const loli::SyntaxErrorException& ex) {
+        ASSERT_STREQ(ex.what(), "There is no `end` keyword at the end of `with` block");
+    }
 }
 
 TEST_F (BodyTests, BodyExpression_WithTwoLambdasInside_ReturnsValidTree) {
