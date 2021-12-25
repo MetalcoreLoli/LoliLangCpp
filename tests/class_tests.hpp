@@ -48,7 +48,7 @@ TEST_F (ClassExpressionTests, ClassExpression_ClassWithProperties_ReturnsValidTr
     std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
 
     //assert
-    ASSERT_STREQ(result.c_str(), "(class (Loli) (define (Name) \"Haku\"))");
+    ASSERT_STREQ(result.c_str(), "(class (Loli) (define (Name) \"Haku\") (define (Age) 16.000000))");
 }
 
 #endif

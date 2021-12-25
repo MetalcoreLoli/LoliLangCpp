@@ -11,7 +11,7 @@ bool loli::Daphnie::IsBinary (const loli::Token& value) {
 }
 
 bool loli::Daphnie::IsClosing(const loli::Token& value) {
-    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::RCURL, loli::Forma::ELSE});
+    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::RCURL, loli::Forma::ELSE, loli::Forma::SEMI});
 }
 
 bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
@@ -63,9 +63,11 @@ loli::Expression* loli::Daphnie::growTree () {
         auto res = AnyRules(expressionsStack);
         if (res != nullptr) {
             expressionsStack.push(res);
-        }
-        else if (IsMatchTo(current.forma(), {loli::Forma::SEMI})) {
-            //TODO: what should i do with semi ?
+
+            //TODO: There is extra move some where. Below is temp solution for it
+            if (IsMatchTo(Peek().forma(), {loli::Forma::SEMI})) {
+                break;
+            }
         }
         else {
             std::string message = "unknown lexeme: \"";
@@ -100,7 +102,7 @@ loli::Expression* loli::Daphnie::BinaryExpression (std::stack<Expression*> &expr
     return new class BinaryExpression (op, left, identifier);
 }
 
-loli::Expression* loli::Daphnie::LambdaExpression (std::stack<Expression*> &expressionsStack) {
+loli::Expression* loli::Daphnie::LambdaExpr (std::stack<Expression*> &expressionsStack) {
     if (expressionsStack.empty()) {
         throw std::runtime_error {"there is nothing to work with"};
     }
@@ -196,6 +198,8 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     return new loli::IfExpression(condition, thenBranch, elseBranch);
 }
 
+
+
 loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expressionsStack) {
     if (IsClosing(PeekNext()) ||!IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER})) {
         throw std::logic_error{"there is no name for class"};
@@ -207,10 +211,24 @@ loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expre
     }
 
     // TODO: implement class body parsing
-    if (IsMatchTo(PeekNext().forma(), {loli::Forma::LCURL})) {
-        throw std::runtime_error {"class body is not implemented"};
+    if (IsMatchTo(MoveToNext().Peek().forma(), {loli::Forma::LCURL})) {
+        auto properties = ClassBodyExpression(expressionsStack);
+
+        return new loli::ClassExpression(name->value(), properties);
     }
 
 
     return new loli::ClassExpression(name->value());
+}
+
+loli::Daphnie::ClassProperties loli::Daphnie::ClassBodyExpression (std::stack<Expression*>& expressionsStack) {
+    ClassProperties links{};
+    auto current = MoveToNext().Peek();
+    while (!IsMatchTo(current.forma(), {loli::Forma::RCURL})) {
+        auto prop = *(dynamic_cast<loli::LambdaExpression*>(growTree()));
+        auto property = loli::newLink<loli::LambdaExpression>(prop);
+        links.push_back(property);
+        current = MoveToNext().Peek();
+    }
+    return links;
 }

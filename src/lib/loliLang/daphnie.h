@@ -15,7 +15,10 @@
 
 namespace loli { 
     class Daphnie {
+        
         class RuleOfExpressionInterpretaion;
+
+        using ClassProperties = std::vector<Link<LambdaExpression>>;
 
         size_t _current{};
         std::vector<Token> _source {};
@@ -42,12 +45,15 @@ namespace loli {
         Expression* BinaryExpression (std::stack<Expression*> &expressionsStack);
         Expression* NumberExpression (std::stack<Expression*> &expressionsStack);
         Expression* StringExpression (std::stack<Expression*> &expressionsStack);
-        Expression* LambdaExpression (std::stack<Expression*> &expressionsStack);
+        Expression* LambdaExpr (std::stack<Expression*> &expressionsStack);
         Expression* IdentifierExpression (std::stack<Expression*> &expressionsStack);
         Expression* GroupingExpression (std::stack<Expression*>& expressionsStack);
         Expression* IfExpression (std::stack<Expression*>& expressionsStack);
         Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
         Expression* ClassExpression (std::stack<Expression*>& expressionsStack);
+
+
+        ClassProperties ClassBodyExpression (std::stack<Expression*>& expressionsStack);
 
         class RuleOfExpressionInterpretaion {
             private:
@@ -92,7 +98,7 @@ namespace loli {
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::NUM}, &Daphnie::IsMatchTo, &Daphnie::NumberExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::STRING_LIT}, &Daphnie::IsMatchTo, &Daphnie::StringExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::CLASS}, &Daphnie::IsMatchTo, &Daphnie::ClassExpression, this));
-            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LAMBDA_ARROW, loli::Forma::DEFINE}, &Daphnie::IsMatchTo, &Daphnie::LambdaExpression, this));
+            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LAMBDA_ARROW, loli::Forma::DEFINE}, &Daphnie::IsMatchTo, &Daphnie::LambdaExpr, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::INDENTIFIER}, &Daphnie::IsMatchTo, &Daphnie::IdentifierExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::IF}, &Daphnie::IsMatchTo, &Daphnie::IfExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LPAREN, loli::Forma::LCURL}, &Daphnie::IsMatchTo, &Daphnie::GroupingExpression, this));

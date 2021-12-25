@@ -23,6 +23,8 @@ namespace loli {
     class UnaryExpression;
     class ClassExpression;
     
+    using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
+
     struct IVisitor {
         virtual GenericLink visitBinaryExpression (BinaryExpression& value) = 0;
         virtual GenericLink visitNumberExpression (NumberExpression& value) = 0;
