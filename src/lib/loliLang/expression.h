@@ -22,6 +22,7 @@ namespace loli {
     class BoolExpression;
     class UnaryExpression;
     class ClassExpression;
+    class BodyExpression;
     
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
 
@@ -36,6 +37,7 @@ namespace loli {
         virtual GenericLink visitBoolExpression (BoolExpression& value) = 0;
         virtual GenericLink visitUnaryExpression (UnaryExpression& value) = 0;
         virtual GenericLink visitClassExpression (ClassExpression& value) = 0;
+        virtual GenericLink visitBodyExpression (BodyExpression& value) = 0;
     };
 
     struct Expression {
@@ -205,6 +207,23 @@ namespace loli {
                 : _name(name), _properties(std::move(properties)) {}
             explicit ClassExpression (const std::string& name)
                 : _name(name) {}
+    };
+
+
+
+    class BodyExpression : public Expression {
+        private:
+            VectorOfExprLinks _lines {};
+
+        public:
+            VectorOfExprLinks lines () const { return _lines; } 
+            
+            GenericLink visit (IVisitor* visitor) override {
+                return visitor->visitBodyExpression(*this);
+            }
+
+            explicit BodyExpression (const VectorOfExprLinks& ls) 
+                : _lines (ls){}
     };
 };
 #endif// __EXPRESSION_H__ 
