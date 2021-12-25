@@ -26,6 +26,8 @@ namespace loli {
             {"and",Token(Forma::AND, "and", 0)},
             {"or",Token(Forma::OR, "or", 0)},
             {"while",Token(Forma::WHILE, "while", 0)},
+            {"with",Token(Forma::WITH, "with", 0)},
+            {"end",Token(Forma::END, "end", 0)},
             {".",Token(Forma::DOT, ".", 0)},
             {"+", Token(Forma::ADD, "+", 0)}, 
             {"-", Token(Forma::SUB, "-", 0)},
