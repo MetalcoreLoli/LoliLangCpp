@@ -1,4 +1,30 @@
-import 'io'
+incl 'io'
+incl 'string'
 
-func main => 
+class Entity with
+    pro id = "";
+    pub Id => id;
+end 
+
+class Loli : Entity with
+    pri name = "";
+    pri age  = 0;
+    
+    pub Name => name;
+    pub Age  => age;
+    
+    pub Loli name age = with
+        self.name = name;
+        self.age  = age;
+    end 
+end
+
+extend Loli with 
+    pub AsString = Name.Append (Age.AsString)
+end
+
+main = with
+    haku = new Loli "Haku" 16;
     print "Hello, World!\n";
+    println haku.AsString; 
+end
