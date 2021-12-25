@@ -213,16 +213,16 @@ namespace loli {
 
     class BodyExpression : public Expression {
         private:
-            VectorOfExprLinks _lines {};
+            std::vector<Expression*>_lines {};
 
         public:
-            VectorOfExprLinks lines () const { return _lines; } 
+            std::vector<Expression*> lines () const { return _lines; } 
             
             GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitBodyExpression(*this);
             }
 
-            explicit BodyExpression (const VectorOfExprLinks& ls) 
+            explicit BodyExpression (const std::vector<Expression*>& ls) 
                 : _lines (ls){}
     };
 };
