@@ -88,10 +88,10 @@ namespace loli {
         }
 
         loli::GenericLink visitBodyExpression (loli::BodyExpression& value) override {
-            std::string res = "(with ";
+            std::string res = "(with";
 
-            for (auto& line : value.lines()) {
-                res.append(loli::unwrap<void, std::string>(value.visit(this)));
+            for (auto line : value.lines()) {
+                res.append(" ").append(loli::unwrap<void, std::string>(line->visit(this)));
             }
 
             return loli::newLink<std::string>(res.append(")"));
