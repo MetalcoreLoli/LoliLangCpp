@@ -7,6 +7,7 @@
 #include "ast_tests.hpp"
 #include "class_tests.hpp"
 #include "body_tests.hpp"
+#include "exception_tests.hpp"
 
 class DaphnieTests : public ::testing::Test {
     protected:
