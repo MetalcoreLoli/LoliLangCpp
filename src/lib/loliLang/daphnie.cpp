@@ -11,7 +11,13 @@ bool loli::Daphnie::IsBinary (const loli::Token& value) {
 }
 
 bool loli::Daphnie::IsClosing(const loli::Token& value) {
-    return IsMatchTo(value.forma(), {loli::Forma::RPAREN, loli::Forma::RCURL, loli::Forma::ELSE, loli::Forma::SEMI});
+    return IsMatchTo(
+            value.forma(), 
+            {
+                loli::Forma::RPAREN, loli::Forma::RCURL, 
+                loli::Forma::ELSE, loli::Forma::SEMI,
+                loli::Forma::END
+            });
 }
 
 bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
@@ -65,7 +71,7 @@ loli::Expression* loli::Daphnie::growTree () {
             expressionsStack.push(res);
 
             //TODO: There is extra move some where. Below is temp solution for it
-            if (IsMatchTo(Peek().forma(), {loli::Forma::SEMI})) {
+            if (IsMatchTo(Peek().forma(), {loli::Forma::SEMI, loli::Forma::END})) {
                 break;
             }
         }
@@ -217,7 +223,6 @@ loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expre
         return new loli::ClassExpression(name->value(), properties);
     }
 
-
     return new loli::ClassExpression(name->value());
 }
 
@@ -231,4 +236,17 @@ loli::Daphnie::ClassProperties loli::Daphnie::ClassBodyExpression (std::stack<Ex
         current = MoveToNext().Peek();
     }
     return links;
+}
+
+loli::Expression* loli::Daphnie::BodyExpr (std::stack<Expression*>& expressionsStack) {
+    auto current = MoveToNext().Peek();
+    std::vector<Expression*> lines {};
+
+    while (!IsClosing(current) && !IsEnd()) {
+        auto line = growTree();
+        lines.push_back (line);
+        current = MoveToNext().Peek();
+    }
+
+    return new loli::BodyExpression(lines);
 }

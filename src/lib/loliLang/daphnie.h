@@ -51,6 +51,7 @@ namespace loli {
         Expression* IfExpression (std::stack<Expression*>& expressionsStack);
         Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
         Expression* ClassExpression (std::stack<Expression*>& expressionsStack);
+        Expression* BodyExpr (std::stack<Expression*>& expressionsStack);
 
 
         ClassProperties ClassBodyExpression (std::stack<Expression*>& expressionsStack);
@@ -95,6 +96,7 @@ namespace loli {
             _binaryOps.push_back(loli::Forma::EQ);
 
             _rules.emplace_back(_binaryOps, &Daphnie::IsMatchTo, &Daphnie::BinaryExpression, this);
+            _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::WITH}, &Daphnie::IsMatchTo, &Daphnie::BodyExpr, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::NUM}, &Daphnie::IsMatchTo, &Daphnie::NumberExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::STRING_LIT}, &Daphnie::IsMatchTo, &Daphnie::StringExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::CLASS}, &Daphnie::IsMatchTo, &Daphnie::ClassExpression, this));
