@@ -14,6 +14,8 @@ add_library (
     lib/loliLang/ast.cpp
     lib/loliLang/exceptions.h
     lib/loliLang/exceptions.cpp
+    lib/loliLang/gramm.h
+    lib/loliLang/gramm.cpp
     lib/loliLang/common.h
     )
 
