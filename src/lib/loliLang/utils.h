@@ -30,12 +30,20 @@ namespace loli::utils {
     template<typename T>
     using Link = std::shared_ptr<T>;
     
+    template<typename T>
+    using UniLink = std::unique_ptr<T>;
+    
     using GenericLink = Link<void>;
     using RawGenericLink = void*;
 
     template<typename T, typename ... Args>
     constexpr Link<T> newLink(Args&& ... args) {
         return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
+    template<typename T, typename ... Args>
+    constexpr Link<T> newUniLink(Args&& ... args) {
+        return std::make_unique<T>(std::forward<Args>(args)...);
     }
 
     template<typename TFrom, typename TTo>
