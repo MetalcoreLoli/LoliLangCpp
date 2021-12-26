@@ -172,7 +172,7 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
                 res.push_back(StringLit());
             } break;
             case '!': {
-                res.push_back(Match2(_current, '='));
+                res.push_back(Match2(current, '='));
             } break;
             case '.': { 
                 res.push_back({Forma::DOT, ".", 0});
