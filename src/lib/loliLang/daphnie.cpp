@@ -242,9 +242,8 @@ loli::Expression* loli::Daphnie::BodyExpr (std::stack<Expression*>& expressionsS
     auto current = MoveToNext().Peek();
     std::vector<Expression*> lines {};
 
-    if (IsMatchTo(current.forma(), {loli::Forma::EOF_})) {
-        throw loli::SyntaxErrorException("There is no `end` keyword at the end of `with` block");
-    }
+    _grammarChecker->TryFindTokenWithFormaOrThrow (
+            _current, loli::Forma::END, "There is no `end` keyword at the end of `with` block");
 
     while (!IsClosing(current) && !IsEnd()) {
         auto line = growTree();

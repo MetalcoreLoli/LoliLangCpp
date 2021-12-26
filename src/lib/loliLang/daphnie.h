@@ -1,6 +1,7 @@
 #ifndef __DAPHNIE_H__
 #define __DAPHNIE_H__
 
+#include <memory>
 #include <string>
 #include <cstddef>
 #include <vector>
@@ -12,9 +13,12 @@
 #include "./token.h"
 #include "./utils.h"
 #include "./expression.h"
+#include "./gramm.h"
 
 namespace loli { 
     class Daphnie {
+        
+        loli::Link<IGrammarChecker> _grammarChecker;
         
         class RuleOfExpressionInterpretaion;
 
@@ -88,7 +92,11 @@ namespace loli {
         Expression* growTree();
 
 
-        explicit Daphnie(std::vector<Token>  source) : _source(std::move(source)) {
+        explicit Daphnie(std::vector<Token>  source) 
+            : _source(std::move(source))
+        {
+            _grammarChecker = loli::newLink<DefGrammarChecker>(_source);
+
             _binaryOps.push_back(loli::Forma::ADD);
             _binaryOps.push_back(loli::Forma::SUB);
             _binaryOps.push_back(loli::Forma::MUL);
