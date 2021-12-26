@@ -42,4 +42,17 @@ TEST_F (BodyTests, BodyExpression_WithTwoLambdasInside_ReturnsValidTree) {
             "(with (define (n) (+ 5.000000 1.000000)) (define (a) \"hello, world\"))"
     );
 }
+
+TEST_F(BodyTests, BodyExpr_AsLambdaExpresionBody_ReturnsValidTree) {
+    std::string code = "a => with b = 1+1; c = 1-1; end";
+    loli::Daphnie d {_lex.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap <void, std::string>(d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ (
+            result.c_str(), 
+            "(define (a) (with (define (b) (+ 1.000000 1.000000)) (define (c) (- 1.000000 1.000000))))");
+}
 #endif // __LOLI_BODY_TESTS__
