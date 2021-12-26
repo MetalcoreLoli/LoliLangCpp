@@ -21,7 +21,9 @@ TEST_F (BodyTests, BodyExpression_WithoutEndWord_ThrowsSyntaxErrorExceptionWithC
     ASSERT_THROW(d.growTree(), loli::SyntaxErrorException);
 
     try {
-        d.growTree();
+        loli::Lexer l{};
+        loli::Daphnie dd{l.lineToTokens("with")};
+        dd.growTree();
     } catch (const loli::SyntaxErrorException& ex) {
         ASSERT_STREQ(ex.what(), "There is no `end` keyword at the end of `with` block");
     }
