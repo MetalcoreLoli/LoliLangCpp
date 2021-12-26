@@ -99,4 +99,17 @@ TEST_F (ASTAsStringTests, Visit_WithValidLCurlGroupingExpression_ReturnsValidAST
     //assert
     ASSERT_STREQ(result.c_str(), expect.c_str());
 }
+
+
+TEST_F (ASTAsStringTests, Visit_WithValidAddExpresionInsideBodyExpression_ReturnVailASTAsStringValue) {
+    std::string code = "with a = 1 + 1; end";
+    loli::Daphnie d {_lexy.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap <void, std::string>(d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ(result.c_str(), "(with (define (a) (+ 1.000000 1.000000)))");
+
+}
 #endif
