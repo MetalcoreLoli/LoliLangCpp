@@ -74,6 +74,8 @@ namespace loli {
     public:
         Lexer();
         std::vector<Token> lineToTokens(const std::string& value);
+
+        static std::vector<Token> Translate(const std::string& code);
     };
 };
 #endif

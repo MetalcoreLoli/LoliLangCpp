@@ -90,6 +90,7 @@ namespace loli {
         Expression* growTree();
 
 
+        
         explicit Daphnie(std::vector<Token>  source) 
             : _source(std::move(source))
         {
@@ -111,6 +112,9 @@ namespace loli {
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::IF}, &Daphnie::IsMatchTo, &Daphnie::IfExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LPAREN, loli::Forma::LCURL}, &Daphnie::IsMatchTo, &Daphnie::GroupingExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::TRUE, loli::Forma::FALSE}, &Daphnie::IsMatchTo, &Daphnie::BoolExpression, this));
+        }
+
+        explicit Daphnie (const std::string& code) : Daphnie(Lexer::Translate(code)) {
         }
     };
 };

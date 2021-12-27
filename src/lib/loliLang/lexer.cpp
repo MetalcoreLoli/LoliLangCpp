@@ -197,3 +197,9 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
     res.push_back({Forma::EOF_, "", 0});
     return res;
 }
+
+
+std::vector<loli::Token> loli::Lexer::Translate(const std::string& code) {
+    Lexer lex{};
+    return lex.lineToTokens (code);
+}
