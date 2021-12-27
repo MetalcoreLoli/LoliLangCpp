@@ -154,6 +154,17 @@ TEST_F (DaphnieTests, GroupingExpression_WithIfStatment_ReturnsValidString) {
     EXPECT_STREQ(result.c_str(), expect.c_str());
 }
 
+
+TEST_F (DaphnieTests, Daphnie_WithValidCodeStringPassedThroughtTheConstructor_TranslatesItIntoValidTree) {
+    loli::Daphnie d{"class name;"};
+
+    //act 
+    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    
+    //assert 
+    ASSERT_STREQ (result.c_str(), "(class (name))");
+}
+
 int main () {
     testing::InitGoogleTest();
     return RUN_ALL_TESTS();
