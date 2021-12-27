@@ -191,7 +191,7 @@ namespace loli {
     class ClassExpression : public Expression {
         private:
             std::string _name;
-            std::vector<Link<LambdaExpression>> _properties{};
+            loli::Link<BodyExpression> _body;
 
         public: 
             GenericLink visit (IVisitor* visitor) override {
@@ -199,12 +199,12 @@ namespace loli {
             }
 
             [[nodiscard]] std::string name () const { return _name; }
-            [[nodiscard]] std::vector<Link<LambdaExpression>> properties() const { return _properties; }
+            [[nodiscard]] Link<BodyExpression> body() const { return _body; }
 
             explicit ClassExpression (
                     const std::string& name,
-                    std::vector<Link<LambdaExpression>> properties) 
-                : _name(name), _properties(std::move(properties)) {}
+                    Link<BodyExpression> body) 
+                : _name(name), _body(std::move(body)) {}
             explicit ClassExpression (const std::string& name)
                 : _name(name) {}
     };

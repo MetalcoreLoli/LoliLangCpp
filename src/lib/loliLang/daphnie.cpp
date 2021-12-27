@@ -207,20 +207,24 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
 
 
 loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expressionsStack) {
-    if (IsClosing(PeekNext()) ||!IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER})) {
-        throw std::logic_error{"there is no name for class"};
-    }
-    auto name = dynamic_cast<loli::IdentifierExpression*>(MoveToNext().IdentifierExpression(expressionsStack));
+    _grammarChecker->TryFindTokenWithFormaOrThrow(
+            _current, 
+            loli::Forma::INDENTIFIER, 
+            "there is no name of class");
 
-    if (!IsMatchTo(PeekNext().forma(), {loli::Forma::SEMI, loli::Forma::LCURL})) {
-        throw std::invalid_argument{"there is no ';' or '{'"};
+    auto name = dynamic_cast<loli::IdentifierExpression*>(MoveToNext().IdentifierExpression(expressionsStack));
+    
+    if (!_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::SEMI) && 
+        !_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::WITH)) {
+        throw loli::SyntaxErrorException("exceped `with` or `;` after class-name");
     }
 
     // TODO: implement class body parsing
-    if (IsMatchTo(MoveToNext().Peek().forma(), {loli::Forma::LCURL})) {
-        auto properties = ClassBodyExpression(expressionsStack);
+    if (IsMatchTo(MoveToNext().Peek().forma(), {loli::Forma::WITH})) {
+        auto body = *static_cast<BodyExpression*>(BodyExpr(expressionsStack));
 
-        return new loli::ClassExpression(name->value(), properties);
+        return new loli::ClassExpression(
+                name->value(), loli::newLink<BodyExpression>(body));
     }
 
     return new loli::ClassExpression(name->value());
