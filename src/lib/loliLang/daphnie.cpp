@@ -230,18 +230,6 @@ loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expre
     return new loli::ClassExpression(name->value());
 }
 
-loli::Daphnie::ClassProperties loli::Daphnie::ClassBodyExpression (std::stack<Expression*>& expressionsStack) {
-    ClassProperties links{};
-    auto current = MoveToNext().Peek();
-    while (!IsMatchTo(current.forma(), {loli::Forma::RCURL})) {
-        auto prop = *(dynamic_cast<loli::LambdaExpression*>(growTree()));
-        auto property = loli::newLink<loli::LambdaExpression>(prop);
-        links.push_back(property);
-        current = MoveToNext().Peek();
-    }
-    return links;
-}
-
 loli::Expression* loli::Daphnie::BodyExpr (std::stack<Expression*>& expressionsStack) {
     auto current = MoveToNext().Peek();
     std::vector<Expression*> lines {};

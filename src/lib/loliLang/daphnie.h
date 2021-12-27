@@ -58,8 +58,6 @@ namespace loli {
         Expression* BodyExpr (std::stack<Expression*>& expressionsStack);
 
 
-        ClassProperties ClassBodyExpression (std::stack<Expression*>& expressionsStack);
-
         class RuleOfExpressionInterpretaion {
             private:
                 bool (loli::Daphnie::*_isMatchTo)(loli::Forma, const std::vector<loli::Forma>&);
