@@ -23,8 +23,4 @@ extend Loli with
     pub AsString = Name.Append (Age.AsString)
 end
 
-main = with
-    haku = new Loli "Haku" 16;
-    print "Hello, World!\n";
-    println haku.AsString; 
-end
+main = (new Loli "Haku" 16).AsString . println
