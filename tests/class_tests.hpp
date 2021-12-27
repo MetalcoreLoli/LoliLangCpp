@@ -13,20 +13,34 @@ class ClassExpressionTests: public ::testing::Test {
         loli::ASTAsString _ast{};
 };
 
-TEST_F (ClassExpressionTests, WithoutName_ThrowsLogicalError) {
+TEST_F (ClassExpressionTests, WithoutName_ThrowsSyntaxErrorWithCustomMessage) {
     std::string code = "class";
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
-    ASSERT_THROW(d.growTree(), std::logic_error);
+    ASSERT_THROW(d.growTree(), loli::SyntaxErrorException);
+    try {
+        loli::Daphnie dd {_lex.lineToTokens(code)};
+        d.growTree();
+    }
+    catch (const loli::SyntaxErrorException& ex) {
+        ASSERT_STREQ (ex.what(), "there is no name of class");
+    }
 }
 
-TEST_F (ClassExpressionTests, WithoutSemiOrLCurl_ThrowsInvalidArgument) {
+TEST_F (ClassExpressionTests, WithoutSemiOrWith_ThrowsSyntaxErrorWithCustomErrorMessage) {
     std::string code = "class Loli";
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
-    ASSERT_THROW(d.growTree(), std::invalid_argument);
+    ASSERT_THROW(d.growTree(), loli::SyntaxErrorException);
+
+    try {
+        loli::Daphnie dd {_lex.lineToTokens(code)};
+        d.growTree();
+    } catch (const std::exception& ex) {
+        ASSERT_STREQ (ex.what(), "exceped `with` or ';' after class-name");
+    }
 }
 
 TEST_F(ClassExpressionTests, ClassExpression_EmptyClass_ReturnsValidExpressionTree) {
@@ -41,7 +55,7 @@ TEST_F(ClassExpressionTests, ClassExpression_EmptyClass_ReturnsValidExpressionTr
 }
 
 TEST_F (ClassExpressionTests, ClassExpression_ClassWithProperties_ReturnsValidTree) {
-    std::string code = "class Loli { Name => \"Haku\"; Age => 16; }";
+    std::string code = "class Loli with Name => \"Haku\"; Age => 16; end";
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
