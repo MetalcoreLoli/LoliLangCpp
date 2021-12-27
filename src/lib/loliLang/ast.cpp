@@ -79,9 +79,11 @@ namespace loli {
         loli::GenericLink visitClassExpression (loli::ClassExpression& value) override {
             std::string res = "(class ("+value.name()+")";
 
-            //properties
-            for (auto& property: value.properties()) {
-                res.append(" ").append(loli::unwrap<void, std::string>(property->visit(this)));
+            if (value.body() != nullptr) {
+                //properties
+                for (auto& property: value.body()->lines()) {
+                    res.append(" ").append(loli::unwrap<void, std::string>(property->visit(this)));
+                }
             }
 
             return loli::newLink<std::string>(res.append(")"));
