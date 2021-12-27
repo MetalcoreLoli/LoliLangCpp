@@ -112,4 +112,26 @@ TEST_F (ASTAsStringTests, Visit_WithValidAddExpresionInsideBodyExpression_Return
     ASSERT_STREQ(result.c_str(), "(with (define (a) (+ 1.000000 1.000000)))");
 
 }
+
+TEST_F (ASTAsStringTests, Visit_WithEmptyClassBody_ReturnsValidAST) {
+    std::string code = "class name;";
+    loli::Daphnie d {_lexy.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ (result.c_str(), "(class (name))");
+}
+
+TEST_F (ASTAsStringTests, Visit_WithTwoLambdaInsideClassBody_ReturnsValidAST) {
+    std::string code = "class Loli with age = 16; Age => age; end";
+    loli::Daphnie d {_lexy.lineToTokens(code)};
+
+    //act 
+    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+
+    //assert
+    ASSERT_STREQ (result.c_str(), "(class (Loli) (define (age) 16.000000) (define (Age) age))");
+}
 #endif
