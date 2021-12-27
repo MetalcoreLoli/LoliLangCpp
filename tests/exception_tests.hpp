@@ -18,4 +18,12 @@ TEST (SyntaxErrorExceptionTests, SyntaxErrorException_WithForma_ThrowsWithDefaul
     }
 }
 
+TEST (SyntaxErrorExceptionTests, SyntaxErrorException_WithForma_ThrowsWithCustomMessage) {
+    try {
+        throw loli::SyntaxErrorException("simple text");
+    } catch (const std::exception& ex) {
+        ASSERT_STREQ(ex.what(), "simple text");
+    }
+}
+
 #endif // __LOLI_EXCEPTIONS_TESTS__
