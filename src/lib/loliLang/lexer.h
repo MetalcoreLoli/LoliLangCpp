@@ -26,6 +26,7 @@ namespace loli {
             {"and",Token(Forma::AND, "and", 0)},
             {"or",Token(Forma::OR, "or", 0)},
             {"while",Token(Forma::WHILE, "while", 0)},
+            {"for",Token(Forma::FOR, "for", 0)},
             {"with",Token(Forma::WITH, "with", 0)},
             {"end",Token(Forma::END, "end", 0)},
             {".",Token(Forma::DOT, ".", 0)},
@@ -56,7 +57,7 @@ namespace loli {
         
         [[nodiscard]] bool IsEnd() const;
         bool IsDigit(char symbol);
-        bool IsKeyword(const std::string& value);
+        bool IsKeyword(const std::string&);
 
         utils::Maybe<std::string*> TryKeyword(); 
 
@@ -73,9 +74,9 @@ namespace loli {
         Token Keyword(const std::string* word);
     public:
         Lexer();
-        std::vector<Token> lineToTokens(const std::string& value);
+        std::vector<Token> lineToTokens(std::string_view value);
 
-        static std::vector<Token> Translate(const std::string& code);
+        static std::vector<Token> Translate(std::string_view code);
     };
 };
 #endif

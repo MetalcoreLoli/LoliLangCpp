@@ -119,7 +119,7 @@ loli::Token loli::Lexer::StringLit() {
     return {Forma::STRING_LIT, val, 0};
 }
 
-std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
+std::vector<loli::Token> loli::Lexer::lineToTokens(std::string_view value) {
     std::vector<loli::Token> res{};
     _source = value;
 
@@ -199,7 +199,7 @@ std::vector<loli::Token> loli::Lexer::lineToTokens(const std::string& value) {
 }
 
 
-std::vector<loli::Token> loli::Lexer::Translate(const std::string& code) {
+std::vector<loli::Token> loli::Lexer::Translate(std::string_view code) {
     Lexer lex{};
     return lex.lineToTokens (code);
 }
