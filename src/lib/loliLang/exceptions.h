@@ -25,7 +25,7 @@ namespace loli {
             std::string _message;
 
         public:
-            explicit SyntaxErrorException (std::string  message) : _message(std::move(message)){}
+            explicit SyntaxErrorException (std::string_view message) : _message(message){}
             SyntaxErrorException(loli::Forma forma) 
                 : _message ("There is syntax error near `" + std::string(loli::FormaAsStr[(size_t)forma]) + "`") 
             {}

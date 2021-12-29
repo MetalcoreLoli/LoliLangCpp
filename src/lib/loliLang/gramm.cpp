@@ -19,7 +19,7 @@ bool loli::DefGrammarChecker::TryFindTokenWithForma (size_t start, loli::Forma f
     return false;
 }
 
-void loli::DefGrammarChecker::TryFindTokenWithFormaOrThrow (size_t start, loli::Forma forma, const std::string& message)  {
+void loli::DefGrammarChecker::TryFindTokenWithFormaOrThrow (size_t start, loli::Forma forma, std::string_view message)  {
     if (!TryFindTokenWithForma(start, forma)) {
         throw loli::SyntaxErrorException(message);
     }
