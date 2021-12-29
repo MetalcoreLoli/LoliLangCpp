@@ -137,12 +137,15 @@ TEST_F (ASTAsStringTests, Visit_WithTwoLambdaInsideClassBody_ReturnsValidAST) {
 
 TEST_F (ASTAsStringTests, Visit_WithForValidForExpression_ReturnsValidAST) {
     std::string code = "for i = 0; i < 10; i = i + 1; with 1 end";
+
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
     std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
 
     //assert
-    ASSERT_STREQ(result.c_str(), "(for (define (i) 0) (< i 10.000000) (define (i) (+ 1.000000 i)) (with 1))");
+    ASSERT_STREQ(
+            result.c_str(), 
+            "(for (define (i) 0.000000) (< 10.000000 i) (define (i) (+ 1.000000 i)) (with 1.000000))");
 }
 #endif
