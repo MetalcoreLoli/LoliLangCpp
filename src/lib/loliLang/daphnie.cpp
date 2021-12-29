@@ -247,5 +247,25 @@ loli::Expression* loli::Daphnie::BodyExpr (std::stack<Expression*>& expressionsS
 }
 
 loli::Expression* loli::Daphnie::ForExpr (std::stack<Expression*>& expressionsStack) {
-    throw std::runtime_error{"loli:Daphnie::ForExpr is not implemented yet."};
+    _grammarChecker->TryFindTokenWithFormaOrThrow(
+            _current, loli::Forma::WITH, 
+            "missing body after `for`");
+
+    auto current = MoveToNext().Peek();
+    if (IsMatchTo (current.forma(), {loli::Forma::EOF_})) {
+        throw loli::SyntaxErrorException(current.forma());
+    }
+
+    
+    auto firstPart = growTree();
+    auto condition = MoveToNext().growTree();
+    auto lastPart  = MoveToNext().growTree();
+
+    auto body = dynamic_cast<BodyExpression*>(MoveToNext().BodyExpr(expressionsStack));
+
+    return new loli::ForExpression (
+            firstPart,
+            condition,
+            lastPart,
+            body);
 }

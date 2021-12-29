@@ -230,25 +230,25 @@ namespace loli {
 
     class ForExpression : public Expression {
         private:
-            loli::Link<Expression> _firstPart;
-            loli::Link<Expression> _condition;
-            loli::Link<Expression> _lastPart;
-            loli::Link<BodyExpression> _body;
+            Expression* _firstPart;
+            Expression* _condition;
+            Expression* _lastPart;
+            BodyExpression* _body;
 
         public:
-            loli::Link<Expression> firstPart() const { return _firstPart;}
-            loli::Link<Expression> condition() const { return _condition;}
-            loli::Link<Expression> lastPart() const { return _lastPart;}
-            loli::Link<BodyExpression> body() const { return _body;}
+            Expression* firstPart() const { return _firstPart;}
+            Expression* condition() const { return _condition;}
+            Expression* lastPart() const { return _lastPart;}
+            BodyExpression* body() const { return _body;}
 
             explicit ForExpression (
-                    loli::Link<Expression> firstPart,
-                    loli::Link<Expression> condition,
-                    loli::Link<Expression> lastPart,
-                    loli::Link<BodyExpression> body)
+                    Expression* firstPart,
+                    Expression* condition,
+                    Expression* lastPart,
+                    BodyExpression* body)
                 : 
-                    _firstPart(std::move(firstPart)), _condition(std::move(condition)), 
-                    _lastPart(std::move(lastPart)), _body(body)
+                    _firstPart((firstPart)), _condition((condition)), 
+                    _lastPart((lastPart)), _body(body)
             {}
 
             GenericLink visit (IVisitor* visitor) override {

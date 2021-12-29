@@ -20,7 +20,6 @@ namespace loli {
             {"false", Token(Forma::FALSE, "false", utils::newLink<bool>(false))},
             {"return", Token(Forma::RETURN, "return", 0)},
             {"import", Token(Forma::IMPORT, "import", 0)},
-            {"for", Token(Forma::FOR_, "for", 0)},
             {"class", Token(Forma::CLASS, "class", 0)},
             {"nil", Token(Forma::NIL, "nil",0)},
             {"and",Token(Forma::AND, "and", 0)},

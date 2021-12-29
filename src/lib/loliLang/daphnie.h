@@ -102,6 +102,8 @@ namespace loli {
             _binaryOps.push_back(loli::Forma::MUL);
             _binaryOps.push_back(loli::Forma::DIV);
             _binaryOps.push_back(loli::Forma::EQ);
+            _binaryOps.push_back(loli::Forma::LT);
+            _binaryOps.push_back(loli::Forma::GT);
 
             _rules.emplace_back(_binaryOps, &Daphnie::IsMatchTo, &Daphnie::BinaryExpression, this);
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::WITH}, &Daphnie::IsMatchTo, &Daphnie::BodyExpr, this));
