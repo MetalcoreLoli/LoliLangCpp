@@ -56,6 +56,7 @@ namespace loli {
         Expression* BoolExpression (std::stack<Expression*>& expressionsStack);
         Expression* ClassExpression (std::stack<Expression*>& expressionsStack);
         Expression* BodyExpr (std::stack<Expression*>& expressionsStack);
+        Expression* ForExpr (std::stack<Expression*>& expressionsStack);
 
 
         class RuleOfExpressionInterpretaion {
@@ -112,6 +113,7 @@ namespace loli {
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::IF}, &Daphnie::IsMatchTo, &Daphnie::IfExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::LPAREN, loli::Forma::LCURL}, &Daphnie::IsMatchTo, &Daphnie::GroupingExpression, this));
             _rules.push_back(RuleOfExpressionInterpretaion({loli::Forma::TRUE, loli::Forma::FALSE}, &Daphnie::IsMatchTo, &Daphnie::BoolExpression, this));
+            _rules.push_back (RuleOfExpressionInterpretaion({loli::Forma::FOR}, &Daphnie::IsMatchTo, &Daphnie::ForExpr, this));
         }
 
         explicit Daphnie (const std::string& code) : Daphnie(Lexer::Translate(code)) {

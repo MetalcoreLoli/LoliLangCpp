@@ -245,3 +245,7 @@ loli::Expression* loli::Daphnie::BodyExpr (std::stack<Expression*>& expressionsS
 
     return new loli::BodyExpression(lines);
 }
+
+loli::Expression* loli::Daphnie::ForExpr (std::stack<Expression*>& expressionsStack) {
+    throw std::runtime_error{"loli:Daphnie::ForExpr is not implemented yet."};
+}

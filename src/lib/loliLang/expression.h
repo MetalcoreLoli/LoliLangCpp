@@ -23,6 +23,7 @@ namespace loli {
     class UnaryExpression;
     class ClassExpression;
     class BodyExpression;
+    class ForExpression;
     
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
 
@@ -38,6 +39,7 @@ namespace loli {
         virtual GenericLink visitUnaryExpression (UnaryExpression& value) = 0;
         virtual GenericLink visitClassExpression (ClassExpression& value) = 0;
         virtual GenericLink visitBodyExpression (BodyExpression& value) = 0;
+        virtual GenericLink visitForExpression (ForExpression& value) = 0;
     };
 
     struct Expression {
@@ -224,6 +226,34 @@ namespace loli {
 
             explicit BodyExpression (const std::vector<Expression*>& ls) 
                 : _lines (ls){}
+    };
+
+    class ForExpression : public Expression {
+        private:
+            loli::Link<Expression> _firstPart;
+            loli::Link<Expression> _condition;
+            loli::Link<Expression> _lastPart;
+            loli::Link<BodyExpression> _body;
+
+        public:
+            loli::Link<Expression> firstPart() const { return _firstPart;}
+            loli::Link<Expression> condition() const { return _condition;}
+            loli::Link<Expression> lastPart() const { return _lastPart;}
+            loli::Link<BodyExpression> body() const { return _body;}
+
+            explicit ForExpression (
+                    loli::Link<Expression> firstPart,
+                    loli::Link<Expression> condition,
+                    loli::Link<Expression> lastPart,
+                    loli::Link<BodyExpression> body)
+                : 
+                    _firstPart(std::move(firstPart)), _condition(std::move(condition)), 
+                    _lastPart(std::move(lastPart)), _body(body)
+            {}
+
+            GenericLink visit (IVisitor* visitor) override {
+                return visitor->visitForExpression(*this);
+            }
     };
 };
 #endif// __EXPRESSION_H__ 

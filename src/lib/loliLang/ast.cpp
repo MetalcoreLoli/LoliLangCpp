@@ -98,6 +98,19 @@ namespace loli {
 
             return loli::newLink<std::string>(res.append(")"));
         }
-    };
 
+        loli::GenericLink  visitForExpression (loli::ForExpression& value) override {
+            std::string res = "(for ";
+            res
+                .append(loli::unwrap<void, std::string>(value.firstPart()->visit(this)))
+                .append(" ")
+                .append(loli::unwrap<void, std::string>(value.condition()->visit(this)))
+                .append(" ")
+                .append(loli::unwrap<void, std::string>(value.lastPart()->visit(this)))
+                .append(" ")
+                .append(loli::unwrap<void, std::string> (value.body()->visit(this)))
+                .append(")");
+            return loli::newLink<std::string>(res);
+        }
+    };
 }
