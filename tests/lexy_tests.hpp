@@ -43,4 +43,13 @@ TEST_F (LexyTests, visitBinaryExpression_WithOneEqOne_ThrowsRuntimeError) {
     }
 }
 
+TEST_F (LexyTests, visitIfExpression_WithOneSubOneLtOne_ReturnsTrue) {
+    std::string code = "if ((1-1) < 1) true else false;";
+
+    //act 
+    auto result = loli::unwrap<void, bool> (loli::Daphnie{code}.growTree()->visit(&_lex));
+
+    //assert
+    ASSERT_TRUE(result);
+}
 #endif //__LEXY_TESTS__
