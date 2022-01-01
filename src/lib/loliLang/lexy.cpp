@@ -32,15 +32,20 @@ loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& val
 }
 
 loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    auto condition = loli::unwrap<void, bool> (value.condition()->visit(this));
+    if (condition) {
+        return value.then()->visit(this);
+    } else {
+        return value.els()->visit(this);
+    }
 }
 
 loli::GenericLink loli::Lexy::visitGroupingExpression (loli::GroupingExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    return value.expression()->visit(this);
 }
 
 loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    return loli::newLink<bool>(value.value());
 }
 
 loli::GenericLink loli::Lexy::visitForExpression(loli::ForExpression& value) {
