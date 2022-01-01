@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <stack>
 
 
 #include "utils.h"
@@ -12,6 +13,8 @@
 namespace loli {
     using namespace utils;
     class Expression;
+    class CallableExpression;
+
     class IdentifierExpression;
     class NumberExpression;
     class BinaryExpression;
@@ -41,9 +44,19 @@ namespace loli {
         virtual GenericLink visitBodyExpression (BodyExpression& value) = 0;
         virtual GenericLink visitForExpression (ForExpression& value) = 0;
     };
+    
+    struct ICallable {
+        virtual GenericLink callLambdaExpression(LambdaExpression& value) = 0;
+    };
 
     struct Expression {
         virtual GenericLink visit (IVisitor * visitor) = 0;
+    };
+
+    struct CallableExpression {
+        virtual GenericLink call (
+                ICallable* caller, 
+                std::stack<Expression*>& stackFrame) = 0;
     };
 
     class StringExpression : public Expression {
@@ -107,7 +120,7 @@ namespace loli {
 
     };
 
-    class LambdaExpression : public Expression {
+    class LambdaExpression : public Expression, public CallableExpression {
         private:
             IdentifierExpression _idetifier;
             Expression*          _body;
@@ -116,6 +129,11 @@ namespace loli {
         public:
             GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitLambdaExpression(*this);
+            }
+            
+            GenericLink call (
+                    ICallable* caller, std::stack<Expression*>& stackFrame) override {
+                return caller->callLambdaExpression(*this);
             }
 
             [[nodiscard]] std::vector<IdentifierExpression>& args() const { return const_cast<std::vector<IdentifierExpression>&>(_args); }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "lexer.h"
+#include "gramm.h"
 #include "lexy.h"
-#include "daphnie.h"
+#include "lexer.h"
 #include "utils.h"
 #include "ast.cpp"
+#include "daphnie.h"
+#include "loliInter.h"
 #include "exceptions.h"
-
-#include "gramm.h"

@@ -1,25 +1,12 @@
 #include "lexy.h"
 
 loli::GenericLink loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
-    if (value.operand() == "+") {
+    if (_opsTable.contains(value.operand())) {
         auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
         auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
-        return std::make_shared<float>(leftValue + rightValue);
-    }
-    if (value.operand() == "-") {
-        auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
-        auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
-        return std::make_shared<float>(leftValue - rightValue);
-    }
-    if (value.operand() == "*") {
-        auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
-        auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
-        return std::make_shared<float>(leftValue * rightValue);
-    }
-    if (value.operand() == "/") {
-        auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
-        auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
-        return std::make_shared<float>(leftValue  / rightValue);
+        return _opsTable[value.operand()](leftValue, rightValue);
+    } else {
+        throw std::runtime_error {"operator `"+value.operand()+"` is not implemented for type `Number`"};
     }
     return nullptr;
 }
@@ -33,24 +20,37 @@ loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value)
 }
 
 loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
 }
 
 loli::GenericLink loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
 }
 
 loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
 }
 
 loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
 }
 
 loli::GenericLink loli::Lexy::visitGroupingExpression (loli::GroupingExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
 }
+
 loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) {
-    return nullptr;
+    throw std::runtime_error{"the method is not implemented yet."};
+}
+
+loli::GenericLink loli::Lexy::visitForExpression(loli::ForExpression& value) {
+    throw std::runtime_error{"the method is not implemented yet."};
+}
+
+loli::GenericLink loli::Lexy::visitClassExpression (loli::ClassExpression & value) {
+    throw std::runtime_error{"the method is not implemented yet."};
+}
+
+loli::GenericLink loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
+    throw std::runtime_error{"the method is not implemented yet."};
 }

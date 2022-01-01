@@ -1,5 +1,7 @@
 add_library (
     loliLang 
+    lib/loliLang/loliInter.h
+    lib/loliLang/loliInter.cpp
     lib/loliLang/utils.h
     lib/loliLang/lexy.h
     lib/loliLang/lexy.cpp

@@ -1,19 +1,41 @@
 #ifndef __LEXY_H__
 #define __LEXY_H__
 
+#include <functional>
+#include <map>
+#include <string>
+
 #include "expression.h"
+#include "loliLang/utils.h"
 
 namespace loli {
     struct Lexy : IVisitor {
-        loli::GenericLink visitBinaryExpression (BinaryExpression& value) override;
-        loli::GenericLink visitNumberExpression (NumberExpression& value) override;
-        loli::GenericLink visitLambdaExpression (LambdaExpression& value)  override;
-        loli::GenericLink visitIdentifierExpression (IdentifierExpression& value) override;
-        loli::GenericLink visitStringExpression (StringExpression& value) override;
-        loli::GenericLink visitIfExpression (IfExpression& value) override;
-        loli::GenericLink visitGroupingExpression (GroupingExpression& value) override;
-        loli::GenericLink visitBoolExpression (BoolExpression& value) override;
-        loli::GenericLink visitUnaryExpression (UnaryExpression& value) override;
+        GenericLink visitBinaryExpression (BinaryExpression& value) override;
+        GenericLink visitNumberExpression (NumberExpression& value) override;
+        GenericLink visitLambdaExpression (LambdaExpression& value) override;
+        GenericLink visitIdentifierExpression (IdentifierExpression& value) override;
+        GenericLink visitStringExpression (StringExpression& value) override;
+        GenericLink visitIfExpression (IfExpression& value) override;
+        GenericLink visitGroupingExpression (GroupingExpression& value) override;
+        GenericLink visitBoolExpression (BoolExpression& value) override;
+        GenericLink visitUnaryExpression (UnaryExpression& value) override;
+        GenericLink visitClassExpression (ClassExpression& value) override;
+        GenericLink visitBodyExpression (BodyExpression& value) override;
+        GenericLink visitForExpression (ForExpression& value) override;
+
+        explicit Lexy () {
+        }
+        private:
+            //{"func", Token(Forma::FUNC, "func", 0)},
+            std::map<std::string, std::function<GenericLink(float, float)>> _opsTable{
+                {"+", [](float a, float b) -> GenericLink {return loli::newLink<float>(a+b);}},
+                {"-", [](float a, float b) -> GenericLink {return loli::newLink<float>(a-b);}},
+                {"*", [](float a, float b) -> GenericLink {return loli::newLink<float>(a*b);}},
+                {"/", [](float a, float b) -> GenericLink {return loli::newLink<float>(a/b);}},
+                {">", [](float a, float b) -> GenericLink {return loli::newLink<bool>(a<b);}},
+                {"<", [](float a, float b) -> GenericLink {return loli::newLink<bool>(a>b);}}
+            };
+
     };
 };
 #endif // __LEXY_H__

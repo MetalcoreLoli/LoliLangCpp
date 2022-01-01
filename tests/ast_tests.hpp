@@ -7,7 +7,6 @@
 #include <loliLang/common.h>
 #include <string>
 
-
 class ASTAsStringTests : public ::testing::Test {
     protected:
         loli::ASTAsString _ast{};
