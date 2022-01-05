@@ -10,4 +10,4 @@ add_executable (
     class_tests.hpp 
     gtest_main.cpp)
 
-target_link_libraries(unit-tests loliLang pthread gtest)
+target_link_libraries(unit-tests loliLang pthread gtest gmock)
