@@ -45,8 +45,8 @@ namespace loli {
         virtual GenericLink visitForExpression (ForExpression& value) = 0;
     };
     
-    struct ICallable {
-        virtual GenericLink callLambdaExpression(LambdaExpression& value) = 0;
+    struct ICaller {
+        virtual GenericLink callLambdaExpression(LambdaExpression& value, std::stack<Expression*>& stackFrame) = 0;
     };
 
     struct Expression {
@@ -55,7 +55,7 @@ namespace loli {
 
     struct CallableExpression {
         virtual GenericLink call (
-                ICallable* caller, 
+                ICaller* caller,
                 std::stack<Expression*>& stackFrame) = 0;
     };
 
@@ -132,8 +132,8 @@ namespace loli {
             }
             
             GenericLink call (
-                    ICallable* caller, std::stack<Expression*>& stackFrame) override {
-                return caller->callLambdaExpression(*this);
+                    ICaller* caller, std::stack<Expression*>& stackFrame) override {
+                return caller->callLambdaExpression(*this, stackFrame);
             }
 
             [[nodiscard]] std::vector<IdentifierExpression>& args() const { return const_cast<std::vector<IdentifierExpression>&>(_args); }

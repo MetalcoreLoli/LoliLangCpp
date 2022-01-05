@@ -7,7 +7,7 @@
 #include <memory>
 
 namespace loli {
-    struct DefCaller : public loli::ICallable {
+    struct DefCaller : public loli::ICaller {
         GenericLink 
         callLambdaExpression(
                 LambdaExpression& value, 

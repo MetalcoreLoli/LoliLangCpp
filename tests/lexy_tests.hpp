@@ -16,7 +16,7 @@ class LexyTests : public ::testing::Test {
         loli::Lexy _lex{};
 };
 
-class MockCaller : public loli::ICallable {
+class MockCaller : public loli::ICaller {
     public:
         MOCK_METHOD(
                 loli::GenericLink, 
