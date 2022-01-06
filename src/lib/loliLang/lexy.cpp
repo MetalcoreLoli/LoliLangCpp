@@ -1,4 +1,7 @@
 #include "lexy.h"
+#include "loliLang/expression.h"
+#include <algorithm>
+#include <typeinfo>
 
 loli::GenericLink loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
     if (_opsTable.contains(value.operand())) {
@@ -16,19 +19,19 @@ loli::GenericLink loli::Lexy::visitNumberExpression (loli::NumberExpression& val
 }
 
 loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
-    throw std::runtime_error {"The Lexy::visitUnaryExpression is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitUnaryExpression");
 }
 
 loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    return loli::newLink<LambdaExpression>(value);
 }
 
 loli::GenericLink loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitIdentifierExpression");
 }
 
 loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitStringExpression");
 }
 
 loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
@@ -49,13 +52,13 @@ loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) 
 }
 
 loli::GenericLink loli::Lexy::visitForExpression(loli::ForExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitForExpression");
 }
 
 loli::GenericLink loli::Lexy::visitClassExpression (loli::ClassExpression & value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitClassExpression");
 }
 
 loli::GenericLink loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
-    throw std::runtime_error{"the method is not implemented yet."};
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitBodyExpression");
 }
