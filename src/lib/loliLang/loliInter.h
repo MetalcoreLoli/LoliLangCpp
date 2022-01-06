@@ -14,7 +14,23 @@
 namespace loli {
     class LoliInter {
         public:
-            utils::GenericLink AnswerOn (std::string_view sv);
+            class ResultOfAnswering {
+                utils::GenericLink _rawResult;
+                public:
+                    utils::GenericLink& RawResult () const { 
+                        return const_cast<utils::GenericLink&>(_rawResult); 
+                    };
+
+                    template<typename TResultAs> 
+                    TResultAs As() {
+                        return loli::unwrap<void, TResultAs>(_rawResult);
+                    }
+
+                    explicit ResultOfAnswering (const utils::GenericLink& result)
+                        : _rawResult(result) {}
+            };
+
+            ResultOfAnswering AnswerOn (std::string_view sv);
     };
 };
 #endif // __LOLI_INTER__

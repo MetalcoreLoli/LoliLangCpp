@@ -3,9 +3,9 @@
 
 
 
-loli::utils::GenericLink loli::LoliInter::AnswerOn (std::string_view sv) {
+loli::LoliInter::ResultOfAnswering loli::LoliInter::AnswerOn (std::string_view sv) {
     loli::Lexy lexy{};
     loli::Daphnie d {std::string(sv)};
 
-    return d.growTree()->visit(&lexy);
+    return ResultOfAnswering{d.growTree()->visit(&lexy)};
 }
