@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <string>
+#include <string_view>
 #include <type_traits>
 namespace loli::utils {
     template <typename T>
@@ -50,5 +52,11 @@ namespace loli::utils {
     constexpr TTo unwrap (Link<TFrom> link) {
         return *std::static_pointer_cast<TTo> (link);
     }
+
+    struct ThrowHelper {
+        static void Throw_NotImplemented (const std::string& methodName) {
+            throw std::runtime_error {methodName + " is not impelented yet."};     
+        }
+    };
 };
 #endif
