@@ -17,7 +17,7 @@ class LoliTests : public ::testing::Test {
 TEST_F (LoliTests, AnswerOn_WithValidExpressionOnePlusOneExpression_ReturnsTwo) {
 
     //act 
-    auto result = loli::unwrap<void, float>(_loli.AnswerOn("1 + 1"));
+    auto result = _loli.AnswerOn("1 + 1").As<float>();
 
     //assert
     ASSERT_GT(0.5f, std::abs(2.0f - result));
