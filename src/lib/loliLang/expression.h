@@ -273,5 +273,25 @@ namespace loli {
                 return visitor->visitForExpression(*this);
             }
     };
+
+
+    struct LambdaExpressionTypeSpec : public loli::Spec <Expression*> {
+        bool IsSatify (Expression* item) override;
+        private:
+            size_t hashCode = typeid(loli::LambdaExpression).hash_code();
+    };
+
+
+    struct ExpressionFactory {
+        static LambdaExpression* EmptyLambdaExpression () {
+            IdentifierExpression empty("EMPTY");
+            return new LambdaExpression (empty, nullptr);
+        }
+    };
+    struct ExpressionSpecFactory {
+        static Link<class LambdaExpressionTypeSpec> LambdaExpressionTypeSpec() {
+            return newLink<class LambdaExpressionTypeSpec>();
+        }
+    };
 };
 #endif// __EXPRESSION_H__ 

@@ -50,3 +50,8 @@ loli::LambdaExpression::LambdaExpression(
 loli::StringExpression::StringExpression(const std::string& value)  {
     _value = value;
 }
+
+bool loli::LambdaExpressionTypeSpec::IsSatify (loli::Expression* item) {
+    size_t hashCode = typeid(item).hash_code();
+    return hashCode == this->hashCode;
+}
