@@ -1,11 +1,13 @@
 #ifndef __LEXY_H__
 #define __LEXY_H__
 
-#include <functional>
 #include <map>
 #include <string>
+#include <functional>
+
 
 #include "expression.h"
+#include "loliLang/memory.h"
 #include "loliLang/utils.h"
 
 namespace loli {
@@ -23,9 +25,14 @@ namespace loli {
         GenericLink visitBodyExpression (BodyExpression& value) override;
         GenericLink visitForExpression (ForExpression& value) override;
 
+        Lexy& PushIntoMainStack (Expression* expression);
+
         explicit Lexy () {
         }
         private:
+
+            loli::IMemoryOf<Expression*>* _memory = new loli::MemoryTableOfExpressions;
+            std::vector <Expression*> _mainStack {};
             //{"func", Token(Forma::FUNC, "func", 0)},
             std::map<std::string, std::function<GenericLink(float, float)>> _opsTable{
                 {"+", [](float a, float b) -> GenericLink {return loli::newLink<float>(a+b);}},

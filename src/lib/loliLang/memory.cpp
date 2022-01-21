@@ -8,10 +8,9 @@ loli::IMemoryOf<loli::Expression*>& loli::MemoryTableOfExpressions::Push (Expres
 } 
 
 bool loli::MemoryTableOfExpressions::TryFind (utils::Spec<Expression*>* spec, Expression** out)  {
-    Expression* pout = *out;
-    for (auto v : _mainStack) {
+    for (Expression* v : _mainStack) {
         if (spec->IsSatisfy(v)) {
-            pout = v; 
+            *out = v; 
             return true;
         }
     }

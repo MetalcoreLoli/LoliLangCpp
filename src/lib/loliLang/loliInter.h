@@ -13,9 +13,13 @@
 
 namespace loli {
     class LoliInter {
+        private:
+            loli::Lexy _lexy{};
         public:
+            
             class ResultOfAnswering {
                 utils::GenericLink _rawResult;
+
                 public:
                     utils::GenericLink& RawResult () const { 
                         return const_cast<utils::GenericLink&>(_rawResult); 

@@ -23,15 +23,22 @@ loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value)
 }
 
 loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
-    return loli::newLink<LambdaExpression>(value);
+    auto l = loli::newLink<LambdaExpression>(value);
+    _memory->Push(l.get());
+    return l;
 }
 
 loli::GenericLink loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
-    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitIdentifierExpression");
+    Expression* out = ExpressionFactory::EmptyLambdaExpression(); 
+    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionTypeSpec().get(), &out)) {
+        throw std::runtime_error {"There is no `"+value.value()+"` identifier"};
+    }
+    auto func = dynamic_cast<LambdaExpression*>(out);
+    return func->body()->visit(this);
 }
 
 loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& value) {
-    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitStringExpression");
+    return loli::newLink<std::string> (value.value());
 }
 
 loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
@@ -61,4 +68,9 @@ loli::GenericLink loli::Lexy::visitClassExpression (loli::ClassExpression & valu
 
 loli::GenericLink loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitBodyExpression");
+}
+
+loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
+    _mainStack.push_back(expression);
+    return *this;
 }
