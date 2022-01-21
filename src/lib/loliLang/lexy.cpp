@@ -74,3 +74,7 @@ loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
     _mainStack.push_back(expression);
     return *this;
 }
+
+loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) {
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::CallExpression");
+}

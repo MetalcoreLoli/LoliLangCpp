@@ -24,6 +24,7 @@ namespace loli {
         GenericLink visitClassExpression (ClassExpression& value) override;
         GenericLink visitBodyExpression (BodyExpression& value) override;
         GenericLink visitForExpression (ForExpression& value) override;
+        GenericLink visitCallExpression (CallExpression& value) override;
 
         Lexy& PushIntoMainStack (Expression* expression);
 
