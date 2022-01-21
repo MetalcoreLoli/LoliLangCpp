@@ -1,6 +1,7 @@
 #ifndef __LOLI_AST_TESTS__
 #define __LOLI_AST_TESTS__
 
+#include "loliLang/expression.h"
 #include <exception>
 #include <stdexcept>
 #include <gtest/gtest.h>
@@ -146,5 +147,29 @@ TEST_F (ASTAsStringTests, Visit_WithForValidForExpression_ReturnsValidAST) {
     ASSERT_STREQ(
             result.c_str(), 
             "(for (define (i) 0.000000) (< 10.000000 i) (define (i) (+ 1.000000 i)) (with 1.000000))");
+}
+
+
+TEST_F (ASTAsStringTests, Visit_CallExpressionWithoutArgs_ReturbsValidASTAsString) {
+    auto call = loli::ExpressionFactory::CallWithoutArgs("d");
+
+    //act 
+    auto result = loli::unwrap<void, std::string>(call->visit(&_ast));
+
+    //assert 
+    ASSERT_STREQ (result.c_str(), "(call d)");
+}
+
+TEST_F (ASTAsStringTests, Visit_CallExpressionWithNumberLiteralUndFunc_ReturbsValidASTAsString) {
+    auto call = loli::ExpressionFactory::Call("add", {
+            loli::ExpressionFactory::Lambda("id", loli::ExpressionFactory::Number(9).get()).get(),
+            loli::ExpressionFactory::Number (1).get()
+            });
+
+    //act 
+    auto result = loli::unwrap<void, std::string>(call->visit(&_ast));
+
+    //assert 
+    ASSERT_STREQ (result.c_str(), "(call add (define (id) 9.000000) 1.000000)");
 }
 #endif

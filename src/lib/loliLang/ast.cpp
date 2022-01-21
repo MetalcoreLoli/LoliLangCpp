@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -112,5 +113,20 @@ namespace loli {
                 .append(")");
             return loli::newLink<std::string>(res);
         }
+        
+        loli::GenericLink  visitCallExpression(loli::CallExpression& value) override {
+            std::string res = "(call ";
+            res
+                .append(loli::unwrap<void, std::string>(value.idetifier().visit(this)));
+            for (auto& arg : value.args()) {
+                res.append(" ").append(loli::unwrap<void, std::string> (arg->visit(this)));
+            }
+
+            res.append(")");
+            return loli::newLink<std::string>(res);
+        }
+
+
+
     };
 }
