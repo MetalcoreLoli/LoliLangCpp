@@ -68,7 +68,7 @@ namespace loli::utils {
 
     template <typename T>
     struct Spec {
-        virtual bool IsSatify (T item) = 0;
+        virtual bool IsSatisfy (T item) = 0;
 
         inline AndSpec<T> operator && (Spec<T> b) {
             return AndSpec<T>(newLink <Spec<T>>(*this), newLink <Spec<T>>(b));
@@ -82,7 +82,7 @@ namespace loli::utils {
     template <typename T>
     struct AndSpec : public Spec<T> {
         bool IsSatify (T item) {
-            return _left->IsSatify (item) && _right->IsSatify(item);
+            return _left->IsSatisfy (item) && _right->IsSatisfy(item);
         }
         AndSpec (Link<Spec<T>>& left, Link<Spec<T>>& right) 
             : _left (left), _right (right) {
@@ -96,7 +96,7 @@ namespace loli::utils {
     template <typename T>
     struct OrSpec: public Spec<T> {
         bool IsSatify (T item) {
-            return _left->IsSatify (item) && _right->IsSatify(item);
+            return _left->IsSatisfy (item) && _right->IsSatisfy(item);
         }
         OrSpec (Link<Spec<T>>& left, Link<Spec<T>>& right) 
             : _left (left), _right (right) {

@@ -276,7 +276,7 @@ namespace loli {
 
 
     struct LambdaExpressionTypeSpec : public loli::Spec <Expression*> {
-        bool IsSatify (Expression* item) override;
+        bool IsSatisfy (Expression* item) override;
         private:
             size_t hashCode = typeid(loli::LambdaExpression).hash_code();
     };
