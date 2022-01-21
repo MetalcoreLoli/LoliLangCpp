@@ -58,5 +58,54 @@ namespace loli::utils {
             throw std::runtime_error {methodName + " is not impelented yet."};     
         }
     };
+
+
+    template <typename T>
+    struct AndSpec;
+    
+    template <typename T>
+    struct OrSpec;
+
+    template <typename T>
+    struct Spec {
+        virtual bool IsSatify (T item) = 0;
+
+        inline AndSpec<T> operator && (Spec<T> b) {
+            return AndSpec<T>(newLink <Spec<T>>(*this), newLink <Spec<T>>(b));
+        }
+
+        inline OrSpec<T> operator || (Spec<T> b) {
+            return OrSpec<T>(newLink <Spec<T>>(*this), newLink <Spec<T>>(b));
+        }
+    };
+
+    template <typename T>
+    struct AndSpec : public Spec<T> {
+        bool IsSatify (T item) {
+            return _left->IsSatify (item) && _right->IsSatify(item);
+        }
+        AndSpec (Link<Spec<T>>& left, Link<Spec<T>>& right) 
+            : _left (left), _right (right) {
+
+        }
+        private:
+            Link<Spec<T>> _left;
+            Link<Spec<T>> _right;
+    };
+    
+    template <typename T>
+    struct OrSpec: public Spec<T> {
+        bool IsSatify (T item) {
+            return _left->IsSatify (item) && _right->IsSatify(item);
+        }
+        OrSpec (Link<Spec<T>>& left, Link<Spec<T>>& right) 
+            : _left (left), _right (right) {
+
+        }
+        private:
+            Link<Spec<T>> _left;
+            Link<Spec<T>> _right;
+    };
+
 };
 #endif
