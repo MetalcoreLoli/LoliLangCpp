@@ -12,6 +12,7 @@ namespace loli {
     };
 
     class MemoryTableOfExpressions : public IMemoryOf<Expression*> {
+        std::vector <Expression*> _mainStack {};
 
         public:
             IMemoryOf<Expression*>& Push (Expression* value) override;

@@ -3,9 +3,17 @@
 #include "loliLang/utils.h"
 
 loli::IMemoryOf<loli::Expression*>& loli::MemoryTableOfExpressions::Push (Expression* value) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::MemoryTableOfExpressions::Push");
+    _mainStack.push_back(value);
+    return *this;
 } 
 
 bool loli::MemoryTableOfExpressions::TryFind (utils::Spec<Expression*>* spec, Expression** out)  {
-    utils::ThrowHelper::Throw_NotImplemented("loli::MemoryTableOfExpressions::TryFind");
+    Expression* pout = *out;
+    for (auto v : _mainStack) {
+        if (spec->IsSatisfy(v)) {
+            pout = v; 
+            return true;
+        }
+    }
+    return false;
 }
