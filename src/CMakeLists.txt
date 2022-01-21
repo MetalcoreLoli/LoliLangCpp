@@ -1,6 +1,8 @@
 add_library (
     loliLang
 
+    lib/loliLang/memory.h
+    lib/loliLang/memory.cpp
     lib/loliLang/defCaller.h
     lib/loliLang/defCaller.cpp
     lib/loliLang/loliInter.h
