@@ -4,6 +4,7 @@
 #include <any>
 #include <string>
 #include <memory>
+#include <string_view>
 #include <vector>
 #include <stack>
 
@@ -27,7 +28,8 @@ namespace loli {
     class ClassExpression;
     class BodyExpression;
     class ForExpression;
-    
+    class CallExpression;
+
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
 
     struct IVisitor {
@@ -43,6 +45,7 @@ namespace loli {
         virtual GenericLink visitClassExpression (ClassExpression& value) = 0;
         virtual GenericLink visitBodyExpression (BodyExpression& value) = 0;
         virtual GenericLink visitForExpression (ForExpression& value) = 0;
+        virtual GenericLink visitCallExpression (CallExpression& value) = 0;
     };
     
     struct ICaller {
@@ -273,6 +276,24 @@ namespace loli {
                 return visitor->visitForExpression(*this);
             }
     };
+    
+    class CallExpression : public Expression {
+        IdentifierExpression _idetifier;
+        std::vector<Expression*> _args{};
+        public:
+
+            IdentifierExpression idetifier () const { return _idetifier; }
+            std::vector<Expression*>& args () const  { return const_cast<std::vector<Expression*>&> (_args); }
+
+            CallExpression (IdentifierExpression& idetifier, const std::vector<Expression*>& args)
+                : _idetifier(idetifier), _args(args){
+
+            }
+
+            GenericLink visit (IVisitor* visitor) override {
+                return visitor->visitCallExpression(*this);
+            }
+    };
 
 
     struct LambdaExpressionTypeSpec : public loli::Spec <Expression*> {
@@ -281,11 +302,30 @@ namespace loli {
             size_t hashCode = typeid(loli::LambdaExpression).hash_code();
     };
 
-
     struct ExpressionFactory {
         static LambdaExpression* EmptyLambdaExpression () {
             IdentifierExpression empty("EMPTY");
-            return new LambdaExpression (empty, nullptr);
+            return new class LambdaExpression (empty, nullptr);
+        }
+
+        static Link<class LambdaExpression> Lambda(const std::string& name, Expression* body) {
+            IdentifierExpression n(name);
+            return newLink<class LambdaExpression> (n, body);
+        }
+
+        static Link<class CallExpression>  CallWithoutArgs(const std::string& idetifier) {
+            std::vector<Expression*> args{};
+            IdentifierExpression id (idetifier);
+            return newLink<class CallExpression>(id, args);
+        }
+
+        static Link<class CallExpression>  Call(const std::string& idetifier, const std::vector<Expression*>& args) {
+            IdentifierExpression id (idetifier);
+            return newLink<class CallExpression>(id, args);
+        }
+
+        static Link<class NumberExpression> Number(float value) {
+            return newLink<class NumberExpression>(value);
         }
     };
     struct ExpressionSpecFactory {
