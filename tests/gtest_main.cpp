@@ -169,6 +169,16 @@ TEST_F (DaphnieTests, Daphnie_WithValidCodeStringPassedThroughtTheConstructor_Tr
     ASSERT_STREQ (result.c_str(), "(class (name))");
 }
 
+TEST_F(DaphnieTests, CallExpr_WithValiCallExpression_ReturnsVaildTree) {
+    loli::Daphnie d{"add d 1"};
+    
+    //act
+    auto result = loli::unwrap<void, std::string> (d.growTree()-> visit(&_ast));
+
+    //assert
+    ASSERT_STREQ (result.c_str(), "(call add d 1.000000)");
+}
+
 int main () {
     testing::InitGoogleTest();
     return RUN_ALL_TESTS();

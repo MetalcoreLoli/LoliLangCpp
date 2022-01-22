@@ -20,6 +20,23 @@ bool loli::Daphnie::IsClosing(const loli::Token& value) {
             });
 }
 
+bool loli::Daphnie::IsKeyword (const loli::Token& value) {
+    return IsMatchTo (value.forma(),
+            {
+                loli::Forma::IF,
+                loli::Forma::ELSE,
+                loli::Forma::TRUE,
+                loli::Forma::FALSE,
+                loli::Forma::RETURN,
+                loli::Forma::IMPORT,
+                loli::Forma::CLASS,
+                loli::Forma::NIL,
+                loli::Forma::FOR_,
+                loli::Forma::FOR,
+                loli::Forma::WHILE,
+                loli::Forma::WITH,
+            });
+}
 bool loli::Daphnie::IsMatchTo (loli::Forma value, const std::vector<loli::Forma>& to) {
     return std::find(to.begin(), to.end(), value) != to.end();
 }
@@ -154,7 +171,12 @@ loli::Expression* loli::Daphnie::StringExpression (std::stack<Expression*> &expr
 
 loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
-    auto expr =new class IdentifierExpression(current.lexeme());
+    auto expr = new class IdentifierExpression(current.lexeme());
+    if (
+            !_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::LAMBDA_ARROW) &&
+            IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER, loli::Forma::NUM, loli::Forma::STRING_LIT})) {
+        return CallExpr(expressionsStack);
+    }
     return expr;
 }
 
@@ -268,4 +290,28 @@ loli::Expression* loli::Daphnie::ForExpr (std::stack<Expression*>& expressionsSt
             condition,
             lastPart,
             body);
+}
+
+loli::Expression* loli::Daphnie::CallExpr (std::stack<Expression*>& expressionsStack) {
+    auto name = Peek().lexeme();
+    std::vector<Expression*> args{};
+    auto current = MoveToNext().Peek();
+    while (IsMatchTo(current.forma(), {Forma::NUM, Forma::STRING_LIT, Forma::INDENTIFIER})) {
+        switch (current.forma()) {
+            case loli::Forma::NUM: 
+                args.push_back (new loli::NumberExpression(std::stof(current.lexeme())));
+                break; 
+            case loli::Forma::STRING_LIT: 
+                args.push_back (new loli::StringExpression(current.lexeme()));
+                break;
+            case Forma::INDENTIFIER: 
+                args.push_back (new loli::IdentifierExpression(current.lexeme()));
+                break;
+        }
+        current = MoveToNext().Peek();
+    }
+    //utils::ThrowHelper::Throw_NotImplemented("loli::Daphnie::CallExpr");
+    class IdentifierExpression n (name);
+    return  new CallExpression (n, args);
+    //return  ExpressionFactory::Call (name, args).get();
 }
