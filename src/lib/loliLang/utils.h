@@ -57,6 +57,9 @@ namespace loli::utils {
         static void Throw_NotImplemented (const std::string& methodName) {
             throw std::runtime_error {methodName + " is not impelented yet."};     
         }
+        static void Throw_ThereIsNo (const std::string& value) {
+            throw std::runtime_error {"There is no `" + value + "`"};     
+        }
     };
 
 
