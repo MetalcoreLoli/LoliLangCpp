@@ -9,6 +9,7 @@
 #include "expression.h"
 #include "loliLang/memory.h"
 #include "loliLang/utils.h"
+#include "expressionFactory.hpp"
 
 namespace loli {
     struct Lexy : IVisitor {
@@ -33,7 +34,6 @@ namespace loli {
         private:
 
             loli::IMemoryOf<Expression*>* _memory = new loli::MemoryTableOfExpressions;
-            std::vector <Expression*> _mainStack {};
             //{"func", Token(Forma::FUNC, "func", 0)},
             std::map<std::string, std::function<GenericLink(float, float)>> _opsTable{
                 {"+", [](float a, float b) -> GenericLink {return loli::newLink<float>(a+b);}},

@@ -118,7 +118,7 @@ namespace loli {
             std::string res = "(call ";
             res
                 .append(loli::unwrap<void, std::string>(value.idetifier().visit(this)));
-            for (auto& arg : value.args()) {
+            for (Expression* arg : value.args()) {
                 res.append(" ").append(loli::unwrap<void, std::string> (arg->visit(this)));
             }
 

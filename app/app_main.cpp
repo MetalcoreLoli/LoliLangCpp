@@ -9,7 +9,9 @@
 int main () {
     loli::ASTAsString ast;
     loli::LoliInter inter {};
-    auto helloStr = inter.AnswerOn("\"Hello, World\"").As<std::string>();
+
+    auto a = inter.AnswerOn("add a b => a + b");
+    auto helloStr = inter.AnswerOn("add 1 1").As<float>();
 
     std::cout << helloStr << std::endl;
 }

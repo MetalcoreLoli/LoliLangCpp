@@ -1,5 +1,7 @@
 #include "lexy.h"
 #include "loliLang/expression.h"
+#include "loliLang/expressionFactory.hpp"
+#include "loliLang/utils.h"
 #include <algorithm>
 #include <typeinfo>
 
@@ -20,6 +22,7 @@ loli::GenericLink loli::Lexy::visitNumberExpression (loli::NumberExpression& val
 
 loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitUnaryExpression");
+    return nullptr;
 }
 
 loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
@@ -60,21 +63,50 @@ loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) 
 
 loli::GenericLink loli::Lexy::visitForExpression(loli::ForExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitForExpression");
+    return nullptr;
 }
 
 loli::GenericLink loli::Lexy::visitClassExpression (loli::ClassExpression & value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitClassExpression");
+    return nullptr;
 }
 
 loli::GenericLink loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitBodyExpression");
+    return nullptr;
 }
 
 loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
-    _mainStack.push_back(expression);
+    _memory->Push(expression);
     return *this;
 }
 
 loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) {
-    ThrowHelper::Throw_NotImplemented("loli::Lexy::CallExpression");
+    Expression* out = nullptr;
+    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionTypeSpec().get(), &out)) {
+        utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
+    }
+    auto lambda = *(dynamic_cast <LambdaExpression*>(out));
+    if (lambda.identifier().value() != value.idetifier().value()) {
+        utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
+    }
+    if (lambda.args().size() > value.args().size()) {
+        throw std::runtime_error {
+            "There is a missing arg in call of `"+value.idetifier().value()+"`"};
+    } else if (lambda.args().size() < value.args().size()) {
+        throw std::runtime_error {
+            "There is a extra arg in call of `"+value.idetifier().value()+"`"};
+    }
+
+    std::vector<Expression*> as {};
+    for (size_t i = 0; i < lambda.args().size(); i++) {
+        auto name = lambda.args()[i].value();
+        auto l = ExpressionFactory::LambdaRaw(name, value.args()[i]);
+        as.push_back(l);
+    }
+    Lexy local{};
+    for (auto a : as) {
+        local.PushIntoMainStack(a);
+    }
+    return lambda.body()->visit(&local);
 }

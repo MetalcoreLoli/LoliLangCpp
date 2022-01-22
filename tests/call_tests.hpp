@@ -27,8 +27,8 @@ TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult
 
 }
 
-TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsOne) {
-    auto codeOfFunc = "id a = a + 9";
+TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
+    auto codeOfFunc = "id a => a + 9";
     auto call = "id 1";
     loli::Daphnie d{call};
     loli::Daphnie dd{codeOfFunc};
