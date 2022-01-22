@@ -302,32 +302,6 @@ namespace loli {
             size_t hashCode = typeid(loli::LambdaExpression).hash_code();
     };
 
-    struct ExpressionFactory {
-        static LambdaExpression* EmptyLambdaExpression () {
-            IdentifierExpression empty("EMPTY");
-            return new class LambdaExpression (empty, nullptr);
-        }
-
-        static Link<class LambdaExpression> Lambda(const std::string& name, Expression* body) {
-            IdentifierExpression n(name);
-            return newLink<class LambdaExpression> (n, body);
-        }
-
-        static Link<class CallExpression>  CallWithoutArgs(const std::string& idetifier) {
-            std::vector<Expression*> args{};
-            IdentifierExpression id (idetifier);
-            return newLink<class CallExpression>(id, args);
-        }
-
-        static Link<class CallExpression>  Call(const std::string& idetifier, const std::vector<Expression*>& args) {
-            IdentifierExpression id (idetifier);
-            return newLink<class CallExpression>(id, args);
-        }
-
-        static Link<class NumberExpression> Number(float value) {
-            return newLink<class NumberExpression>(value);
-        }
-    };
     struct ExpressionSpecFactory {
         static Link<class LambdaExpressionTypeSpec> LambdaExpressionTypeSpec() {
             return newLink<class LambdaExpressionTypeSpec>();
