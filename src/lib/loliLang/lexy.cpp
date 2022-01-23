@@ -89,10 +89,10 @@ loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) 
     auto lambda = *(dynamic_cast <LambdaExpression*>(out));
     if (lambda.args().size() > value.args().size()) {
         throw std::runtime_error {
-            "There is a missing arg in call of `"+value.idetifier().value()+"`"};
+            "There is a missing arg in call of `"+value.idetifier().value()+"` function"};
     } else if (lambda.args().size() < value.args().size()) {
         throw std::runtime_error {
-            "There is a extra arg in call of `"+value.idetifier().value()+"`"};
+            "There is a extra arg in call of `"+value.idetifier().value()+"` function"};
     }
 
     std::vector<Expression*> as {};

@@ -40,4 +40,30 @@ TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_Ret
     //assert 
     ASSERT_EQ (10.0f, result);
 }
+
+TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError) {
+    auto codeOfFunc = "add a b => a + b";
+    auto call = "add 1 2 3";
+    loli::Daphnie dd{codeOfFunc};
+
+    //act
+    dd.growTree()->visit(&_lexy);
+    auto act = [this](loli::Daphnie d)  {
+        d.growTree()->visit(&_lexy);
+    };
+
+    //assert 
+    ASSERT_THROW (act(loli::Daphnie{call}), std::runtime_error);
+    try {
+        act (loli::Daphnie{call});
+    } catch (const std::runtime_error& ex) {
+        ASSERT_STREQ(ex.what(), "There is a extra arg in call of `add` function");
+    }
+    try {
+        act (loli::Daphnie{"add 1"});
+    } catch (const std::runtime_error& ex) {
+        ASSERT_STREQ(ex.what(), "There is a missing arg in call of `add` function");
+    }
+
+}
 #endif // __LOLI_CALL_TESTS__
