@@ -55,3 +55,7 @@ bool loli::LambdaExpressionTypeSpec::IsSatisfy (loli::Expression* item) {
     size_t hashCode = typeid(*item).hash_code();
     return hashCode == this->hashCode;
 }
+
+bool loli::LambdaExpressionNameSpec::IsSatisfy (loli::LambdaExpression& item) {
+    return item.identifier().value() == this->_name;
+}

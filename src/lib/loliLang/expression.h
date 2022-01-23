@@ -302,9 +302,23 @@ namespace loli {
             size_t hashCode = typeid(loli::LambdaExpression).hash_code();
     };
 
+    struct LambdaExpressionNameSpec : loli::Spec <LambdaExpression&> {
+        bool IsSatisfy (LambdaExpression& item) override;
+
+        LambdaExpressionNameSpec (const std::string& name) : _name (name){}
+        private:
+            std::string _name;
+    };
+
     struct ExpressionSpecFactory {
         static Link<class LambdaExpressionTypeSpec> LambdaExpressionTypeSpec() {
             return newLink<class LambdaExpressionTypeSpec>();
+        }
+
+        static Link<class LambdaExpressionNameSpec> LambdaExpressionNameSpec(
+                const std::string& name
+                ) {
+            return newLink<class LambdaExpressionNameSpec>(name);
         }
     };
 };
