@@ -66,4 +66,18 @@ TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError)
     }
 
 }
+
+TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
+    auto codeOfFunc = "add a b => if (a < b) add b a else 5";
+    auto call = "add 1 2";
+    loli::Daphnie dd{codeOfFunc};
+
+    //act
+    dd.growTree()->visit(&_lexy);
+    auto result = loli::unwrap<void, float> (loli::Daphnie{call}.growTree()->visit(&_lexy));
+
+    //assert 
+    ASSERT_EQ(5.0f,result);
+
+}
 #endif // __LOLI_CALL_TESTS__

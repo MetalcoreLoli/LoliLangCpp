@@ -310,6 +310,7 @@ loli::Expression* loli::Daphnie::CallExpr (std::stack<Expression*>& expressionsS
         }
         current = MoveToNext().Peek();
     }
+    _current--;
     //utils::ThrowHelper::Throw_NotImplemented("loli::Daphnie::CallExpr");
     class IdentifierExpression n (name);
     return  new CallExpression (n, args);
