@@ -56,6 +56,10 @@ bool loli::LambdaExpressionTypeSpec::IsSatisfy (loli::Expression* item) {
     return hashCode == this->hashCode;
 }
 
-bool loli::LambdaExpressionNameSpec::IsSatisfy (loli::LambdaExpression& item) {
-    return item.identifier().value() == this->_name;
+bool loli::LambdaExpressionNameSpec::IsSatisfy (loli::Expression* item) {
+    if (ExpressionSpecFactory::LambdaExpressionTypeSpec()->IsSatisfy(item)) {
+        auto l = dynamic_cast <LambdaExpression*> (item);
+        return l->identifier().value() == this->_name;
+    }
+    return false;
 }

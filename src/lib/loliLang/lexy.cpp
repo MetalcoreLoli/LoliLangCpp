@@ -83,13 +83,10 @@ loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
 
 loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) {
     Expression* out = nullptr;
-    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionTypeSpec().get(), &out)) {
+    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value()).get(), &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
     }
     auto lambda = *(dynamic_cast <LambdaExpression*>(out));
-    if (lambda.identifier().value() != value.idetifier().value()) {
-        utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
-    }
     if (lambda.args().size() > value.args().size()) {
         throw std::runtime_error {
             "There is a missing arg in call of `"+value.idetifier().value()+"`"};
