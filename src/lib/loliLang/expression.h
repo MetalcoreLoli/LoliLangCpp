@@ -130,6 +130,8 @@ namespace loli {
             std::vector<IdentifierExpression> _args{};
 
         public:
+            LambdaExpression (const LambdaExpression &) = default;
+
             GenericLink visit (IVisitor* visitor) override {
                 return visitor->visitLambdaExpression(*this);
             }
@@ -144,7 +146,7 @@ namespace loli {
             [[nodiscard]] Expression*           body () const { return _body; }
 
             LambdaExpression(IdentifierExpression& identifier, Expression* body);
-            LambdaExpression(IdentifierExpression& identifier, std::vector<IdentifierExpression>& args, Expression* body);
+            LambdaExpression(IdentifierExpression& identifier, const std::vector<IdentifierExpression>& args, Expression* body);
     };
 
     class IfExpression : public Expression {

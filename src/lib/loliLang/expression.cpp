@@ -40,7 +40,7 @@ loli::LambdaExpression::LambdaExpression(loli::IdentifierExpression& identifier,
 
 loli::LambdaExpression::LambdaExpression(
         loli::IdentifierExpression& identifier, 
-        std::vector<IdentifierExpression>& args, 
+        const std::vector<IdentifierExpression>& args, 
         loli::Expression* body) {
     _idetifier = identifier;
     _args = args;
