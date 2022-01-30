@@ -58,7 +58,7 @@ namespace loli::utils {
             throw std::runtime_error {methodName + " is not impelented yet."};     
         }
         static void Throw_ThereIsNo (const std::string& value) {
-            throw std::runtime_error {"There is no `" + value + "`"};     
+            throw std::runtime_error {"There is no `" + value + "` word"};     
         }
     };
 
