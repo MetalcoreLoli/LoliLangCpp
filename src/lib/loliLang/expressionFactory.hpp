@@ -20,6 +20,10 @@ namespace loli {
             IdentifierExpression n(name);
             return  new class LambdaExpression(n, body);
         }
+        static LambdaExpression* LambdaRaw(const std::string& name, const std::vector<loli::IdentifierExpression>& args, Expression* body) {
+            IdentifierExpression n(name);
+            return new LambdaExpression(n, args, body);
+        }
 
         static Link<class CallExpression>  CallWithoutArgs(const std::string& idetifier) {
             std::vector<Expression*> args{};
