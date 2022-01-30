@@ -53,6 +53,7 @@ namespace loli {
     };
 
     struct Expression {
+        bool IsLiteral = false;
         virtual GenericLink visit (IVisitor * visitor) = 0;
     };
 
@@ -145,8 +146,8 @@ namespace loli {
             [[nodiscard]] IdentifierExpression& identifier() const { return const_cast<IdentifierExpression&>(_idetifier); }
             [[nodiscard]] Expression*           body () const { return _body; }
 
-            LambdaExpression(IdentifierExpression& identifier, Expression* body);
-            LambdaExpression(IdentifierExpression& identifier, const std::vector<IdentifierExpression>& args, Expression* body);
+            LambdaExpression(const IdentifierExpression& identifier, Expression* body);
+            LambdaExpression(const IdentifierExpression& identifier, const std::vector<IdentifierExpression>& args, Expression* body);
     };
 
     class IfExpression : public Expression {

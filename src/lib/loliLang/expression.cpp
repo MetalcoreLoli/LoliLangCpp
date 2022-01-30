@@ -26,20 +26,22 @@ loli::BinaryExpression::BinaryExpression(const std::string& operand, loli::Expre
 
 loli::NumberExpression::NumberExpression(float value)  {
     _value = value;
+    IsLiteral = true;
 }
+
 float loli::NumberExpression::value() const { return _value; }
 
 loli::IdentifierExpression::IdentifierExpression(const std::string& value) {
     _value = value;
 }
 
-loli::LambdaExpression::LambdaExpression(loli::IdentifierExpression& identifier, loli::Expression* body) {
+loli::LambdaExpression::LambdaExpression(const loli::IdentifierExpression& identifier, loli::Expression* body) {
     _idetifier = identifier;
     _body  = body;
 }
 
 loli::LambdaExpression::LambdaExpression(
-        loli::IdentifierExpression& identifier, 
+        const loli::IdentifierExpression& identifier, 
         const std::vector<IdentifierExpression>& args, 
         loli::Expression* body) {
     _idetifier = identifier;
@@ -49,6 +51,7 @@ loli::LambdaExpression::LambdaExpression(
 }
 loli::StringExpression::StringExpression(const std::string& value)  {
     _value = value;
+    IsLiteral = true;
 }
 
 bool loli::LambdaExpressionTypeSpec::IsSatisfy (loli::Expression* item) {
