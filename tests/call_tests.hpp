@@ -13,7 +13,6 @@ class CallTests : public ::testing::Test {
 };
 
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
-    return;
     auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
 
     //act
@@ -33,7 +32,6 @@ TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
 }
 
 TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
-    return;
     auto codeOfFunc = "add a b => if (a < b) (add (a + b) (a + b)) else a";
     auto call = "add 1 4";
     loli::Daphnie dd{codeOfFunc};
