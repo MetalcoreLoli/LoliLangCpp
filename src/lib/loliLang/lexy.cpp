@@ -5,8 +5,8 @@
 #include "loliLang/utils.h"
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <typeinfo>
-#define LOLI_LOG_STD
 
 #ifdef LOLI_LOG_STD
 #include <iostream>
@@ -116,8 +116,13 @@ loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value)
         if (a->IsLiteral)
             local.PushIntoMainStack(a);
         else {
-            auto result =  (a->body()->visit(&local)).Unwrap<float>();
-            local.PushIntoMainStack (ExpressionFactory::LambdaRaw(a->identifier().value(), new NumberExpression(result)));
+            auto result =  (a->body()->visit(this));
+            if (result.TypeHashCode() == typeid(std::string).hash_code()) {
+                local.PushIntoMainStack (ExpressionFactory::LambdaRaw(a->identifier().value(), new StringExpression(result.Unwrap<std::string>())));
+            } else if (result.TypeHashCode() == typeid(float).hash_code()) {
+                local.PushIntoMainStack (ExpressionFactory::LambdaRaw(
+                            a->identifier().value(), new NumberExpression(result.Unwrap<float>())));
+            } 
         }
     }
 #ifdef LOLI_LOG_STD
