@@ -5,6 +5,8 @@
 #include <string>
 #include <memory>
 #include <string_view>
+#include <typeinfo>
+#include <type_traits>
 #include <vector>
 #include <stack>
 
@@ -32,33 +34,59 @@ namespace loli {
 
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
 
+
+    class ReturnResult {
+        GenericLink _value = nullptr;
+        size_t _hashCode; 
+
+        public:
+            ReturnResult (const GenericLink& value, size_t typeHashCode) 
+                :_value (value), _hashCode(typeHashCode) {}  
+
+            template <typename T>
+            T ForceUnwrap () {
+                return loli::unwrap<void, T> (_value);
+            }
+            
+            template <typename T>
+            T Unwrap () {
+                if (typeid(T).hash_code() == _hashCode) {
+                    return ForceUnwrap<T>();
+                } else {
+                    throw std::runtime_error {"result type is not the " + std::string(typeid(T).name())};
+                }
+            }
+
+            static ReturnResult Empty() { return {nullptr, 0}; };
+    };
+
     struct IVisitor {
-        virtual GenericLink visitBinaryExpression (BinaryExpression& value) = 0;
-        virtual GenericLink visitNumberExpression (NumberExpression& value) = 0;
-        virtual GenericLink visitLambdaExpression (LambdaExpression& value) = 0;
-        virtual GenericLink visitIdentifierExpression (IdentifierExpression& value) = 0;
-        virtual GenericLink visitStringExpression (StringExpression& value) = 0;
-        virtual GenericLink visitIfExpression (IfExpression& value) = 0;
-        virtual GenericLink visitGroupingExpression (GroupingExpression& value) = 0;
-        virtual GenericLink visitBoolExpression (BoolExpression& value) = 0;
-        virtual GenericLink visitUnaryExpression (UnaryExpression& value) = 0;
-        virtual GenericLink visitClassExpression (ClassExpression& value) = 0;
-        virtual GenericLink visitBodyExpression (BodyExpression& value) = 0;
-        virtual GenericLink visitForExpression (ForExpression& value) = 0;
-        virtual GenericLink visitCallExpression (CallExpression& value) = 0;
+        virtual ReturnResult visitBinaryExpression (BinaryExpression& value) = 0;
+        virtual ReturnResult visitNumberExpression (NumberExpression& value) = 0;
+        virtual ReturnResult visitLambdaExpression (LambdaExpression& value) = 0;
+        virtual ReturnResult visitIdentifierExpression (IdentifierExpression& value) = 0;
+        virtual ReturnResult visitStringExpression (StringExpression& value) = 0;
+        virtual ReturnResult visitIfExpression (IfExpression& value) = 0;
+        virtual ReturnResult visitGroupingExpression (GroupingExpression& value) = 0;
+        virtual ReturnResult visitBoolExpression (BoolExpression& value) = 0;
+        virtual ReturnResult visitUnaryExpression (UnaryExpression& value) = 0;
+        virtual ReturnResult visitClassExpression (ClassExpression& value) = 0;
+        virtual ReturnResult visitBodyExpression (BodyExpression& value) = 0;
+        virtual ReturnResult visitForExpression (ForExpression& value) = 0;
+        virtual ReturnResult visitCallExpression (CallExpression& value) = 0;
     };
     
     struct ICaller {
-        virtual GenericLink callLambdaExpression(LambdaExpression& value, std::stack<Expression*>& stackFrame) = 0;
+        virtual ReturnResult callLambdaExpression(LambdaExpression& value, std::stack<Expression*>& stackFrame) = 0;
     };
 
     struct Expression {
         bool IsLiteral = false;
-        virtual GenericLink visit (IVisitor * visitor) = 0;
+        virtual ReturnResult visit (IVisitor * visitor) = 0;
     };
 
     struct CallableExpression {
-        virtual GenericLink call (
+        virtual ReturnResult call (
                 ICaller* caller,
                 std::stack<Expression*>& stackFrame) = 0;
     };
@@ -69,7 +97,7 @@ namespace loli {
         public:
             [[nodiscard]] std::string& value() const { return const_cast<std::string&>(_value); }
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitStringExpression(*this);
             }
             explicit StringExpression (const std::string& value) ;
@@ -80,7 +108,7 @@ namespace loli {
             float _value;
         public:
             [[nodiscard]] float value() const ;
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitNumberExpression(*this);
             }
             explicit NumberExpression (float value) ;
@@ -102,7 +130,7 @@ namespace loli {
             BinaryExpression& left  (Expression* value);
             BinaryExpression& right (Expression* value);
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitBinaryExpression(*this);
             }
 
@@ -114,7 +142,7 @@ namespace loli {
             std::string _value;
 
         public:
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitIdentifierExpression(*this);
             }
 
@@ -133,11 +161,11 @@ namespace loli {
         public:
             LambdaExpression (const LambdaExpression &) = default;
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitLambdaExpression(*this);
             }
             
-            GenericLink call (
+            ReturnResult call (
                     ICaller* caller, std::stack<Expression*>& stackFrame) override {
                 return caller->callLambdaExpression(*this, stackFrame);
             }
@@ -156,7 +184,7 @@ namespace loli {
             Expression* _then; 
             Expression* _else;
         public:
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitIfExpression(*this);
             }
 
@@ -174,7 +202,7 @@ namespace loli {
         public:
             [[nodiscard]] Expression* expression () const { return _expression; }
         
-            loli::GenericLink visit (IVisitor * visitor) override {
+            loli::ReturnResult visit (IVisitor * visitor) override {
                 return visitor->visitGroupingExpression(*this);
             }
 
@@ -187,7 +215,7 @@ namespace loli {
         public:
 
 
-            loli::GenericLink visit (IVisitor * visitor) override {
+            loli::ReturnResult visit (IVisitor * visitor) override {
                 return visitor->visitBoolExpression(*this);
             }
 
@@ -202,7 +230,7 @@ namespace loli {
         
         public:
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitUnaryExpression(*this);
             }
 
@@ -220,7 +248,7 @@ namespace loli {
             loli::Link<BodyExpression> _body;
 
         public: 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitClassExpression(*this);
             }
 
@@ -244,7 +272,7 @@ namespace loli {
         public:
             std::vector<Expression*> lines () const { return _lines; } 
             
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitBodyExpression(*this);
             }
 
@@ -275,7 +303,7 @@ namespace loli {
                     _lastPart((lastPart)), _body(body)
             {}
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitForExpression(*this);
             }
     };
@@ -293,7 +321,7 @@ namespace loli {
 
             }
 
-            GenericLink visit (IVisitor* visitor) override {
+            ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitCallExpression(*this);
             }
     };

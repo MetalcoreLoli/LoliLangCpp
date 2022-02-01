@@ -8,7 +8,7 @@
 
 namespace loli {
     struct DefCaller : public loli::ICaller {
-        GenericLink 
+        ReturnResult
         callLambdaExpression(
                 LambdaExpression& value, 
                 std::stack<Expression*>& stackFrame) override;

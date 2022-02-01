@@ -20,6 +20,16 @@ bool loli::Daphnie::IsClosing(const loli::Token& value) {
             });
 }
 
+bool loli::Daphnie::IsCall (const loli::Token& value) {
+    return IsMatchTo (value.forma(),
+            {
+                loli::Forma::INDENTIFIER,
+                loli::Forma::STRING_LIT,
+                loli::Forma::NUM,
+                loli::Forma::LPAREN,
+             });
+}
+
 bool loli::Daphnie::IsKeyword (const loli::Token& value) {
     return IsMatchTo (value.forma(),
             {
@@ -174,7 +184,7 @@ loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &
     auto expr = new class IdentifierExpression(current.lexeme());
     if (
             !_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::LAMBDA_ARROW) &&
-            IsMatchTo(PeekNext().forma(), {loli::Forma::INDENTIFIER, loli::Forma::NUM, loli::Forma::STRING_LIT})) {
+            IsCall(PeekNext())) {
         return CallExpr(expressionsStack);
     }
     return expr;
@@ -296,16 +306,19 @@ loli::Expression* loli::Daphnie::CallExpr (std::stack<Expression*>& expressionsS
     auto name = Peek().lexeme();
     std::vector<Expression*> args{};
     auto current = MoveToNext().Peek();
-    while (IsMatchTo(current.forma(), {Forma::NUM, Forma::STRING_LIT, Forma::INDENTIFIER})) {
+    while (IsCall(current)) {
         switch (current.forma()) {
             case loli::Forma::NUM: 
-                args.push_back (new loli::NumberExpression(std::stof(current.lexeme())));
+                args.push_back (NumberExpression(expressionsStack));
                 break; 
             case loli::Forma::STRING_LIT: 
-                args.push_back (new loli::StringExpression(current.lexeme()));
+                args.push_back (StringExpression(expressionsStack));
                 break;
             case Forma::INDENTIFIER: 
                 args.push_back (new loli::IdentifierExpression(current.lexeme()));
+                break;
+            case Forma::LPAREN: 
+                args.push_back(GroupingExpression(expressionsStack));
                 break;
         }
         current = MoveToNext().Peek();

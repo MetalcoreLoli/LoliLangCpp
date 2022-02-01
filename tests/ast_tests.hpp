@@ -1,6 +1,7 @@
 #ifndef __LOLI_AST_TESTS__
 #define __LOLI_AST_TESTS__
 
+#include "loliLang/daphnie.h"
 #include "loliLang/expression.h"
 #include <exception>
 #include <stdexcept>
@@ -20,7 +21,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidIfExpression_ReturnsValidASTAsStringVal
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(if 1 0 1)";
     
     //assert
@@ -32,7 +33,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidBinaryExpression_ReturnsValidASTAsStrin
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(+ 2.000000 1.000000)";
     
     //assert
@@ -44,7 +45,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidUnaryExpression_ReturnsValidASTAsString
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(- 12.000000)";
     
     //assert
@@ -56,7 +57,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidIdentifierExpression_ReturnsValidASTAsS
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(define (add a b) (+ b a))";
     
     //assert
@@ -68,7 +69,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidLambdaExpression_ReturnsValidASTAsStrin
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(define (add) (if 1 0 0))";
     
     //assert
@@ -81,7 +82,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidGroupingExpression_ReturnsValidASTAsStr
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(+ 8.000000 7.000000)";
     
     //assert
@@ -93,7 +94,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidLCurlGroupingExpression_ReturnsValidAST
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(+ 8.000000 7.000000)";
     
     //assert
@@ -106,7 +107,7 @@ TEST_F (ASTAsStringTests, Visit_WithValidAddExpresionInsideBodyExpression_Return
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap <void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(with (define (a) (+ 1.000000 1.000000)))");
@@ -118,7 +119,7 @@ TEST_F (ASTAsStringTests, Visit_WithEmptyClassBody_ReturnsValidAST) {
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ (result.c_str(), "(class (name))");
@@ -129,7 +130,7 @@ TEST_F (ASTAsStringTests, Visit_WithTwoLambdaInsideClassBody_ReturnsValidAST) {
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ (result.c_str(), "(class (Loli) (define (age) 16.000000) (define (Age) age))");
@@ -141,7 +142,7 @@ TEST_F (ASTAsStringTests, Visit_WithForValidForExpression_ReturnsValidAST) {
     loli::Daphnie d {_lexy.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(
@@ -154,7 +155,7 @@ TEST_F (ASTAsStringTests, Visit_CallExpressionWithoutArgs_ReturbsValidASTAsStrin
     auto call = loli::ExpressionFactory::CallWithoutArgs("d");
 
     //act 
-    auto result = loli::unwrap<void, std::string>(call->visit(&_ast));
+    auto result = (call->visit(&_ast)).Unwrap<std::string>();
 
     //assert 
     ASSERT_STREQ (result.c_str(), "(call d)");
@@ -167,7 +168,15 @@ TEST_F (ASTAsStringTests, Visit_CallExpressionWithNumberLiteralUndFunc_ReturbsVa
             });
 
     //act 
-    auto result = loli::unwrap<void, std::string>(call->visit(&_ast));
+    auto result = (call->visit(&_ast)).Unwrap<std::string>();
+
+    //assert 
+    ASSERT_STREQ (result.c_str(), "(call add (define (id) 9.000000) 1.000000)");
+}
+TEST_F (ASTAsStringTests, Visit_RecCallExpressionWithNumberLiteralUndFunc_ReturbsValidASTAsString) {
+    auto call = loli::Daphnie{"add a b => if (a < b) add a b else b"}.growTree(); 
+    //act 
+    auto result = (call->visit(&_ast)).Unwrap<std::string>();
 
     //assert 
     ASSERT_STREQ (result.c_str(), "(call add (define (id) 9.000000) 1.000000)");

@@ -41,7 +41,7 @@ TEST_F(ForExpressionTests, ForExpression_WithValidParts_ReturnValidTree) {
     loli::Daphnie d {code};
 
     //act 
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(for (define (i) 0.000000) (< 10.000000 i) (define (i) (+ 1.000000 i)) (with 1.000000))");

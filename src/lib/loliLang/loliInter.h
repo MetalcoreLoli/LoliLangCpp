@@ -18,19 +18,19 @@ namespace loli {
         public:
             
             class ResultOfAnswering {
-                utils::GenericLink _rawResult;
+                ReturnResult _rawResult;
 
                 public:
-                    utils::GenericLink& RawResult () const { 
-                        return const_cast<utils::GenericLink&>(_rawResult); 
+                    ReturnResult& RawResult () const { 
+                        return const_cast<ReturnResult&>(_rawResult); 
                     };
 
                     template<typename TResultAs> 
                     TResultAs As() {
-                        return loli::unwrap<void, TResultAs>(_rawResult);
+                        return (_rawResult).Unwrap<TResultAs>();
                     }
 
-                    explicit ResultOfAnswering (const utils::GenericLink& result)
+                    explicit ResultOfAnswering (const ReturnResult& result)
                         : _rawResult(result) {}
             };
 

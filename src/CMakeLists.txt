@@ -2,6 +2,8 @@ add_library (
     loliLang
 
     lib/loliLang/expressionFactory.hpp
+    lib/loliLang/expressionConverter.h
+    lib/loliLang/expressionConverter.cpp
     lib/loliLang/memory.h
     lib/loliLang/memory.cpp
     lib/loliLang/defCaller.h

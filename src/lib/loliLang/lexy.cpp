@@ -1,51 +1,57 @@
 #include "lexy.h"
 #include "loliLang/expression.h"
+#include "loliLang/expressionConverter.h"
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/utils.h"
 #include <algorithm>
+#include <memory>
 #include <typeinfo>
+#define LOLI_LOG_STD
 
-loli::GenericLink loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
+#ifdef LOLI_LOG_STD
+#include <iostream>
+#include "ast.cpp"
+#endif 
+
+loli::ReturnResult loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
     if (_opsTable.contains(value.operand())) {
-        auto leftValue  = *std::static_pointer_cast<float>(value.left()->visit(this));
-        auto rightValue = *std::static_pointer_cast<float>(value.right()->visit(this));
+        auto leftValue  = (value.left()->visit(this).Unwrap<float>());
+        auto rightValue = (value.right()->visit(this).Unwrap<float>());
         return _opsTable[value.operand()](leftValue, rightValue);
-    } else {
-        throw std::runtime_error {"operator `"+value.operand()+"` is not implemented for type `Number`"};
-    }
-    return nullptr;
+    } 
+    throw std::runtime_error {"operator `"+value.operand()+"` is not implemented for type `Number`"};
 }
 
-loli::GenericLink loli::Lexy::visitNumberExpression (loli::NumberExpression& value) {
-    return std::make_shared<float>(value.value());
+loli::ReturnResult loli::Lexy::visitNumberExpression (loli::NumberExpression& value) {
+    return {loli::newLink<float>(value.value()), typeid(float).hash_code()};
 }
 
-loli::GenericLink loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
+loli::ReturnResult loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitUnaryExpression");
-    return nullptr;
 }
 
-loli::GenericLink loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
-    auto l = loli::newLink<LambdaExpression>(value);
-    _memory->Push(l.get());
+loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
+    ReturnResult l = {loli::newLink<LambdaExpression> (value), typeid(LambdaExpression).hash_code()};
+    _memory.Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
     return l;
 }
 
-loli::GenericLink loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
-    Expression* out = ExpressionFactory::EmptyLambdaExpression(); 
-    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionTypeSpec().get(), &out)) {
+loli::ReturnResult loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
+    Expression* out = nullptr; 
+    auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.value()).get();
+    if (!_memory.TryFind(spec, &out)) {
         throw std::runtime_error {"There is no `"+value.value()+"` identifier"};
     }
     auto func = dynamic_cast<LambdaExpression*>(out);
     return func->body()->visit(this);
 }
 
-loli::GenericLink loli::Lexy::visitStringExpression (loli::StringExpression& value) {
-    return loli::newLink<std::string> (value.value());
+loli::ReturnResult loli::Lexy::visitStringExpression (loli::StringExpression& value) {
+    return {loli::newLink<std::string> (value.value()), typeid(std::string).hash_code()};
 }
 
-loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
-    auto condition = loli::unwrap<void, bool> (value.condition()->visit(this));
+loli::ReturnResult loli::Lexy::visitIfExpression(loli::IfExpression& value) {
+    auto condition = value.condition()->visit(this).Unwrap<bool>();
     if (condition) {
         return value.then()->visit(this);
     } else {
@@ -53,37 +59,38 @@ loli::GenericLink loli::Lexy::visitIfExpression(loli::IfExpression& value) {
     }
 }
 
-loli::GenericLink loli::Lexy::visitGroupingExpression (loli::GroupingExpression& value) {
+loli::ReturnResult loli::Lexy::visitGroupingExpression (loli::GroupingExpression& value) {
     return value.expression()->visit(this);
 }
 
-loli::GenericLink loli::Lexy::visitBoolExpression (loli::BoolExpression& value) {
-    return loli::newLink<bool>(value.value());
+loli::ReturnResult loli::Lexy::visitBoolExpression (loli::BoolExpression& value) {
+    return {loli::newLink<bool>(value.value()), typeid(bool).hash_code()};
 }
 
-loli::GenericLink loli::Lexy::visitForExpression(loli::ForExpression& value) {
+loli::ReturnResult loli::Lexy::visitForExpression(loli::ForExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitForExpression");
-    return nullptr;
+    return {nullptr, 0};
 }
 
-loli::GenericLink loli::Lexy::visitClassExpression (loli::ClassExpression & value) {
+loli::ReturnResult loli::Lexy::visitClassExpression (loli::ClassExpression & value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitClassExpression");
-    return nullptr;
+    return {nullptr, 0};
 }
 
-loli::GenericLink loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
+loli::ReturnResult loli::Lexy::visitBodyExpression (loli::BodyExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitBodyExpression");
-    return nullptr;
+    return {nullptr, 0};
 }
 
 loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
-    _memory->Push(expression);
+    _memory.Push(expression);
     return *this;
 }
 
-loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) {
+loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value) {
     Expression* out = nullptr;
-    if (!_memory->TryFind(ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value()).get(), &out)) {
+    auto nameSpec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value()).get();
+    if (!_memory.TryFind(nameSpec, &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
     }
     auto lambda = *(dynamic_cast <LambdaExpression*>(out));
@@ -95,15 +102,31 @@ loli::GenericLink loli::Lexy::visitCallExpression (loli::CallExpression& value) 
             "There is a extra arg in call of `"+value.idetifier().value()+"` function"};
     }
 
-    std::vector<Expression*> as {};
+    std::vector<LambdaExpression*> as {};
+    Lexy local{};
+    ExpressionConverter con{&local};
+    local.PushIntoMainStack(&lambda);
     for (size_t i = 0; i < lambda.args().size(); i++) {
         auto name = lambda.args()[i].value();
-        auto l = ExpressionFactory::LambdaRaw(name, value.args()[i]);
-        as.push_back(l);
+        auto arg = value.args()[lambda.args().size() - 1 - i];
+        as.push_back(ExpressionFactory::LambdaRaw(name, arg));
     }
-    Lexy local{};
+    std::reverse(as.begin(), as.end());
     for (auto a : as) {
-        local.PushIntoMainStack(a);
+        if (a->IsLiteral)
+            local.PushIntoMainStack(a);
+        else {
+            auto result =  (a->body()->visit(&local)).Unwrap<float>();
+            local.PushIntoMainStack (ExpressionFactory::LambdaRaw(a->identifier().value(), new NumberExpression(result)));
+        }
     }
+#ifdef LOLI_LOG_STD
+    std::cout << "Dump: "<< lambda.identifier().value() << std::endl;
+    loli::ASTAsString ast{};
+    for (auto arg: as) {
+        std::cout << (arg->visit(&ast)).Unwrap<std::string>() << std::endl;
+    }
+    std::cout <<  (lambda.visit(&ast)).Unwrap<std::string>() << std::endl;
+#endif
     return lambda.body()->visit(&local);
 }

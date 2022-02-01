@@ -15,6 +15,7 @@ namespace loli {
         std::vector <Expression*> _mainStack {};
 
         public:
+            void Clean () {_mainStack.clear();} 
             IMemoryOf<Expression*>& Push (Expression* value) override;
             bool TryFind (utils::Spec<Expression*>* spec, Expression** out) override; 
     };

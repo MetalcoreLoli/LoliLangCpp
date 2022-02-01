@@ -48,7 +48,7 @@ TEST_F(ClassExpressionTests, ClassExpression_EmptyClass_ReturnsValidExpressionTr
     loli::Daphnie d{_lex.lineToTokens(code)};
 
     //act
-    std::string result = loli::unwrap<void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(class (Loli))");
@@ -59,7 +59,7 @@ TEST_F (ClassExpressionTests, ClassExpression_ClassWithProperties_ReturnsValidTr
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(class (Loli) (define (Name) \"Haku\") (define (Age) 16.000000))");

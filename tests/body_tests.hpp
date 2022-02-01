@@ -34,7 +34,7 @@ TEST_F (BodyTests, BodyExpression_WithTwoLambdasInside_ReturnsValidTree) {
     loli::Daphnie d{_lex.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert 
     ASSERT_STREQ(
@@ -48,7 +48,7 @@ TEST_F(BodyTests, BodyExpr_AsLambdaExpresionBody_ReturnsValidTree) {
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap <void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ (

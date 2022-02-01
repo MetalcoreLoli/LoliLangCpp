@@ -12,6 +12,42 @@ class CallTests : public ::testing::Test {
         loli::Lexy _lexy{};
 };
 
+TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
+    return;
+    auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
+
+    //act
+    loli::Daphnie{codeOfFunc}.growTree()->visit(&_lexy);
+    auto resultA = 
+         (loli::Daphnie{"id 1 2 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+    auto resultB = 
+         (loli::Daphnie{"id 0 2 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+    auto resultC = 
+         (loli::Daphnie{"id 0 0 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+
+    //assert 
+    ASSERT_EQ(1.0f,resultA);
+    ASSERT_EQ(2.0f,resultB);
+    ASSERT_EQ(3.0f,resultC);
+
+}
+
+TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
+    return;
+    auto codeOfFunc = "add a b => if (a < b) (add (a + b) (a + b)) else a";
+    auto call = "add 1 4";
+    loli::Daphnie dd{codeOfFunc};
+
+    //act
+    dd.growTree()->visit(&_lexy);
+    auto result =  (
+            loli::Daphnie{call}.growTree()->visit(&_lexy)).Unwrap<float>();
+
+    //assert 
+    ASSERT_EQ(5.0f,result);
+
+}
+
 TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult) {
     auto codeOfFunc = "a = 1 + 1";
     auto call = "a";
@@ -20,7 +56,7 @@ TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult
 
     //act
     dd.growTree()->visit(&_lexy);
-    auto result = loli::unwrap <void, float> (d.growTree()->visit(&_lexy));
+    auto result =  (d.growTree()->visit(&_lexy)).Unwrap<float>();
 
     //assert 
     ASSERT_EQ (2.0f, result);
@@ -35,7 +71,7 @@ TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_Ret
     
     //act 
     dd.growTree() -> visit(&_lexy);
-    auto result = loli::unwrap <void, float> (d.growTree() -> visit (&_lexy));
+    auto result =  (d.growTree() -> visit (&_lexy)).Unwrap<float>();
 
     //assert 
     ASSERT_EQ (10.0f, result);
@@ -64,20 +100,6 @@ TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError)
     } catch (const std::runtime_error& ex) {
         ASSERT_STREQ(ex.what(), "There is a missing arg in call of `add` function");
     }
-
-}
-
-TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
-    auto codeOfFunc = "add a b => if (a < b) add b a else 5";
-    auto call = "add 1 2";
-    loli::Daphnie dd{codeOfFunc};
-
-    //act
-    dd.growTree()->visit(&_lexy);
-    auto result = loli::unwrap<void, float> (loli::Daphnie{call}.growTree()->visit(&_lexy));
-
-    //assert 
-    ASSERT_EQ(5.0f,result);
 
 }
 #endif // __LOLI_CALL_TESTS__

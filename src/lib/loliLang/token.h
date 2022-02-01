@@ -1,7 +1,9 @@
 #ifndef TOKEN_H
 #define TOKEN_H
+#include <algorithm>
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace loli {
     enum class Forma {
@@ -123,6 +125,13 @@ namespace loli {
         Token& forma   (Forma value);
 
         [[nodiscard]] std::string asString() const;
+
+        [[nodiscard]] static bool IsLiteral(const Token& token) {
+           std::vector<Forma> literals = {
+               Forma::NUM, Forma::STRING_LIT
+           };
+           return std::find(literals.begin(), literals.end(), token.forma()) != literals.end();
+        }
     };
 };
 #endif

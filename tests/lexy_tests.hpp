@@ -1,6 +1,7 @@
 #ifndef __LEXY_TESTS__
 #define __LEXY_TESTS__
 
+#include "loliLang/expression.h"
 #include <cmath>
 #include <exception>
 #include <stack>
@@ -19,7 +20,7 @@ class LexyTests : public ::testing::Test {
 class MockCaller : public loli::ICaller {
     public:
         MOCK_METHOD(
-                loli::GenericLink, 
+                loli::ReturnResult, 
                 callLambdaExpression, 
                 (loli::LambdaExpression&, std::stack<loli::Expression*>&),
                 (override));
@@ -29,7 +30,7 @@ TEST_F (LexyTests, visitBinaryExpression_WithOneAddOne_ReturnsTwo) {
     loli::Daphnie d{"1 + 1"};
 
     //act 
-    auto result = loli::unwrap <void, float> (d.growTree()->visit(&_lex));
+    auto result =  (d.growTree()->visit(&_lex)).Unwrap<float>();
 
 
     //assert 
@@ -57,7 +58,7 @@ TEST_F (LexyTests, visitIfExpression_WithOneSubOneLtOne_ReturnsTrue) {
     std::string code = "if ((1-1) < 1) true else false;";
 
     //act 
-    auto result = loli::unwrap<void, bool> (loli::Daphnie{code}.growTree()->visit(&_lex));
+    auto result =  (loli::Daphnie{code}.growTree()->visit(&_lex)).Unwrap<bool>();
 
     //assert
     ASSERT_TRUE(result);
@@ -72,13 +73,13 @@ TEST_F (LexyTests, visitLambdaExpression_WithValidOnePlusOne_ReturnsTwo) {
     EXPECT_CALL(caller,
                 callLambdaExpression(testing::_, testing::_))
             .Times(1)
-            .WillOnce(Return(loli::newLink<float>(2.0f)));
+            .WillOnce(Return(loli::ReturnResult{loli::newLink<float>(2.0f), typeid(float).hash_code()}));
 
     //act
     auto func =
-        loli::unwrap<void, loli::LambdaExpression>(loli::Daphnie{code}.growTree()->visit(&_lex));
+        (loli::Daphnie{code}.growTree()->visit(&_lex)).Unwrap<loli::LambdaExpression>();
 
-    auto result = loli::unwrap<void, float>(func.call(&caller, _emptyStack));
+    auto result = (func.call(&caller, _emptyStack)).Unwrap<float>();
 
     //assert
     ASSERT_EQ(2.0f, result);

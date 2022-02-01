@@ -28,7 +28,7 @@ TEST_F(DaphnieTests, BinaryExpression_OnePlusSevenMulNine_ReturnsValidSting) {
     loli::Daphnie d {_lex.lineToTokens(code)};
     
     // act
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     // assert
     ASSERT_STREQ(result.c_str(), "(+ (* 9.000000 7.000000) 1.000000)");
@@ -39,7 +39,7 @@ TEST_F(DaphnieTests, UnaryExpression_MinusOne_ReturnsValidBinaryTree) {
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(- 1.000000)");
@@ -50,7 +50,7 @@ TEST_F(DaphnieTests, UnaryExpression_NegativeOneMinusFourInsideGrouping_ReturnsV
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(- 4.000000 (- 1.000000))");
@@ -61,7 +61,7 @@ TEST_F (DaphnieTests, GroupingExpression_WithTwoBinaryExpressionInside_ReturnsVa
     auto tokens = _lex.lineToTokens (code);
     loli::Daphnie d{tokens};
 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect ="(+ (* 1.000000 7.000000) 1.000000)"; 
 
     EXPECT_STREQ(result.c_str(), expect.c_str());
@@ -108,7 +108,7 @@ TEST_F(DaphnieTests, UnaryExpression_NegativeOneMinusFourInsideLCurlGrouping_Ret
     loli::Daphnie d {_lex.lineToTokens(code)};
 
     //act
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ(result.c_str(), "(- 4.000000 (- 1.000000))");
@@ -119,7 +119,7 @@ TEST_F (DaphnieTests, IfExpression_WithMissingRparen_ThrowsRuntimeError) {
     auto tokens = _lex.lineToTokens (code);
     loli::Daphnie d{tokens};
 
-    EXPECT_ANY_THROW(d.growTree()->visit(&_ast));
+    EXPECT_ANY_THROW(d.growTree()->visit(&_ast).Unwrap<std::string>());
 }
 
 TEST_F (DaphnieTests, IfExpression_WithoutCondition_ThrowsLogicError) {
@@ -152,7 +152,7 @@ TEST_F (DaphnieTests, GroupingExpression_WithIfStatment_ReturnsValidString) {
     auto tokens = _lex.lineToTokens (code);
     loli::Daphnie d{tokens};
 
-    std::string result = loli::unwrap<void, std::string>(d.growTree()->visit(&_ast));
+    std::string result = (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     std::string expect = "(if 1 1 (- (- 1.000000) 4.000000))";
 
     EXPECT_STREQ(result.c_str(), expect.c_str());
@@ -163,7 +163,7 @@ TEST_F (DaphnieTests, Daphnie_WithValidCodeStringPassedThroughtTheConstructor_Tr
     loli::Daphnie d{"class name;"};
 
     //act 
-    std::string result = loli::unwrap <void, std::string> (d.growTree()->visit(&_ast));
+    std::string result =  (d.growTree()->visit(&_ast)).Unwrap<std::string>();
     
     //assert 
     ASSERT_STREQ (result.c_str(), "(class (name))");
@@ -173,7 +173,7 @@ TEST_F(DaphnieTests, CallExpr_WithValiCallExpression_ReturnsVaildTree) {
     loli::Daphnie d{"add d 1"};
     
     //act
-    auto result = loli::unwrap<void, std::string> (d.growTree()-> visit(&_ast));
+    auto result =  (d.growTree()-> visit(&_ast)).Unwrap<std::string>();
 
     //assert
     ASSERT_STREQ (result.c_str(), "(call add d 1.000000)");

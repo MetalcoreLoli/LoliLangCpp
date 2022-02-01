@@ -5,19 +5,19 @@
 
 namespace loli {
     struct ExpressionConverter: IVisitor {
-        GenericLink visitBinaryExpression (BinaryExpression& value) override;
-        GenericLink visitNumberExpression (NumberExpression& value) override;
-        GenericLink visitLambdaExpression (LambdaExpression& value) override;
-        GenericLink visitIdentifierExpression (IdentifierExpression& value) override;
-        GenericLink visitStringExpression (StringExpression& value) override;
-        GenericLink visitIfExpression (IfExpression& value) override;
-        GenericLink visitGroupingExpression (GroupingExpression& value) override;
-        GenericLink visitBoolExpression (BoolExpression& value) override;
-        GenericLink visitUnaryExpression (UnaryExpression& value) override;
-        GenericLink visitClassExpression (ClassExpression& value) override;
-        GenericLink visitBodyExpression (BodyExpression& value) override;
-        GenericLink visitForExpression (ForExpression& value) override;
-        GenericLink visitCallExpression (CallExpression& value) override;
+        ReturnResult visitBinaryExpression (BinaryExpression& value) override;
+        ReturnResult visitNumberExpression (NumberExpression& value) override;
+        ReturnResult visitLambdaExpression (LambdaExpression& value) override;
+        ReturnResult visitIdentifierExpression (IdentifierExpression& value) override;
+        ReturnResult visitStringExpression (StringExpression& value) override;
+        ReturnResult visitIfExpression (IfExpression& value) override;
+        ReturnResult visitGroupingExpression (GroupingExpression& value) override;
+        ReturnResult visitBoolExpression (BoolExpression& value) override;
+        ReturnResult visitUnaryExpression (UnaryExpression& value) override;
+        ReturnResult visitClassExpression (ClassExpression& value) override;
+        ReturnResult visitBodyExpression (BodyExpression& value) override;
+        ReturnResult visitForExpression (ForExpression& value) override;
+        ReturnResult visitCallExpression (CallExpression& value) override;
         
         explicit ExpressionConverter (IVisitor* evaluator) : _evaluator (evaluator){}
         private:
