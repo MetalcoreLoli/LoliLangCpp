@@ -2,6 +2,7 @@
 #define __EXPRESSION_H__
 
 #include <any>
+#include <cstddef>
 #include <string>
 #include <memory>
 #include <string_view>
@@ -56,6 +57,8 @@ namespace loli {
                     throw std::runtime_error {"result type is not the " + std::string(typeid(T).name())};
                 }
             }
+
+            size_t TypeHashCode() const {return _hashCode;}
 
             static ReturnResult Empty() { return {nullptr, 0}; };
     };
