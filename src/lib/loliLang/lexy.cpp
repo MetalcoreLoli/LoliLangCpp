@@ -4,6 +4,7 @@
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/utils.h"
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <typeinfo>
@@ -111,18 +112,12 @@ loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value)
         auto arg = value.args()[lambda.args().size() - 1 - i];
         as.push_back(ExpressionFactory::LambdaRaw(name, arg));
     }
-    std::reverse(as.begin(), as.end());
     for (auto a : as) {
         if (a->IsLiteral)
             local.PushIntoMainStack(a);
         else {
             auto result =  (a->body()->visit(this));
-            if (result.TypeHashCode() == typeid(std::string).hash_code()) {
-                local.PushIntoMainStack (ExpressionFactory::LambdaRaw(a->identifier().value(), new StringExpression(result.Unwrap<std::string>())));
-            } else if (result.TypeHashCode() == typeid(float).hash_code()) {
-                local.PushIntoMainStack (ExpressionFactory::LambdaRaw(
-                            a->identifier().value(), new NumberExpression(result.Unwrap<float>())));
-            } 
+            local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));
         }
     }
 #ifdef LOLI_LOG_STD

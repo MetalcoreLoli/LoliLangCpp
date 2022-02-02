@@ -3,6 +3,12 @@
 
 #include "expression.h"
 #include "utils.h"
+#include <any>
+#include <functional>
+#include <map>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
 
 namespace loli {
     using namespace utils;
@@ -46,6 +52,19 @@ namespace loli {
 
         static StringExpression* StringRaw(const std::string& value) {
             return new StringExpression(value);
+        }
+
+        static Expression* FromReturnResult (ReturnResult result) {
+            static std::map<size_t, std::function<Expression*(ReturnResult)>> mm = {
+                {typeid(float).hash_code(), [](ReturnResult a){return NumberRaw(a.Unwrap<float>());}},
+                {typeid(std::string).hash_code(), [](ReturnResult a){return StringRaw(a.Unwrap<std::string>());}},
+            };
+            size_t hash_code =  result.TypeHashCode();
+            if (mm.contains(hash_code)) {
+                return mm[hash_code](result);
+            } else {
+                throw std::runtime_error{"I don't know how to create expression from type with hash code: `"+ std::string(typeid(result.TypeHashCode()).name())+"`"};
+            }
         }
     };
 }
