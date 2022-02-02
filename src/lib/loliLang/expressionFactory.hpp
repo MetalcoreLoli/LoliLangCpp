@@ -40,6 +40,13 @@ namespace loli {
             return newLink<class NumberExpression>(value);
         }
 
+        static NumberExpression* NumberRaw(float value) {
+            return new NumberExpression (value);
+        }
+
+        static StringExpression* StringRaw(const std::string& value) {
+            return new StringExpression(value);
+        }
     };
 }
 #endif //__LOLI_EXPRESSION_FACTORY_H__
