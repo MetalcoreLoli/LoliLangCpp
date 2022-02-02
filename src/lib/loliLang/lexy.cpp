@@ -1,4 +1,5 @@
 #include "lexy.h"
+#include "loliLang/call.h"
 #include "loliLang/expression.h"
 #include "loliLang/expressionConverter.h"
 #include "loliLang/expressionFactory.hpp"
@@ -29,6 +30,7 @@ loli::ReturnResult loli::Lexy::visitNumberExpression (loli::NumberExpression& va
 
 loli::ReturnResult loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value) {
     ThrowHelper::Throw_NotImplemented("loli::Lexy::visitUnaryExpression");
+    return ReturnResult::Empty();
 }
 
 loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
@@ -89,44 +91,5 @@ loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
 }
 
 loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value) {
-    Expression* out = nullptr;
-    auto nameSpec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value()).get();
-    if (!_memory.TryFind(nameSpec, &out)) {
-        utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
-    }
-    auto lambda = *(dynamic_cast <LambdaExpression*>(out));
-    if (lambda.args().size() > value.args().size()) {
-        throw std::runtime_error {
-            "There is a missing arg in call of `"+value.idetifier().value()+"` function"};
-    } else if (lambda.args().size() < value.args().size()) {
-        throw std::runtime_error {
-            "There is a extra arg in call of `"+value.idetifier().value()+"` function"};
-    }
-
-    std::vector<LambdaExpression*> as {};
-    Lexy local{};
-    ExpressionConverter con{&local};
-    local.PushIntoMainStack(&lambda);
-    for (size_t i = 0; i < lambda.args().size(); i++) {
-        auto name = lambda.args()[i].value();
-        auto arg = value.args()[lambda.args().size() - 1 - i];
-        as.push_back(ExpressionFactory::LambdaRaw(name, arg));
-    }
-    for (auto a : as) {
-        if (a->IsLiteral)
-            local.PushIntoMainStack(a);
-        else {
-            auto result =  (a->body()->visit(this));
-            local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));
-        }
-    }
-#ifdef LOLI_LOG_STD
-    std::cout << "Dump: "<< lambda.identifier().value() << std::endl;
-    loli::ASTAsString ast{};
-    for (auto arg: as) {
-        std::cout << (arg->visit(&ast)).Unwrap<std::string>() << std::endl;
-    }
-    std::cout <<  (lambda.visit(&ast)).Unwrap<std::string>() << std::endl;
-#endif
-    return lambda.body()->visit(&local);
+    return Call::Create().Validate(value, _memory).Map().FillLocalStackFrame(*this).Execute();  
 }
