@@ -12,6 +12,20 @@ class CallTests : public ::testing::Test {
         loli::Lexy _lexy{};
 };
 
+TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityFive) {
+    auto fibHelper  = "fibHelper a b n => if (0 < n) fibHelper (a + b) a (1 - n) else a";
+    auto fib        = "fib n => fibHelper n";
+
+    //act 
+    loli::Daphnie {fibHelper}.growTree()->visit(&_lexy);
+    loli::Daphnie {fib}.growTree()->visit(&_lexy);
+
+    auto result = loli::Daphnie {"fib 10"}.growTree()->visit(&_lexy).Unwrap<float>();
+
+    //assert 
+    ASSERT_EQ (55.0f, result);
+}
+
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
     auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
 
