@@ -12,8 +12,9 @@ int main () {
     loli::ASTAsString ast;
     loli::LoliInter inter {};
 
-    auto a = inter.AnswerOn("fib a b n => if (0 < n) fib (a + b) a (1 - n) else a");
-    auto helloStr = inter.AnswerOn("fib 0 1 10").As<float>();
+    auto fibHelper  = inter.AnswerOn("fibHelper a b n => if (0 < n) fibHelper (a + b) a (1 - n) else a");
+    auto fib        = inter.AnswerOn("fib n => fibHelper 0 1 n");
+    auto helloStr = inter.AnswerOn("fib 10").As<float>();
 
     std::cout << helloStr << std::endl;
 }
