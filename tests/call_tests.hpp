@@ -24,7 +24,9 @@ TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityF
 
     //assert 
     ASSERT_EQ (55.0f, result);
+    loli::mem::Environment::Instance().Clear();
 }
+
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
     auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
 
@@ -41,8 +43,11 @@ TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
     ASSERT_EQ(1.0f,resultA);
     ASSERT_EQ(2.0f,resultB);
     ASSERT_EQ(3.0f,resultC);
-
+    
+    loli::mem::Environment::Instance().Clear();
 }
+
+
 TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
     auto codeOfFunc = "id a => a + 9";
     auto call = "id 1";
@@ -55,9 +60,8 @@ TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_Ret
 
     //assert 
     ASSERT_EQ (10.0f, result);
+    loli::mem::Environment::Instance().Clear();
 }
-
-
 TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult) {
     auto codeOfFunc = "a = 1 + 1";
     auto call = "a";
@@ -70,7 +74,7 @@ TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult
 
     //assert 
     ASSERT_EQ (2.0f, result);
-
+    loli::mem::Environment::Instance().Clear();
 }
 
 
@@ -86,7 +90,7 @@ TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
 
     //assert 
     ASSERT_EQ(5.0f,result);
-
+    loli::mem::Environment::Instance().Clear();
 }
 
 TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError) {
@@ -112,6 +116,6 @@ TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError)
     } catch (const std::runtime_error& ex) {
         ASSERT_STREQ(ex.what(), "There is a missing arg in call of `add` function");
     }
-
+    loli::mem::Environment::Instance().Clear();
 }
 #endif // __LOLI_CALL_TESTS__
