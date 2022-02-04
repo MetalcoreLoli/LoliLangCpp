@@ -21,11 +21,11 @@ namespace loli {
     };
 
     namespace mem {
-        using SpecFilter = loli::Link<utils::Spec<Expression*>>;
+        using ExpressionFilter = loli::Link<utils::Spec<Expression*>>;
         struct IEnvironment {
             virtual IEnvironment& Push (Expression*) =0;
             virtual IEnvironment& Clear() =0;
-            virtual bool TryFind (const SpecFilter spec, Expression **out) = 0;
+            virtual bool TryFind (const ExpressionFilter spec, Expression **out) = 0;
         };
 
         class Environment : public IEnvironment {
@@ -40,7 +40,7 @@ namespace loli {
                     return *this;
                 }
 
-                bool TryFind (const SpecFilter spec, Expression** out) {
+                bool TryFind (const ExpressionFilter spec, Expression** out) {
                    for (auto expr : _mainStack) {
                        if (spec->IsSatisfy(expr)) {
                            *out = expr;
