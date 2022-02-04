@@ -33,12 +33,8 @@ loli::Call& loli::Call::Map () {
 
 loli::Call& loli::Call::FillLocalStackFrame(loli::Lexy& global) {
     for (auto a : _mappedArgs) {
-        if (a->IsLiteral)
-            _local.PushIntoMainStack(a);
-        else {
-            auto result =  (a->body()->visit(&global));
-            _local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));
-        }
+        auto result =  (a->body()->visit(&global));
+        _local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));
     }
     return *this;
 }
