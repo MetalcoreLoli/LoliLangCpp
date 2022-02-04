@@ -5,16 +5,6 @@
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/memory.h"
 #include "loliLang/utils.h"
-#include <algorithm>
-#include <cstddef>
-#include <memory>
-#include <string>
-#include <typeinfo>
-
-#ifdef LOLI_LOG_STD
-#include <iostream>
-#include "ast.cpp"
-#endif 
 
 loli::ReturnResult loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
     if (_opsTable.contains(value.operand())) {
