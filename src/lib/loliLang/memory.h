@@ -19,5 +19,40 @@ namespace loli {
             IMemoryOf<Expression*>& Push (Expression* value) override;
             bool TryFind (utils::Spec<Expression*>* spec, Expression** out) override; 
     };
+
+    namespace mem {
+        class Environment {
+            using SpecFilter = loli::Link<utils::Spec<Expression*>>;
+            std::vector<Expression*> _mainStack{};
+
+
+            Environment() {}
+            public:
+                Environment(Environment&) = delete;
+                void Push(Expression* value) {
+                    _mainStack.push_back(value);
+                }
+
+                bool TryFind (const SpecFilter spec, Expression** out) {
+                   for (auto expr : _mainStack) {
+                       if (spec->IsSatisfy(expr)) {
+                           *out = expr;
+                           return true;
+                       }
+                   } 
+                   return false;
+                }
+
+                void Clear () {
+                    _mainStack.clear();
+                }
+
+                static Environment& Instance() {
+                    static Environment _ptr; 
+                    return _ptr;
+                }
+        };
+
+    };
 }
 #endif // __LOLI_MEMORY__

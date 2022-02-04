@@ -3,6 +3,7 @@
 #include "loliLang/expression.h"
 #include "loliLang/expressionConverter.h"
 #include "loliLang/expressionFactory.hpp"
+#include "loliLang/memory.h"
 #include "loliLang/utils.h"
 #include <algorithm>
 #include <cstddef>
@@ -35,14 +36,14 @@ loli::ReturnResult loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value
 
 loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
     ReturnResult l = {loli::newLink<LambdaExpression> (value), typeid(LambdaExpression).hash_code()};
-    _memory.Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
+    mem::Environment::Instance().Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
     return l;
 }
 
 loli::ReturnResult loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
     Expression* out = nullptr; 
-    auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.value()).get();
-    if (!_memory.TryFind(spec, &out)) {
+    auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.value());
+    if (!mem::Environment::Instance().TryFind(spec, &out) && !_memory.TryFind(spec.get(), &out)) {
         throw std::runtime_error {"There is no `"+value.value()+"` identifier"};
     }
     auto func = dynamic_cast<LambdaExpression*>(out);
