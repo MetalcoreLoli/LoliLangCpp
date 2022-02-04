@@ -14,7 +14,7 @@ namespace loli {
         loli::LambdaExpression _lambda = *ExpressionFactory::LambdaRaw("", nullptr);
         public:
             Call() {}
-            Call& Validate (const loli::CallExpression& value, loli::MemoryTableOfExpressions& memory);
+            Call& Validate (const loli::CallExpression& value);
             Call& Map ();
             Call& FillLocalStackFrame (loli::Lexy& global);
             loli::ReturnResult Execute();

@@ -2,7 +2,7 @@
 #include "loliLang/memory.h"
 #include <string>
 
-loli::Call& loli::Call::Validate (const loli::CallExpression& value, loli::MemoryTableOfExpressions& memory) {
+loli::Call& loli::Call::Validate (const loli::CallExpression& value) {
     Expression* out = nullptr;
     auto nameSpec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value());
     if (!mem::Environment::Instance().TryFind(nameSpec, &out)) {

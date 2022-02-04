@@ -96,5 +96,5 @@ loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
 }
 
 loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value) {
-    return Call::Create().Validate(value, _memory).Map().FillLocalStackFrame(*this).Execute();  
+    return Call::Create().Validate(value).Map().FillLocalStackFrame(*this).Execute();  
 }
