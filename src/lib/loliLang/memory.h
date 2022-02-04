@@ -21,16 +21,23 @@ namespace loli {
     };
 
     namespace mem {
-        class Environment {
-            using SpecFilter = loli::Link<utils::Spec<Expression*>>;
-            std::vector<Expression*> _mainStack{};
+        using SpecFilter = loli::Link<utils::Spec<Expression*>>;
+        struct IEnvironment {
+            virtual IEnvironment& Push (Expression*) =0;
+            virtual IEnvironment& Clear() =0;
+            virtual bool TryFind (const SpecFilter spec, Expression **out) = 0;
+        };
 
+        class Environment : public IEnvironment {
+            std::vector<Expression*> _mainStack{};
 
             Environment() {}
             public:
                 Environment(Environment&) = delete;
-                void Push(Expression* value) {
+
+                IEnvironment& Push(Expression* value) {
                     _mainStack.push_back(value);
+                    return *this;
                 }
 
                 bool TryFind (const SpecFilter spec, Expression** out) {
@@ -43,8 +50,9 @@ namespace loli {
                    return false;
                 }
 
-                void Clear () {
+                IEnvironment& Clear () {
                     _mainStack.clear();
+                    return *this;
                 }
 
                 static Environment& Instance() {
