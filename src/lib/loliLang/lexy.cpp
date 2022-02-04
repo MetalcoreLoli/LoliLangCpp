@@ -36,6 +36,10 @@ loli::ReturnResult loli::Lexy::visitUnaryExpression(loli::UnaryExpression& value
 
 loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& value) {
     ReturnResult l = {loli::newLink<LambdaExpression> (value), typeid(LambdaExpression).hash_code()};
+    auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.identifier().value());
+    if (mem::Environment::Instance().TryFind(spec, nullptr)) {
+        throw std::runtime_error {"There is another identifier with name `"+value.identifier().value()+"`"};
+    }
     mem::Environment::Instance().Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
     return l;
 }
