@@ -173,12 +173,4 @@ TEST_F (ASTAsStringTests, Visit_CallExpressionWithNumberLiteralUndFunc_ReturbsVa
     //assert 
     ASSERT_STREQ (result.c_str(), "(call add (define (id) 9.000000) 1.000000)");
 }
-TEST_F (ASTAsStringTests, Visit_RecCallExpressionWithNumberLiteralUndFunc_ReturbsValidASTAsString) {
-    auto call = loli::Daphnie{"add a b => if (a < b) add a b else b"}.growTree(); 
-    //act 
-    auto result = (call->visit(&_ast)).Unwrap<std::string>();
-
-    //assert 
-    ASSERT_STREQ (result.c_str(), "(call add (define (id) 9.000000) 1.000000)");
-}
 #endif

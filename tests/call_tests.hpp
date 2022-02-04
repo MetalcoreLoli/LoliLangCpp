@@ -14,7 +14,7 @@ class CallTests : public ::testing::Test {
 
 TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityFive) {
     auto fibHelper  = "fibHelper a b n => if (0 < n) fibHelper (a + b) a (1 - n) else a";
-    auto fib        = "fib n => fibHelper n";
+    auto fib        = "fib n => fibHelper 0 1 n";
 
     //act 
     loli::Daphnie {fibHelper}.growTree()->visit(&_lexy);
@@ -25,7 +25,6 @@ TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityF
     //assert 
     ASSERT_EQ (55.0f, result);
 }
-
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
     auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
 
@@ -44,21 +43,20 @@ TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
     ASSERT_EQ(3.0f,resultC);
 
 }
-
-TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
-    auto codeOfFunc = "add a b => if (a < b) (add (a + b) (a + b)) else a";
-    auto call = "add 1 4";
+TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
+    auto codeOfFunc = "id a => a + 9";
+    auto call = "id 1";
+    loli::Daphnie d{call};
     loli::Daphnie dd{codeOfFunc};
-
-    //act
-    dd.growTree()->visit(&_lexy);
-    auto result =  (
-            loli::Daphnie{call}.growTree()->visit(&_lexy)).Unwrap<float>();
+    
+    //act 
+    dd.growTree() -> visit(&_lexy);
+    auto result =  (d.growTree() -> visit (&_lexy)).Unwrap<float>();
 
     //assert 
-    ASSERT_EQ(5.0f,result);
-
+    ASSERT_EQ (10.0f, result);
 }
+
 
 TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult) {
     auto codeOfFunc = "a = 1 + 1";
@@ -75,18 +73,20 @@ TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult
 
 }
 
-TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
-    auto codeOfFunc = "id a => a + 9";
-    auto call = "id 1";
-    loli::Daphnie d{call};
+
+TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
+    auto codeOfFunc = "add a b => if (a < b) (add (a + b) (a + b)) else a";
+    auto call = "add 1 4";
     loli::Daphnie dd{codeOfFunc};
-    
-    //act 
-    dd.growTree() -> visit(&_lexy);
-    auto result =  (d.growTree() -> visit (&_lexy)).Unwrap<float>();
+
+    //act
+    dd.growTree()->visit(&_lexy);
+    auto result =  (
+            loli::Daphnie{call}.growTree()->visit(&_lexy)).Unwrap<float>();
 
     //assert 
-    ASSERT_EQ (10.0f, result);
+    ASSERT_EQ(5.0f,result);
+
 }
 
 TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError) {
