@@ -114,7 +114,7 @@ namespace loli {
             ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitNumberExpression(*this);
             }
-            explicit NumberExpression (float value) ;
+            NumberExpression (float value) ;
     };
 
     class BinaryExpression : public Expression {
@@ -223,7 +223,7 @@ namespace loli {
             }
 
             [[nodiscard]] bool value () const { return _value; }
-            explicit BoolExpression (bool value) : _value(value) {}
+            BoolExpression (bool value) : _value(value) {}
     };
 
     class UnaryExpression : public Expression {
