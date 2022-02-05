@@ -51,8 +51,8 @@ namespace loli {
 
         template<typename T, typename U> 
             requires DerivedFromExpression <T> && DerivedFromExpression <U>
-        static Link<BinaryExpression> Binary (const std::string& op, T left, U right) {
-            return newLink<BinaryExpression>(op, left, right);
+        static BinaryExpression BinaryValue (const std::string& op, T left, U right) {
+            return BinaryExpression(op, &left, &right);
         }
 
         static NumberExpression* NumberRaw(float value) {
