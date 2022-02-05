@@ -12,6 +12,9 @@
 
 namespace loli {
     using namespace utils;
+    template<typename T>
+    concept DerivedFromExpression = std::is_base_of_v<Expression, T>;
+
     struct ExpressionFactory {
         static LambdaExpression* EmptyLambdaExpression () {
             IdentifierExpression empty("EMPTY");
@@ -44,6 +47,12 @@ namespace loli {
 
         static Link<class NumberExpression> Number(float value) {
             return newLink<class NumberExpression>(value);
+        }
+
+        template<typename T, typename U> 
+            requires DerivedFromExpression <T> && DerivedFromExpression <U>
+        static Link<BinaryExpression> Binary (const std::string& op, T left, U right) {
+            return newLink<BinaryExpression>(op, left, right);
         }
 
         static NumberExpression* NumberRaw(float value) {
