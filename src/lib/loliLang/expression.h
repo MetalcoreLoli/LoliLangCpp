@@ -114,7 +114,7 @@ namespace loli {
             ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitNumberExpression(*this);
             }
-            NumberExpression (float value) ;
+            NumberExpression(float value);
     };
 
     class BinaryExpression : public Expression {
