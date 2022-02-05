@@ -1,6 +1,8 @@
 add_library (
     loliLang
 
+    lib/loliLang/types.h
+    lib/loliLang/types.cpp
     lib/loliLang/call.h
     lib/loliLang/call.cpp
     lib/loliLang/expressionFactory.hpp
