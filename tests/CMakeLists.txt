@@ -1,6 +1,7 @@
 add_executable (
     unit-tests 
 
+    typechecking_tests.hpp
     call_tests.hpp
     lexy_tests.hpp
     loli_tests.hpp

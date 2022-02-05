@@ -12,6 +12,7 @@
 #include "loli_tests.hpp"
 #include "lexy_tests.hpp"
 #include "call_tests.hpp"
+#include "typechecking_tests.hpp"
 
 class DaphnieTests : public ::testing::Test {
     protected:
