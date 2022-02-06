@@ -27,8 +27,13 @@ loli::ReturnResult loli::TypeChecker::visitStringExpression (StringExpression& v
     return {utils::newLink<StringType>(), typeid(StringType).hash_code()};
 } 
 loli::ReturnResult loli::TypeChecker::visitIfExpression (IfExpression& value) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitIfExpression");
-    return ReturnResult::Empty();
+    auto thn = value.then()->visit(this);
+    auto els = value.els()->visit(this);
+    
+    if (thn.TypeHashCode() != els.TypeHashCode()) {
+        throw std::runtime_error {"type of left value is not the same as type of right value"};
+    }
+    return thn;
 } 
 loli::ReturnResult loli::TypeChecker::visitGroupingExpression (GroupingExpression& value) {
     return value.expression()->visit(this);

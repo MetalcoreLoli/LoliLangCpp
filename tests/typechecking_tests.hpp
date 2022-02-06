@@ -89,4 +89,14 @@ TEST_F(TypecheckingTests, BinaryExpression_WithWrongTypes_ThrowsRuntimeError) {
     }
 }
 
+TEST_F (TypecheckingTests, IfExpression_With2Floats_ReturnsFloatType) {
+    auto num = loli::IfExpression(new loli::BoolExpression(true), new loli::NumberExpression(0), new loli::NumberExpression(0));
+    auto typeChecker = loli::TypeChecker();
+
+    //act 
+    auto type = num.visit(&typeChecker); 
+
+    //assert 
+    ASSERT_EQ(typeid(loli::FloatType).hash_code(), type.TypeHashCode());
+}
 #endif //__TYPECHECKING_TESTS__
