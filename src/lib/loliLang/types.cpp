@@ -27,6 +27,11 @@ loli::ReturnResult loli::TypeChecker::visitStringExpression (StringExpression& v
     return {utils::newLink<StringType>(), typeid(StringType).hash_code()};
 } 
 loli::ReturnResult loli::TypeChecker::visitIfExpression (IfExpression& value) {
+    auto condition = value.condition()->visit(this);
+    if (condition.TypeHashCode() != typeid(BoolType).hash_code()) {
+        throw std::runtime_error {"There should be boolen expression inside of a condition block"};
+    }
+
     auto thn = value.then()->visit(this);
     auto els = value.els()->visit(this);
     

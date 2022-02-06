@@ -99,4 +99,20 @@ TEST_F (TypecheckingTests, IfExpression_With2Floats_ReturnsFloatType) {
     //assert 
     ASSERT_EQ(typeid(loli::FloatType).hash_code(), type.TypeHashCode());
 }
+
+TEST_F (TypecheckingTests, IfExpression_WithWrongTypeCondition_ThrowsRuntimeError) {
+    auto num = loli::IfExpression(new loli::BinaryExpression("+",  new loli::NumberExpression(0), new loli::NumberExpression(0)), new loli::NumberExpression(0), new loli::NumberExpression(0));
+    auto typeChecker = loli::TypeChecker();
+
+    //act 
+    auto type = [](loli::IfExpression n, loli::TypeChecker typeChecker) {n.visit(&typeChecker);}; 
+
+    //assert 
+    ASSERT_THROW(type(num, typeChecker), std::runtime_error);
+    try {
+        type(num, typeChecker);
+    } catch (const std::runtime_error& ex) {
+        ASSERT_STREQ(ex.what(), "There should be boolen expression inside of a condition block");
+    }
+}
 #endif //__TYPECHECKING_TESTS__
