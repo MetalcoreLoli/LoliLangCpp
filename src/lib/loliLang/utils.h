@@ -60,6 +60,9 @@ namespace loli::utils {
         static void Throw_ThereIsNo (const std::string& value) {
             throw std::runtime_error {"There is no `" + value + "` word"};     
         }
+        static void Throw_OperationIsNotImplementedForType (const std::string& op, const std::string typeName) {
+            throw std::runtime_error {"Operataion is not impelented `" + op+ "` for type `"+typeName+"`"};     
+        }
     };
 
 
