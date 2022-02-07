@@ -6,17 +6,42 @@
 #include "loliLang/expression.h"
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/lexy.h"
+#include "loliLang/memory.h"
 #include "loliLang/types.h"
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-function-mocker.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gtest/gtest_pred_impl.h>
 #include <stdexcept>
 #include <string>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <loliLang/common.h>
 
+/*
+ * 
+            virtual IEnvironment& Push (Expression*) =0;
+            virtual IEnvironment& Clear() =0;
+            virtual bool TryFind (const ExpressionFilter spec, Expression **out) = 0;
+ *
+ * */
+class MockEnvironment : public loli::mem::IEnvironment {
+    public:
+    MOCK_METHOD(IEnvironment&, Push, (loli::Expression*), (override));
+    MOCK_METHOD(IEnvironment&, Clear, (), (override));
+    MOCK_METHOD(bool, TryFind, (const loli::mem::ExpressionFilter spec, loli::Expression **out), (override));
+};
+
 class TypecheckingTests : public ::testing::Test{
     protected:
+        size_t _floatTypeHashCode = typeid(loli::FloatType).hash_code();
+        size_t _stringTypeHashCode = typeid(loli::StringType).hash_code();
+        size_t _boolTypeHashCode = typeid(loli::BoolType).hash_code();
+        MockEnvironment _mockEnv {};
         loli::Lexy _lexy{};
 };
+
 
 TEST_F(TypecheckingTests, NumberExpression_ShouldReturnFloatType) {
     auto num = loli::NumberExpression(0.f);
@@ -26,7 +51,7 @@ TEST_F(TypecheckingTests, NumberExpression_ShouldReturnFloatType) {
     auto type = num.visit(&typeChecker); 
 
     //assert 
-    ASSERT_EQ(typeid(loli::FloatType).hash_code(), type.TypeHashCode());
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
 }
 
 TEST_F(TypecheckingTests, BoolExpression_ShouldReturnBool) {
@@ -48,7 +73,7 @@ TEST_F(TypecheckingTests, StringExpression_ShouldReturnStringType) {
     auto type = num.visit(&typeChecker); 
 
     //assert 
-    ASSERT_EQ(typeid(loli::StringType).hash_code(), type.TypeHashCode());
+    ASSERT_EQ(_stringTypeHashCode, type.TypeHashCode());
 }
 
 TEST_F(TypecheckingTests, BinaryExpression_With2Floats_ReturnsFloatType) {
@@ -59,7 +84,7 @@ TEST_F(TypecheckingTests, BinaryExpression_With2Floats_ReturnsFloatType) {
     auto type = num.visit(&typeChecker); 
 
     //assert 
-    ASSERT_EQ(typeid(loli::FloatType).hash_code(), type.TypeHashCode());
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
 }
 
 TEST_F(TypecheckingTests, BinaryExpression_With2Boolens_ReturnsBoolType) {
@@ -70,7 +95,7 @@ TEST_F(TypecheckingTests, BinaryExpression_With2Boolens_ReturnsBoolType) {
     auto type = num.visit(&typeChecker); 
 
     //assert 
-    ASSERT_EQ(typeid(loli::BoolType).hash_code(), type.TypeHashCode());
+    ASSERT_EQ(_boolTypeHashCode, type.TypeHashCode());
 }
 
 TEST_F(TypecheckingTests, BinaryExpression_WithWrongTypes_ThrowsRuntimeError) {
@@ -97,7 +122,7 @@ TEST_F (TypecheckingTests, IfExpression_With2Floats_ReturnsFloatType) {
     auto type = num.visit(&typeChecker); 
 
     //assert 
-    ASSERT_EQ(typeid(loli::FloatType).hash_code(), type.TypeHashCode());
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
 }
 
 TEST_F (TypecheckingTests, IfExpression_WithWrongTypeCondition_ThrowsRuntimeError) {
@@ -114,5 +139,59 @@ TEST_F (TypecheckingTests, IfExpression_WithWrongTypeCondition_ThrowsRuntimeErro
     } catch (const std::runtime_error& ex) {
         ASSERT_STREQ(ex.what(), "There should be boolen expression inside of a condition block");
     }
+}
+
+TEST_F (TypecheckingTests, LambdaExpression_WithFloatNumberInsideBody_ReturnsFloatType){
+    auto ll = *loli::ExpressionFactory::Lambda("a", new loli::NumberExpression(1));
+    auto typeChecker = loli::TypeChecker();
+
+    //act 
+    auto type = ll.visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
+
+}
+
+TEST_F (TypecheckingTests, LambdaExpression_WithTrueInsideBody_ReturnsFloatType){
+    auto ll = *loli::ExpressionFactory::Lambda("a", new loli::BoolExpression(1));
+    auto typeChecker = loli::TypeChecker();
+
+    //act 
+    auto type = ll.visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(_boolTypeHashCode, type.TypeHashCode());
+
+}
+
+TEST_F (TypecheckingTests, LambdaExpression_WithStringInsideBody_ReturnsFloatType){
+    auto ll = *loli::ExpressionFactory::Lambda("a", new loli::StringExpression("hello"));
+    auto typeChecker = loli::TypeChecker();
+
+    //act 
+    auto type = ll.visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(_stringTypeHashCode, type.TypeHashCode());
+}
+
+TEST_F (TypecheckingTests, IdentifierExpression_WithFloatValue_ReturnsFloatType) {
+    using ::testing::_;
+    using::testing::WithArg;
+    auto typeChecker = loli::TypeChecker(&_mockEnv);
+    auto a = loli::ExpressionFactory::LambdaRaw("a", new loli::NumberExpression(1));
+
+    EXPECT_CALL(_mockEnv,TryFind(_, _)).Times(1);
+    ON_CALL(_mockEnv, TryFind).WillByDefault([&a](const loli::mem::ExpressionFilter spec, loli::Expression **out) {
+                *out = a;
+                return true;
+            });
+    
+    //act 
+    auto type = loli::IdentifierExpression("a").visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(type.TypeHashCode(), _floatTypeHashCode);
 }
 #endif //__TYPECHECKING_TESTS__

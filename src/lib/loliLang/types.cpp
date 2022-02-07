@@ -1,4 +1,6 @@
 #include "loliLang/types.h"
+#include "loliLang/expression.h"
+#include "loliLang/memory.h"
 #include "loliLang/utils.h"
 
 loli::ReturnResult loli::TypeChecker::visitBinaryExpression (BinaryExpression& value) {
@@ -16,12 +18,18 @@ loli::ReturnResult loli::TypeChecker::visitNumberExpression (NumberExpression& v
     return {utils::newLink<FloatType>(), typeid(FloatType).hash_code()};
 } 
 loli::ReturnResult loli::TypeChecker::visitLambdaExpression (LambdaExpression& value) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitLambdaExpression");
-    return ReturnResult::Empty();
+    return value.body()->visit(this);
 } 
 loli::ReturnResult loli::TypeChecker::visitIdentifierExpression (IdentifierExpression& value) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitIdentifierExpression");
-    return ReturnResult::Empty();
+    //utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitIdentifierExpression");
+    //return ReturnResult::Empty();
+
+    Expression* out = nullptr;
+    auto spec = loli::ExpressionSpecFactory::LambdaExpressionNameSpec(value.value());
+    if (!mem::GlobalEnvironment.TryFind(spec, &out) && !_env->TryFind(spec, &out)) {
+        utils::ThrowHelper::Throw_ThereIsNo(value.value());  
+    }
+    return out->visit(this);
 } 
 loli::ReturnResult loli::TypeChecker::visitStringExpression (StringExpression& value) {
     return {utils::newLink<StringType>(), typeid(StringType).hash_code()};
