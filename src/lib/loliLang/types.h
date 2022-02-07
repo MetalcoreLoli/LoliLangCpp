@@ -6,6 +6,7 @@
 #include <string_view>
 
 #include "loliLang/expression.h"
+#include "loliLang/memory.h"
 #include "loliLang/utils.h"
 
 namespace loli {
@@ -60,7 +61,11 @@ namespace loli {
 
 
     class TypeChecker : public IVisitor {
+        private: 
+            mem::IEnvironment* _env;
         public:
+            TypeChecker () : _env (&mem::GlobalEnvironment) {}
+            TypeChecker (mem::IEnvironment* env) : _env (env) {}
             ReturnResult visitBinaryExpression (BinaryExpression& value) override;
             ReturnResult visitNumberExpression (NumberExpression& value) override;
             ReturnResult visitLambdaExpression (LambdaExpression& value) override;
