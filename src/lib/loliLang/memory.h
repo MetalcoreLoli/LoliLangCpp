@@ -27,6 +27,31 @@ namespace loli {
             virtual IEnvironment& Clear() =0;
             virtual bool TryFind (const ExpressionFilter spec, Expression **out) = 0;
         };
+        
+        class LocalEnvironment : public IEnvironment {
+            std::vector<Expression*> _container {};
+            public:
+                ~LocalEnvironment () {Clear();}
+                IEnvironment& Push(Expression* value) {
+                    _container.push_back(value);
+                    return *this;
+                }
+
+                bool TryFind (const ExpressionFilter spec, Expression** out) {
+                   for (auto expr : _container) {
+                       if (spec->IsSatisfy(expr)) {
+                           *out = expr;
+                           return true;
+                       }
+                   } 
+                   return false;
+                }
+
+                IEnvironment& Clear () {
+                    _container.clear();
+                    return *this;
+                }
+        };
 
         class Environment : public IEnvironment {
             std::vector<Expression*> _mainStack{};
@@ -60,6 +85,8 @@ namespace loli {
                     return _ptr;
                 }
         };
+
+        static Environment& GlobalEnvironment = Environment::Instance(); 
 
     };
 }
