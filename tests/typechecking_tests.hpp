@@ -1,37 +1,15 @@
-
 #ifndef __TYPECHECKING_TESTS__
 #define __TYPECHECKING_TESTS__
 
-#include "loliLang/daphnie.h"
-#include "loliLang/expression.h"
-#include "loliLang/expressionFactory.hpp"
-#include "loliLang/lexy.h"
-#include "loliLang/memory.h"
-#include "loliLang/types.h"
-#include <gmock/gmock-actions.h>
-#include <gmock/gmock-function-mocker.h>
-#include <gmock/gmock-matchers.h>
-#include <gmock/gmock-spec-builders.h>
+
 #include <gtest/gtest_pred_impl.h>
 #include <stdexcept>
 #include <string>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <loliLang/common.h>
 
-/*
- * 
-            virtual IEnvironment& Push (Expression*) =0;
-            virtual IEnvironment& Clear() =0;
-            virtual bool TryFind (const ExpressionFilter spec, Expression **out) = 0;
- *
- * */
-class MockEnvironment : public loli::mem::IEnvironment {
-    public:
-    MOCK_METHOD(IEnvironment&, Push, (loli::Expression*), (override));
-    MOCK_METHOD(IEnvironment&, Clear, (), (override));
-    MOCK_METHOD(bool, TryFind, (const loli::mem::ExpressionFilter spec, loli::Expression **out), (override));
-};
+#include <loliLang/common.h>
+#include "mockCommon.hpp"
+
 
 class TypecheckingTests : public ::testing::Test{
     protected:
@@ -183,7 +161,8 @@ TEST_F (TypecheckingTests, IdentifierExpression_WithFloatValue_ReturnsFloatType)
     auto a = loli::ExpressionFactory::LambdaRaw("a", new loli::NumberExpression(1));
 
     EXPECT_CALL(_mockEnv,TryFind(_, _)).Times(1);
-    ON_CALL(_mockEnv, TryFind).WillByDefault([&a](const loli::mem::ExpressionFilter spec, loli::Expression **out) {
+    ON_CALL(_mockEnv, TryFind)
+        .WillByDefault([&a](const loli::mem::ExpressionFilter spec, loli::Expression **out) {
                 *out = a;
                 return true;
             });
