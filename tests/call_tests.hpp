@@ -1,11 +1,16 @@
 #ifndef __LOLI_CALL_TESTS__
 #define __LOLI_CALL_TESTS__
 
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
 #include <stdexcept>
 #include <string>
 #include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <loliLang/common.h>
+
+#include "loliLang/expression.h"
+#include "loliLang/expressionFactory.hpp"
+#include "mockCommon.hpp"
 
 class CallTests : public ::testing::Test {
     protected:
@@ -28,53 +33,82 @@ TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityF
 }
 
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
-    auto codeOfFunc    = "id a b c => if (a > 0) a else if (b > 0) b else c";
+    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
+
+    EXPECT_CALL(env, TryFind(testing::_,testing::_)).Times(3);
+    ON_CALL(env, TryFind)
+        .WillByDefault([](auto s, loli::Expression **out) {
+                auto a = loli::IdentifierExpression("a");
+                auto b = loli::IdentifierExpression("b");
+                auto c = loli::IdentifierExpression("c"); 
+                auto zero = loli::NumberExpression(0);
+                auto aghtzero = loli::BinaryExpression("!=", &a, &zero);
+                auto bghtzero = loli::BinaryExpression("!=", &b, &zero);
+                *out = loli::ExpressionFactory::LambdaRaw(
+                        "id", 
+                        {c,b,a},
+                        new loli::IfExpression(
+                            &aghtzero, &a, new loli::IfExpression(&bghtzero, &b, &c)));
+                 return true;
+                });
 
     //act
-    loli::Daphnie{codeOfFunc}.growTree()->visit(&_lexy);
     auto resultA = 
-         (loli::Daphnie{"id 1 2 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+         (loli::ExpressionFactory::Call("id", {loli::ExpressionFactory::NumberRaw(1), loli::ExpressionFactory::NumberRaw(2), loli::ExpressionFactory::NumberRaw(3)}).get()->visit(&lexy)).Unwrap<float>();
     auto resultB = 
-         (loli::Daphnie{"id 0 2 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+         (loli::ExpressionFactory::Call("id", {loli::ExpressionFactory::NumberRaw(0), loli::ExpressionFactory::NumberRaw(2), loli::ExpressionFactory::NumberRaw(3)}).get()->visit(&lexy)).Unwrap<float>();
     auto resultC = 
-         (loli::Daphnie{"id 0 0 3"}.growTree()->visit(&_lexy)).Unwrap<float>();
+         (loli::ExpressionFactory::Call("id", {loli::ExpressionFactory::NumberRaw(0), loli::ExpressionFactory::NumberRaw(0), loli::ExpressionFactory::NumberRaw(3)}).get()->visit(&lexy)).Unwrap<float>();
 
     //assert 
     ASSERT_EQ(1.0f,resultA);
     ASSERT_EQ(2.0f,resultB);
     ASSERT_EQ(3.0f,resultC);
-    
-    loli::mem::Environment::Instance().Clear();
 }
 
 
 TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
-    auto codeOfFunc = "id a => a + 9";
-    auto call = "id 1";
-    loli::Daphnie d{call};
-    loli::Daphnie dd{codeOfFunc};
-    
+    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
+
+    EXPECT_CALL(env, TryFind(testing::_,testing::_)).Times(1);
+    ON_CALL(env, TryFind)
+        .WillByDefault([](auto s, loli::Expression **out) {
+                *out = loli::ExpressionFactory::LambdaRaw(
+                        "id", 
+                        {loli::IdentifierExpression("a")}, 
+                        new loli::BinaryExpression(
+                            "+", 
+                            new loli::IdentifierExpression("a"), new loli::NumberExpression(1)));
+                 return true;
+                });
+
+    auto name = loli::IdentifierExpression("id");
     //act 
-    dd.growTree() -> visit(&_lexy);
-    auto result =  (d.growTree() -> visit (&_lexy)).Unwrap<float>();
+    auto result = loli::CallExpression(name, {loli::ExpressionFactory::NumberRaw(9)}).visit(&lexy).Unwrap<float>();
 
     //assert 
     ASSERT_EQ (10.0f, result);
-    loli::mem::Environment::Instance().Clear();
 }
-TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult) {
-    auto codeOfFunc = "a = 1 + 1";
-    auto call = "a";
-    loli::Daphnie d{call};
-    loli::Daphnie dd{codeOfFunc};
 
+TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult) {
+    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
+    auto func = loli::ExpressionFactory::LambdaRaw(
+            "a", 
+            new loli::BinaryExpression("+", new loli::NumberExpression(1), new loli::NumberExpression(1)));
+
+    auto call = *loli::ExpressionFactory::CallWithoutArgs("a");
+
+    EXPECT_CALL(env, TryFind(::testing::_, ::testing::_)).Times(1);
+    ON_CALL(env, TryFind)
+        .WillByDefault([&func](auto spec, loli::Expression** out){
+                *out = func;
+                return true;
+            });
     //act
-    dd.growTree()->visit(&_lexy);
-    auto result =  (d.growTree()->visit(&_lexy)).Unwrap<float>();
+    auto result =  (call.visit(&lexy)).Unwrap<float>();
 
     //assert 
     ASSERT_EQ (2.0f, result);
-    loli::mem::Environment::Instance().Clear();
 }
 
 
@@ -94,28 +128,42 @@ TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
 }
 
 TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError) {
-    auto codeOfFunc = "add a b => a + b";
-    auto call = "add 1 2 3";
-    loli::Daphnie dd{codeOfFunc};
+    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
 
+    auto func = loli::ExpressionFactory::LambdaRaw(
+            "add", {
+                loli::IdentifierExpression("a"),
+                loli::IdentifierExpression("b")
+            }, 
+            new loli::BinaryExpression("+", 
+                new loli::IdentifierExpression("a"), new loli::IdentifierExpression("b")));;
+
+    auto call = *loli::ExpressionFactory::Call("add", {
+                new loli::NumberExpression(1),
+                new loli::NumberExpression(2),
+                new loli::NumberExpression(3)
+            }).get();
+
+    EXPECT_CALL(env, TryFind(::testing::_, ::testing::_)).Times(3);
+    ON_CALL(env, TryFind)
+        .WillByDefault([&func](auto spec, loli::Expression** out){
+                *out = func;
+                return true;
+            });
     //act
-    dd.growTree()->visit(&_lexy);
-    auto act = [this](loli::Daphnie d)  {
-        d.growTree()->visit(&_lexy);
-    };
+    auto act = [](loli::CallExpression call, loli::Lexy lexy) {call.visit(&lexy);};
 
     //assert 
-    ASSERT_THROW (act(loli::Daphnie{call}), std::runtime_error);
+    ASSERT_THROW (act(call, lexy), std::runtime_error);
     try {
-        act (loli::Daphnie{call});
+        act (call, lexy);
     } catch (const std::runtime_error& ex) {
         ASSERT_STREQ(ex.what(), "There is a extra arg in call of `add` function");
     }
     try {
-        act (loli::Daphnie{"add 1"});
+        act (*loli::ExpressionFactory::Call("add",{new loli::NumberExpression(1)}).get(), lexy);
     } catch (const std::runtime_error& ex) {
         ASSERT_STREQ(ex.what(), "There is a missing arg in call of `add` function");
     }
-    loli::mem::Environment::Instance().Clear();
 }
 #endif // __LOLI_CALL_TESTS__

@@ -10,16 +10,17 @@ namespace loli {
         loli::Lexy _local{};
         std::vector<LambdaExpression*> _mappedArgs{};
         std::vector<Expression*> _callArgs{};
+        mem::IEnvironment *_globalEnv;
 
         loli::LambdaExpression _lambda = *ExpressionFactory::LambdaRaw("", nullptr);
         public:
-            Call() {}
+            Call(mem::IEnvironment* env) : _globalEnv(env) {}
             Call& Validate (const loli::CallExpression& value);
             Call& Map ();
             Call& FillLocalStackFrame (loli::Lexy& global);
             loli::ReturnResult Execute();
 
-            static Call Create() {return {};}
+            static Call Create(mem::IEnvironment* env) {return {env};}
     };
 }
 

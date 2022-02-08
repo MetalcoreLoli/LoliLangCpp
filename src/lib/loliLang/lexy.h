@@ -29,9 +29,12 @@ namespace loli {
 
         Lexy& PushIntoMainStack (Expression* expression);
 
-        explicit Lexy () {
+        explicit Lexy () : _globalEnv(&mem::GlobalEnvironment){
         }
+
+        Lexy(mem::IEnvironment* env) : _globalEnv(env) {}
         private:
+            mem::IEnvironment* _globalEnv{};
 
             loli::MemoryTableOfExpressions _memory {};
             //{"func", Token(Forma::FUNC, "func", 0)},
@@ -41,7 +44,8 @@ namespace loli {
                 {"*", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a*b), typeid(float).hash_code());}},
                 {"/", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a/b), typeid(float).hash_code());}},
                 {">", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a<b), typeid(bool).hash_code());}},
-                {"<", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a>b), typeid(bool).hash_code());}}
+                {"<", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a>b), typeid(bool).hash_code());}},
+                {"!=", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a!=b), typeid(bool).hash_code());}}
             };
 
     };

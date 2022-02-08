@@ -5,7 +5,7 @@
 loli::Call& loli::Call::Validate (const loli::CallExpression& value) {
     Expression* out = nullptr;
     auto nameSpec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value());
-    if (!mem::Environment::Instance().TryFind(nameSpec, &out)) {
+    if (!_globalEnv->TryFind(nameSpec, &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
     }
     _lambda = *(dynamic_cast <LambdaExpression*>(out));
