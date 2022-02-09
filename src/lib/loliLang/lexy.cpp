@@ -4,9 +4,14 @@
 #include "loliLang/expressionConverter.h"
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/memory.h"
+#include "loliLang/types.h"
 #include "loliLang/utils.h"
 
 loli::ReturnResult loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
+    auto env = mem::Or(_globalEnv, &_localEnv);
+    auto typeChecker = loli::TypeChecker (&env); 
+    value.visit(&typeChecker);
+
     if (_opsTable.contains(value.operand())) {
         auto leftValue  = (value.left()->visit(this).Unwrap<float>());
         auto rightValue = (value.right()->visit(this).Unwrap<float>());
