@@ -35,8 +35,8 @@ namespace loli {
         Lexy(mem::IEnvironment* env) : _globalEnv(env) {}
         private:
             mem::IEnvironment* _globalEnv{};
+            mem::LocalEnvironment _localEnv{};
 
-            loli::MemoryTableOfExpressions _memory {};
             //{"func", Token(Forma::FUNC, "func", 0)},
             std::map<std::string, std::function<ReturnResult(float, float)>> _opsTable{
                 {"+", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a+b), typeid(float).hash_code());}},

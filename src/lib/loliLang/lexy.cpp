@@ -30,14 +30,14 @@ loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& va
     if (_globalEnv->TryFind(spec, nullptr)) {
         throw std::runtime_error {"There is another identifier with name `"+value.identifier().value()+"`"};
     }
-    mem::Environment::Instance().Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
+    _globalEnv->Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
     return l;
 }
 
 loli::ReturnResult loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
     Expression* out = nullptr; 
     auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.value());
-    if (!_globalEnv->TryFind(spec, &out) && !_memory.TryFind(spec.get(), &out)) {
+    if (!_globalEnv->TryFind(spec, &out) && !_localEnv.TryFind(spec, &out)) {
         throw std::runtime_error {"There is no `"+value.value()+"` identifier"};
     }
     auto func = dynamic_cast<LambdaExpression*>(out);
@@ -81,7 +81,7 @@ loli::ReturnResult loli::Lexy::visitBodyExpression (loli::BodyExpression& value)
 }
 
 loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
-    _memory.Push(expression);
+    _localEnv.Push(expression);
     return *this;
 }
 
