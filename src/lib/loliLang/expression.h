@@ -61,6 +61,9 @@ namespace loli {
             size_t TypeHashCode() const {return _hashCode;}
 
             static ReturnResult Empty() { return {nullptr, 0}; };
+            
+            template<typename T>
+            static ReturnResult New(T value) { return {newLink<T>(value), typeid(T).hash_code()};};
     };
 
     struct IVisitor {
