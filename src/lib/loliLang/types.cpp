@@ -74,3 +74,20 @@ loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value
     utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitCallExpression");
     return ReturnResult::Empty();
 } 
+
+loli::IMethod* loli::TypeMethodGetter::GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) {
+    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetter::GetMethodOfBoolType "); 
+    return nullptr;
+} 
+
+loli::IMethod* loli::TypeMethodGetter::GetMethodOfFloatType (const FloatType& type, std::string_view methodName) {
+    if (!type.VTable.contains(methodName)) {
+        utils::ThrowHelper::Throw_OperationIsNotImplementedForType(std::string(methodName), "Number");
+    }
+    return type.VTable.at(methodName);
+} 
+
+loli::IMethod* loli::TypeMethodGetter::GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) {
+    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetter::GetMethodOfStringType "); 
+    return nullptr;
+} 

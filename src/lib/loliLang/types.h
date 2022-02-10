@@ -1,5 +1,6 @@
 #ifndef __LOLI_TYPES__
 #define __LOLI_TYPES__
+#include <cstddef>
 #include <functional>
 #include <string>
 #include <map>
@@ -10,6 +11,39 @@
 #include "loliLang/utils.h"
 
 namespace loli {
+    class BoolType;
+    class FloatType;
+    class StringType;
+
+    struct IMethod { 
+        virtual ReturnResult Invoke(const std::vector<ReturnResult>& args) = 0;
+    };
+    
+    struct ITypeMethodGetter  {
+        virtual IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) = 0;
+        virtual IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) = 0;
+        virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
+    };
+
+    struct TypeMethodGetter : public ITypeMethodGetter {
+        IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) override;
+        IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) override;
+        IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) override;
+
+        private: 
+    }; 
+
+    template<typename T>
+    struct AddMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            T sum;
+            for (auto arg: args) {
+                sum += arg.Unwrap<T>();
+            }
+            return ReturnResult::New(sum);
+        }
+    };
+
     template <typename T>
     class TypeVTable {
         using BinaryOpFunction = std::function <ReturnResult(T, T)>;
@@ -30,34 +64,37 @@ namespace loli {
             }
     };
 
-    template <typename T>
-    class Type {
-        protected:
-            TypeVTable<T> _vTable{};
-
-        public:
-            Type (){}
-            virtual TypeVTable<T>& VTable() const {return const_cast<TypeVTable<T>&>(_vTable);}
-
+    struct IType {
+        virtual IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodName) = 0;
     };
 
 
-    class FloatType : public Type<float> {
+    class FloatType : public IType {
+
         public:
+            //TODO: FIX THIS !!!!!!!!1
+            std::map<std::string_view, IMethod*> VTable{};
+            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodName) override {
+                return getter->GetMethodOfFloatType(*this, methodName);
+            } 
+
             FloatType () {
-                _vTable.BinaryOps().insert({"+", [](float a, float b) -> ReturnResult {return {newLink<float>(a+b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({"-", [](float a, float b) -> ReturnResult {return {newLink<float>(a-b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({"*", [](float a, float b) -> ReturnResult {return {newLink<float>(a*b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({"/", [](float a, float b) -> ReturnResult {return {newLink<float>(a/b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({"<", [](float a, float b) -> ReturnResult {return {newLink<float>(a<b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({">", [](float a, float b) -> ReturnResult {return {newLink<float>(a>b), typeid(float).hash_code()};}});
-                _vTable.BinaryOps().insert({"!=", [](float a, float b) -> ReturnResult {return {newLink<bool>(a!=b), typeid(bool).hash_code()};}});
-                _vTable.BinaryOps().insert({"==", [](float a, float b) -> ReturnResult {return {newLink<bool>(a==b), typeid(bool).hash_code()};}});
+                VTable.insert({"+", new AddMethodImpl<float>});
             }
     };
 
-    class BoolType : public Type<bool> {};
-    class StringType : public Type<std::string> {};
+    class BoolType : public IType {
+        public: 
+            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodNameHashCode) override {
+                return getter->GetMethodOfBoolType(*this, methodNameHashCode);
+            } 
+    };
+    class StringType : public IType {
+        public: 
+            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodNameHashCode) override {
+                return getter->GetMethodOfStringType(*this, methodNameHashCode);
+            } 
+    };
 
 
     class TypeChecker : public IVisitor {
@@ -80,5 +117,7 @@ namespace loli {
             ReturnResult visitForExpression (ForExpression& value) override;
             ReturnResult visitCallExpression (CallExpression& value) override;
     };
+
+
 }
 #endif // __LOLI_TYPES__

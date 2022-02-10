@@ -2,6 +2,7 @@ add_executable (
     unit-tests 
 
     mockCommon.hpp
+    typemethods_tests.hpp
     typechecking_tests.hpp
     call_tests.hpp
     lexy_tests.hpp
