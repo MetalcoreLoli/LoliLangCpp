@@ -80,14 +80,22 @@ loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfBoolType (const BoolType& 
     return nullptr;
 } 
 
-loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfFloatType (const FloatType& type, std::string_view methodName) {
-    if (!type.VTable.contains(methodName)) {
+loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfFloatType(loli::ITypeRequestHander* type, std::string_view methodName){
+    if (!type->ContainsMethod(methodName)) {
         utils::ThrowHelper::Throw_OperationIsNotImplementedForType(std::string(methodName), "Number");
     }
-    return type.VTable.at(methodName);
+    return type->GetMethod(methodName);
 } 
 
 loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) {
     utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetRequest::GetMethodOfStringType "); 
     return nullptr;
+} 
+
+bool loli::FloatTypeRequestHandler::ContainsMethod (std::string_view methodName) {
+    return _table.contains(methodName);
+} 
+
+loli::IMethod* loli::FloatTypeRequestHandler::GetMethod (std::string_view methodName) {
+    return _table.at(methodName); 
 } 

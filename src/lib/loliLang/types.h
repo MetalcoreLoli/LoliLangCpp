@@ -15,19 +15,26 @@ namespace loli {
     class FloatType;
     class StringType;
 
+    struct FloatTypeRequestHandler; 
+
     struct IMethod { 
         virtual ReturnResult Invoke(const std::vector<ReturnResult>& args) = 0;
     };
     
+    struct ITypeRequestHander {
+        virtual bool ContainsMethod (std::string_view methodName) =0; 
+        virtual IMethod* GetMethod (std::string_view methodName) = 0;
+    };
+
     struct ITypeMethodGetRequest  {
         virtual IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) = 0;
-        virtual IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) = 0;
+        virtual IMethod* GetMethodOfFloatType (ITypeRequestHander* type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
     };
 
-    struct TypeMethodGetRequest : public ITypeMethodGetRequest {
+    struct TypeMethodGetRequest: public ITypeMethodGetRequest {
         IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) override;
-        IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) override;
+        IMethod* GetMethodOfFloatType (ITypeRequestHander* type, std::string_view methodNameHashCode) override;
         IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) override;
 
         private: 
@@ -44,6 +51,25 @@ namespace loli {
         }
     };
 
+    struct FloatTypeRequestHandler : public ITypeRequestHander {
+        bool ContainsMethod (std::string_view methodName) override; 
+        IMethod* GetMethod (std::string_view methodName)  override;
+
+        FloatTypeRequestHandler(FloatTypeRequestHandler&) =default; 
+        FloatTypeRequestHandler(FloatTypeRequestHandler&&) =default; 
+        
+        static FloatTypeRequestHandler& Instance() {
+            static FloatTypeRequestHandler handler;
+            return handler;
+        } 
+        private:
+            FloatTypeRequestHandler() {
+                _table.insert({"+", new AddMethodImpl<float>});
+            }
+            std::map <std::string_view, IMethod*> _table {};
+
+    };
+
     struct IType {
         virtual IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodName) = 0;
     };
@@ -52,15 +78,9 @@ namespace loli {
     class FloatType : public IType {
 
         public:
-            //TODO: FIX THIS !!!!!!!!1
-            std::map<std::string_view, IMethod*> VTable{};
             IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodName) override {
-                return getter->GetMethodOfFloatType(*this, methodName);
+                return getter->GetMethodOfFloatType(&FloatTypeRequestHandler::Instance(), methodName);
             } 
-
-            FloatType () {
-                VTable.insert({"+", new AddMethodImpl<float>});
-            }
     };
 
     class BoolType : public IType {
@@ -98,6 +118,7 @@ namespace loli {
             ReturnResult visitCallExpression (CallExpression& value) override;
     };
 
-
+    
+    static FloatTypeRequestHandler& FloatTypeRequestHandler = FloatTypeRequestHandler::Instance();
 }
 #endif // __LOLI_TYPES__
