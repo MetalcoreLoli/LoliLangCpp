@@ -44,26 +44,6 @@ namespace loli {
         }
     };
 
-    template <typename T>
-    class TypeVTable {
-        using BinaryOpFunction = std::function <ReturnResult(T, T)>;
-        using BinaryOpsTable = std::map <std::string_view, BinaryOpFunction>;
-        BinaryOpsTable _binaryOps {};
-
-        public:
-            TypeVTable(){}
-            BinaryOpsTable BinaryOps () const {
-                return const_cast<BinaryOpsTable&>(_binaryOps);
-            }
-            
-            BinaryOpFunction BinaryOp (std::string_view sv)  {
-                if (_binaryOps.contains(sv)) return _binaryOps[sv];
-                else {
-                    utils::ThrowHelper::Throw_OperationIsNotImplementedForType (std::string(sv), typeid(T).name());
-                }
-            }
-    };
-
     struct IType {
         virtual IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodName) = 0;
     };
