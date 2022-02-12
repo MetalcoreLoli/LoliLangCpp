@@ -30,7 +30,7 @@ class TypeMethodsTests : public ::testing::Test {
         virtual IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
  * */
-struct MockTypeMethodGetter : public loli::ITypeMethodGetter {
+struct MockTypeMethodGetRequest : public loli::ITypeMethodGetRequest {
     MOCK_METHOD (loli::IMethod*, GetMethodOfBoolType, (const loli::BoolType& type, std::string_view methodNameHashCode), (override));
     MOCK_METHOD (loli::IMethod*, GetMethodOfFloatType, (const loli::FloatType& type, std::string_view methodNameHashCode), (override));
     MOCK_METHOD (loli::IMethod*, GetMethodOfStringType, (const loli::StringType& type, std::string_view methodNameHashCode), (override));
@@ -46,7 +46,7 @@ struct MockMethod : public loli::IMethod {
 
 TEST_F (TypeMethodsTests, FloatType_GetMethod_WithAMethodHashCode_ReturnsPtrToMethod) {
     auto type = loli::FloatType();
-    auto dummyGetter = MockTypeMethodGetter();
+    auto dummyGetter = MockTypeMethodGetRequest();
 
     EXPECT_CALL(dummyGetter,GetMethodOfFloatType(testing::_, testing::_)).Times(1);
     ON_CALL(dummyGetter, GetMethodOfFloatType)
@@ -61,7 +61,7 @@ TEST_F (TypeMethodsTests, FloatType_GetMethod_WithAMethodHashCode_ReturnsPtrToMe
 
 TEST_F (TypeMethodsTests, BoolType_GetMethod_WithAMethodHashCode_ReturnsPtrToMethod) {
     auto type = loli::BoolType();
-    auto dummyGetter = MockTypeMethodGetter();
+    auto dummyGetter = MockTypeMethodGetRequest();
 
     EXPECT_CALL(dummyGetter,GetMethodOfBoolType(testing::_, testing::_)).Times(1);
     ON_CALL(dummyGetter, GetMethodOfBoolType)
@@ -76,7 +76,7 @@ TEST_F (TypeMethodsTests, BoolType_GetMethod_WithAMethodHashCode_ReturnsPtrToMet
 
 TEST_F (TypeMethodsTests, StringType_GetMethod_WithAMethodHashCode_ReturnsPtrToMethod) {
     auto type = loli::StringType();
-    auto dummyGetter = MockTypeMethodGetter();
+    auto dummyGetter = MockTypeMethodGetRequest();
 
     EXPECT_CALL(dummyGetter,GetMethodOfStringType(testing::_, testing::_)).Times(1);
     ON_CALL(dummyGetter, GetMethodOfStringType)
@@ -91,7 +91,7 @@ TEST_F (TypeMethodsTests, StringType_GetMethod_WithAMethodHashCode_ReturnsPtrToM
 
 TEST_F (TypeMethodsTests, StringType_GetMethod_WithAMethodHashCode_AfterInvoke_ReturnsHelloWorld) {
     auto type = loli::StringType();
-    auto dummyGetter = MockTypeMethodGetter();
+    auto dummyGetter = MockTypeMethodGetRequest();
     auto dummyMethod = MockMethod();
 
     EXPECT_CALL(dummyGetter,GetMethodOfStringType(testing::_, testing::_)).Times(1);
@@ -114,7 +114,7 @@ TEST_F (TypeMethodsTests, StringType_GetMethod_WithAMethodHashCode_AfterInvoke_R
 
 TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsSum) {
     auto type = loli::FloatType();
-    auto getter = loli::TypeMethodGetter();
+    auto getter = loli::TypeMethodGetRequest();
 
     //act 
     auto result = type.GetMethod(&getter, "+")->Invoke({

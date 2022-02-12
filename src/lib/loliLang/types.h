@@ -19,13 +19,13 @@ namespace loli {
         virtual ReturnResult Invoke(const std::vector<ReturnResult>& args) = 0;
     };
     
-    struct ITypeMethodGetter  {
+    struct ITypeMethodGetRequest  {
         virtual IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
     };
 
-    struct TypeMethodGetter : public ITypeMethodGetter {
+    struct TypeMethodGetRequest : public ITypeMethodGetRequest {
         IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) override;
         IMethod* GetMethodOfFloatType (const FloatType& type, std::string_view methodNameHashCode) override;
         IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) override;
@@ -45,7 +45,7 @@ namespace loli {
     };
 
     struct IType {
-        virtual IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodName) = 0;
+        virtual IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodName) = 0;
     };
 
 
@@ -54,7 +54,7 @@ namespace loli {
         public:
             //TODO: FIX THIS !!!!!!!!1
             std::map<std::string_view, IMethod*> VTable{};
-            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodName) override {
+            IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodName) override {
                 return getter->GetMethodOfFloatType(*this, methodName);
             } 
 
@@ -65,13 +65,13 @@ namespace loli {
 
     class BoolType : public IType {
         public: 
-            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodNameHashCode) override {
+            IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodNameHashCode) override {
                 return getter->GetMethodOfBoolType(*this, methodNameHashCode);
             } 
     };
     class StringType : public IType {
         public: 
-            IMethod* GetMethod(ITypeMethodGetter* getter, std::string_view methodNameHashCode) override {
+            IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodNameHashCode) override {
                 return getter->GetMethodOfStringType(*this, methodNameHashCode);
             } 
     };

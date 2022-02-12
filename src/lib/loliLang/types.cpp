@@ -75,19 +75,19 @@ loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value
     return ReturnResult::Empty();
 } 
 
-loli::IMethod* loli::TypeMethodGetter::GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetter::GetMethodOfBoolType "); 
+loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) {
+    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetRequest::GetMethodOfBoolType "); 
     return nullptr;
 } 
 
-loli::IMethod* loli::TypeMethodGetter::GetMethodOfFloatType (const FloatType& type, std::string_view methodName) {
+loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfFloatType (const FloatType& type, std::string_view methodName) {
     if (!type.VTable.contains(methodName)) {
         utils::ThrowHelper::Throw_OperationIsNotImplementedForType(std::string(methodName), "Number");
     }
     return type.VTable.at(methodName);
 } 
 
-loli::IMethod* loli::TypeMethodGetter::GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetter::GetMethodOfStringType "); 
+loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) {
+    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetRequest::GetMethodOfStringType "); 
     return nullptr;
 } 
