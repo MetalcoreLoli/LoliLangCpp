@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <string_view>
+#include <vector>
 
 #include "loliLang/expression.h"
 #include "loliLang/memory.h"
@@ -51,6 +52,37 @@ namespace loli {
         }
     };
 
+    template<typename T>
+    struct SubMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l - r);
+        }
+    };
+
+    template<typename T>
+    struct MulMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l * r);
+        }
+    };
+
+    template<typename T>
+    struct DivMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l / r);
+        }
+    };
+
+
     struct FloatTypeRequestHandler : public ITypeRequestHander {
         bool ContainsMethod (std::string_view methodName) override; 
         IMethod* GetMethod (std::string_view methodName)  override;
@@ -65,6 +97,9 @@ namespace loli {
         private:
             FloatTypeRequestHandler() {
                 _table.insert({"+", new AddMethodImpl<float>});
+                _table.insert({"-", new SubMethodImpl<float>});
+                _table.insert({"*", new MulMethodImpl<float>});
+                _table.insert({"/", new DivMethodImpl<float>});
             }
             std::map <std::string_view, IMethod*> _table {};
 

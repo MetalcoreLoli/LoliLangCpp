@@ -125,4 +125,50 @@ TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsSum) {
     ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
     ASSERT_FLOAT_EQ(3.0f, result.Unwrap<float>());
 }
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsSub) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "-")->Invoke({
+                loli::ReturnResult::New<float>(2.0f),
+                loli::ReturnResult::New<float>(1.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ(1.0f, result.Unwrap<float>());
+}
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsMul) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "*")->Invoke({
+                loli::ReturnResult::New<float>(2.0f),
+                loli::ReturnResult::New<float>(1.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ(2.0f, result.Unwrap<float>());
+}
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsDiv) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "/")->Invoke({
+                loli::ReturnResult::New<float>(6.0f),
+                loli::ReturnResult::New<float>(2.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ(3.0f, result.Unwrap<float>());
+}
+
 #endif //__TYPEMETHODS_TESTS__
