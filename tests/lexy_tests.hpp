@@ -37,23 +37,6 @@ TEST_F (LexyTests, visitBinaryExpression_WithOneAddOne_ReturnsTwo) {
     ASSERT_GT (0.05f, std::abs(2.0f - result));
 }
 
-TEST_F (LexyTests, visitBinaryExpression_WithOneEqOne_ThrowsRuntimeError) {
-    std::string code = "1==1";
-
-    //act
-    auto act = [](loli::Daphnie d, loli::IVisitor *visitor) {
-        d.growTree()->visit(visitor);
-    };
-
-    //assert
-    ASSERT_THROW(act(loli::Daphnie{code}, &_lex), std::runtime_error);
-    try {
-        act(loli::Daphnie{code}, &_lex);
-    } catch (const std::runtime_error& ex) {
-        ASSERT_STREQ(ex.what(), "operator `==` is not implemented for type `Number`");
-    }
-}
-
 TEST_F (LexyTests, visitIfExpression_WithOneSubOneLtOne_ReturnsTrue) {
     std::string code = "if ((1-1) < 1) true else false;";
 
