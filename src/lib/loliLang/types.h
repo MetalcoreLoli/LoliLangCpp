@@ -83,6 +83,36 @@ namespace loli {
     };
 
 
+    template<typename T>
+    struct GTMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l > r);
+        }
+    };
+
+    template<typename T>
+    struct LTMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l < r);
+        }
+    };
+
+    template<typename T>
+    struct NotEqMethodImpl : public IMethod {
+        ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
+            auto v = std::vector<ReturnResult>(args);
+            auto l = v.at(0).Unwrap<T>();
+            auto r = v.at(1).Unwrap<T>();
+            return ReturnResult::New(l != r);
+        }
+    };
+
     struct FloatTypeRequestHandler : public ITypeRequestHander {
         bool ContainsMethod (std::string_view methodName) override; 
         IMethod* GetMethod (std::string_view methodName)  override;
@@ -100,6 +130,9 @@ namespace loli {
                 _table.insert({"-", new SubMethodImpl<float>});
                 _table.insert({"*", new MulMethodImpl<float>});
                 _table.insert({"/", new DivMethodImpl<float>});
+                _table.insert({">", new GTMethodImpl<float>});
+                _table.insert({"<", new LTMethodImpl<float>});
+                _table.insert({"!=", new NotEqMethodImpl<float>});
             }
             std::map <std::string_view, IMethod*> _table {};
 

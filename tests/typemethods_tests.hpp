@@ -23,6 +23,7 @@ class TypeMethodsTests : public ::testing::Test {
     protected:
         std::size_t _stdstringHashCode = typeid(std::string).hash_code();
         std::size_t _stdfloatHashCode = typeid(float).hash_code();
+        std::size_t _stdboolHashCode = typeid(bool).hash_code();
 };
 
 /*
@@ -171,4 +172,48 @@ TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsDiv) {
     ASSERT_FLOAT_EQ(3.0f, result.Unwrap<float>());
 }
 
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsGt) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, ">")->Invoke({
+                loli::ReturnResult::New<float>(6.0f),
+                loli::ReturnResult::New<float>(2.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
+    ASSERT_EQ(true, result.Unwrap<bool>());
+}
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsLt) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "<")->Invoke({
+                loli::ReturnResult::New<float>(2.0f),
+                loli::ReturnResult::New<float>(6.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
+    ASSERT_EQ(true, result.Unwrap<bool>());
+}
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsNotEq) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "!=")->Invoke({
+                loli::ReturnResult::New<float>(2.0f),
+                loli::ReturnResult::New<float>(6.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
+    ASSERT_EQ(true, result.Unwrap<bool>());
+}
 #endif //__TYPEMETHODS_TESTS__
