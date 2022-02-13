@@ -60,7 +60,11 @@ namespace loli {
 
             size_t TypeHashCode() const {return _hashCode;}
 
+            template<typename T>
+            T* AsRawPtrOf () {return (T*)_value.get();}
+
             static ReturnResult Empty() { return {nullptr, 0}; };
+            static void* Raw(ReturnResult value) {return value._value.get();}; 
             
             template<typename T>
             static ReturnResult New(T value) { return {newLink<T>(value), typeid(T).hash_code()};};
