@@ -216,4 +216,19 @@ TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsNotEq) {
     ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
     ASSERT_EQ(true, result.Unwrap<bool>());
 }
+
+TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsEq) {
+    auto type = loli::FloatType();
+    auto getter = loli::TypeMethodGetRequest();
+
+    //act 
+    auto result = type.GetMethod(&getter, "==")->Invoke({
+                loli::ReturnResult::New<float>(2.0f),
+                loli::ReturnResult::New<float>(6.0f),
+            });
+
+    //assert
+    ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
+    ASSERT_EQ(false, result.Unwrap<bool>());
+}
 #endif //__TYPEMETHODS_TESTS__
