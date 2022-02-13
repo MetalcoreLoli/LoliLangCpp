@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "loliLang/expression.h"
@@ -195,6 +196,13 @@ namespace loli {
             ReturnResult visitBodyExpression (BodyExpression& value) override;
             ReturnResult visitForExpression (ForExpression& value) override;
             ReturnResult visitCallExpression (CallExpression& value) override;
+
+            template<typename TGetRequest> requires std::is_base_of<ITypeMethodGetRequest, TGetRequest>::value
+            static IMethod* GetMethod (mem::IEnvironment* env, Expression* expression, const std::string& methodName) {
+                auto typeChecker = TypeChecker(env);
+                auto getter = TGetRequest();
+                return expression->visit(&typeChecker).AsRawPtrOf<IType>()->GetMethod(&getter, methodName);
+            }
     };
 
     

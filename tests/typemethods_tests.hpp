@@ -9,6 +9,7 @@
 #include <gmock/gmock-matchers.h>
 #include <gmock/gmock-spec-builders.h>
 #include <gtest/gtest_pred_impl.h>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <gtest/gtest.h>
@@ -230,5 +231,23 @@ TEST_F (TypeMethodsTests, FloatType_GetMethod_With2Floats_ReturnsEq) {
     //assert
     ASSERT_EQ(_stdboolHashCode, result.TypeHashCode());
     ASSERT_EQ(false, result.Unwrap<bool>());
+}
+
+
+TEST_F (TypeMethodsTests, AddMethod_With2Floats_ReturnsSum) {
+    auto expression  = loli::BinaryExpression("+", new loli::NumberExpression(1), new loli::NumberExpression(2));
+    auto typeChecker = loli::TypeChecker();
+    auto getter = loli::TypeMethodGetRequest();
+    
+    //act 
+    auto addMethod= expression.visit(&typeChecker).AsRawPtrOf<loli::IType>()->GetMethod(&getter, expression.operand());
+    auto result = addMethod->Invoke({
+                loli::ReturnResult::New(1.0f),
+                loli::ReturnResult::New(2.0f),
+            });
+
+    //assert 
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ (3.0f, result.Unwrap<float>());
 }
 #endif //__TYPEMETHODS_TESTS__

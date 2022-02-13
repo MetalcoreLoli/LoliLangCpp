@@ -9,15 +9,11 @@
 
 loli::ReturnResult loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
     auto env = mem::Or(_globalEnv, &_localEnv);
-    auto typeChecker = loli::TypeChecker (&env); 
-    value.visit(&typeChecker);
-
-    if (_opsTable.contains(value.operand())) {
-        auto leftValue  = (value.left()->visit(this).Unwrap<float>());
-        auto rightValue = (value.right()->visit(this).Unwrap<float>());
-        return _opsTable[value.operand()](leftValue, rightValue);
-    } 
-    throw std::runtime_error {"operator `"+value.operand()+"` is not implemented for type `Number`"};
+    auto method = TypeChecker::GetMethod<TypeMethodGetRequest>(&env, &value, value.operand());
+    return method->Invoke({
+                value.right()->visit(this),
+                value.left()->visit(this),
+            });
 }
 
 loli::ReturnResult loli::Lexy::visitNumberExpression (loli::NumberExpression& value) {

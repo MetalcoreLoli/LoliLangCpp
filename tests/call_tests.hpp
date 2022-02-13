@@ -18,7 +18,7 @@ class CallTests : public ::testing::Test {
 };
 
 TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityFive) {
-    auto fibHelper  = "fibHelper a b n => if (0 < n) fibHelper (a + b) a (1 - n) else a";
+    auto fibHelper  = "fibHelper a b n => if (0 < n) fibHelper (a + b) a (n - 1) else a";
     auto fib        = "fib n => fibHelper 0 1 n";
 
     //act 
