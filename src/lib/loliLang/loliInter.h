@@ -6,16 +6,22 @@
 #include <string_view>
 
 #include "lexy.h"
+#include "loliLang/memory.h"
 #include "utils.h"
-#include "lexer.h"
 #include "daphnie.h"
-#include "expression.h"
-
+#include "ast.cpp"
 namespace loli {
+    struct IWriter {
+        virtual void Write (const std::string& message) = 0;
+    };
+
     class LoliInter {
         private:
+            mem::LocalEnvironment* _global = new mem::LocalEnvironment;
             loli::Lexy _lexy{};
         public:
+            LoliInter () {
+            }
             
             class ResultOfAnswering {
                 ReturnResult _rawResult;
@@ -35,6 +41,7 @@ namespace loli {
             };
 
             ResultOfAnswering AnswerOn (std::string_view sv);
+            ResultOfAnswering AnswerOn (std::string_view sv, IWriter* writer);
     };
 };
 #endif // __LOLI_INTER__

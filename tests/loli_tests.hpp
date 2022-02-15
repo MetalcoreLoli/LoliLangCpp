@@ -22,4 +22,20 @@ TEST_F (LoliTests, AnswerOn_WithValidExpressionOnePlusOneExpression_ReturnsTwo) 
     //assert
     ASSERT_GT(0.5f, std::abs(2.0f - result));
 }
+
+TEST_F (LoliTests, AnswerOn_WithCodeBlock_ReturnsFiftyFive) {
+    auto code = R"(
+        fibHelper a b n => 
+            if (0 < n) fibHelper (a + b) a (n - 1) else a; 
+
+        fib n = fibHelper 0 1 n;
+        
+        fib 10;
+    )";
+    //act 
+    auto result = _loli.AnswerOn(code).As<float>();
+
+    //assert
+    ASSERT_FLOAT_EQ(result, 55.0f);
+}
 #endif // __LOLI_INTER__

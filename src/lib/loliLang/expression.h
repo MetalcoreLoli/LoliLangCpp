@@ -32,6 +32,7 @@ namespace loli {
     class BodyExpression;
     class ForExpression;
     class CallExpression;
+    struct IVisitor;
 
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
 

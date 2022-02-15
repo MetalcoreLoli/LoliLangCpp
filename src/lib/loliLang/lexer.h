@@ -12,6 +12,8 @@
 namespace loli {
     class Lexer {
     private:
+        size_t _currentLine;
+
         std::map<std::string, loli::Token> _symbolsTable {
             {"func", Token(Forma::FUNC, "func", 0)},
             {"if",   Token(Forma::IF,   "if", 0)},
