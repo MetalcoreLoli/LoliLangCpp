@@ -2,6 +2,7 @@ add_executable (
     unit-tests 
 
     mockCommon.hpp
+    daphnie_tests.hpp
     lexer_tests.hpp
     typemethods_tests.hpp
     typechecking_tests.hpp
