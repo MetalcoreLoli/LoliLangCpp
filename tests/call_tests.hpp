@@ -18,18 +18,18 @@ class CallTests : public ::testing::Test {
 };
 
 TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityFive) {
+    auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
     auto fibHelper  = "fibHelper a b n => if (0 < n) fibHelper (a + b) a (n - 1) else a";
     auto fib        = "fib n => fibHelper 0 1 n";
 
     //act 
-    loli::Daphnie {fibHelper}.growTree()->visit(&_lexy);
-    loli::Daphnie {fib}.growTree()->visit(&_lexy);
+    loli::Daphnie {fibHelper}.growTree()->visit(&lexy);
+    loli::Daphnie {fib}.growTree()->visit(&lexy);
 
-    auto result = loli::Daphnie {"fib 10"}.growTree()->visit(&_lexy).Unwrap<float>();
+    auto result = loli::Daphnie {"fib 10"}.growTree()->visit(&lexy).Unwrap<float>();
 
     //assert 
     ASSERT_EQ (55.0f, result);
-    loli::mem::Environment::Instance().Clear();
 }
 
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
@@ -113,18 +113,18 @@ TEST_F (CallTests, Call_FuncWhichContainsOnePlusOneExpression_ReturnsTwoAsResult
 
 
 TEST_F (CallTests, Call_WithRecurtionCall_ReturnsFive) {
-    auto codeOfFunc = "add a b => if (a < b) (add (a + b) (a + b)) else a";
+    auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    auto codeOfFunc = "add a b => if (a < b) add (a + b) (a + b) else a";
     auto call = "add 1 4";
     loli::Daphnie dd{codeOfFunc};
 
     //act
-    dd.growTree()->visit(&_lexy);
+    dd.growTree()->visit(&lexy);
     auto result =  (
-            loli::Daphnie{call}.growTree()->visit(&_lexy)).Unwrap<float>();
+            loli::Daphnie{call}.growTree()->visit(&lexy)).Unwrap<float>();
 
     //assert 
     ASSERT_EQ(5.0f,result);
-    loli::mem::Environment::Instance().Clear();
 }
 
 TEST_F (CallTests, Call_WithWrongAmountOfArgsPasssedThroughtIt_ThrowRutimeError) {
