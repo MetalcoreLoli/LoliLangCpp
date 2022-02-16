@@ -14,6 +14,7 @@
 #include "call_tests.hpp"
 #include "typechecking_tests.hpp"
 #include "typemethods_tests.hpp"
+#include "lexer_tests.hpp"
 
 class DaphnieTests : public ::testing::Test {
     protected:

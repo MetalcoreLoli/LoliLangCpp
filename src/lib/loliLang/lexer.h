@@ -30,6 +30,7 @@ namespace loli {
             {"for",Token(Forma::FOR, "for", 0)},
             {"with",Token(Forma::WITH, "with", 0)},
             {"end",Token(Forma::END, "end", 0)},
+            {"where",Token(Forma::WHERE, "where", 0)},
             {".",Token(Forma::DOT, ".", 0)},
             {"+", Token(Forma::ADD, "+", 0)}, 
             {"-", Token(Forma::SUB, "-", 0)},

@@ -46,6 +46,7 @@ namespace loli {
        EOF_,
        WITH,
        END,
+       WHERE,
        SIZE_OF_FORMA
     };
     inline Forma operator |(Forma a, Forma b) {
@@ -100,6 +101,7 @@ namespace loli {
        "EOF_",
        "WITH",
        "END",
+       "WHERE",
     };
     static_assert (
             sizeof(FormaAsStr)/sizeof(FormaAsStr[0]) == (size_t)Forma::SIZE_OF_FORMA,
