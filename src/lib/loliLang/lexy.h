@@ -26,6 +26,7 @@ namespace loli {
         ReturnResult visitBodyExpression (BodyExpression& value) override;
         ReturnResult visitForExpression (ForExpression& value) override;
         ReturnResult visitCallExpression (CallExpression& value) override;
+        ReturnResult visitWhereExpression (WhereExpression& value) override;
 
         Lexy& PushIntoMainStack (Expression* expression);
 
@@ -36,18 +37,6 @@ namespace loli {
         private:
             mem::IEnvironment* _globalEnv{};
             mem::LocalEnvironment _localEnv{};
-
-            //{"func", Token(Forma::FUNC, "func", 0)},
-            std::map<std::string, std::function<ReturnResult(float, float)>> _opsTable{
-                {"+", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a+b), typeid(float).hash_code());}},
-                {"-", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a-b), typeid(float).hash_code());}},
-                {"*", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a*b), typeid(float).hash_code());}},
-                {"/", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<float> (a/b), typeid(float).hash_code());}},
-                {">", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a<b), typeid(bool).hash_code());}},
-                {"<", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a>b), typeid(bool).hash_code());}},
-                {"!=", [](float a, float b) -> ReturnResult {return ReturnResult(loli::newLink<bool> (a!=b), typeid(bool).hash_code());}}
-            };
-
     };
 };
 #endif // __LEXY_H__
