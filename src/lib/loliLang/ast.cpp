@@ -113,6 +113,15 @@ namespace loli {
                 .append(")");
             return {loli::newLink<std::string>(res), typeid(std::string).hash_code()};
         }
+
+        loli::ReturnResult visitWhereExpression (WhereExpression& value) override {
+            std::string res = "(where ";
+            res.append(value.func()->visit(this).Unwrap<std::string>()).append(" (");
+            for (auto arg : value.args()) {
+                res.append(" ").append(arg->visit(this).Unwrap<std::string>());
+            }
+            return loli::ReturnResult::New(res.append(")"));
+        }
         
         loli::ReturnResult  visitCallExpression(loli::CallExpression& value) override {
             std::string res = "(call ";
