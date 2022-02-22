@@ -6,9 +6,10 @@
 #include "loliLang/memory.h"
 #include "loliLang/types.h"
 #include "loliLang/utils.h"
+#include <vector>
 
 loli::ReturnResult loli::Lexy::visitBinaryExpression (loli::BinaryExpression& value) {
-    auto env = mem::Or(_globalEnv, &_localEnv);
+    auto env = mem::Or(_globalEnv, _localEnv);
     auto method = TypeChecker::GetMethod<TypeMethodGetRequest>(&env, &value, value.operand());
     return method->Invoke({
                 value.right()->visit(this),
@@ -31,17 +32,23 @@ loli::ReturnResult loli::Lexy::visitLambdaExpression (loli::LambdaExpression& va
     if (_globalEnv->TryFind(spec, nullptr)) {
         throw std::runtime_error {"There is another identifier with name `"+value.identifier().value()+"`"};
     }
-    _globalEnv->Push(ExpressionFactory::LambdaRaw(value.identifier().value(), value.args(), value.body()));
+    _globalEnv->Push(&value);
     return l;
 }
 
 loli::ReturnResult loli::Lexy::visitIdentifierExpression (loli::IdentifierExpression& value) {
     Expression* out = nullptr; 
     auto spec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.value());
-    if (!_globalEnv->TryFind(spec, &out) && !_localEnv.TryFind(spec, &out)) {
-        throw std::runtime_error {"There is no `"+value.value()+"` identifier"};
+    auto env = mem::Or(_globalEnv, _localEnv);
+    if (!env.TryFind(spec, &out)) {
+        throw std::runtime_error {"There is no `"+value.value()+"` identifier1"};
     }
     auto func = dynamic_cast<LambdaExpression*>(out);
+    if (func->hasWhereBlock()) {
+        for (auto arg: func->where()) {
+            PushIntoMainStack(arg);
+        }
+    }
     return func->body()->visit(this);
 }
 
@@ -82,10 +89,17 @@ loli::ReturnResult loli::Lexy::visitBodyExpression (loli::BodyExpression& value)
 }
 
 loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
-    _localEnv.Push(expression);
+    _localEnv->Push(expression);
     return *this;
 }
 
 loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value) {
-    return Call::Create(_globalEnv).Validate(value).Map().FillLocalStackFrame(*this).Execute();  
+    auto env = mem::Or(_globalEnv, _localEnv); 
+    return Call::Create(_globalEnv).Validate(value, _localEnv).Map().FillLocalStackFrame(*this).Execute();  
+}
+
+loli::ReturnResult loli::Lexy::visitWhereExpression (WhereExpression& value) {
+    auto f = value.func();
+    f->where(std::vector<Expression*>(value.args().begin(), value.args().end()));
+    return f->visit(this);
 }

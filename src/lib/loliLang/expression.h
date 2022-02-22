@@ -32,6 +32,7 @@ namespace loli {
     class BodyExpression;
     class ForExpression;
     class CallExpression;
+    class WhereExpression;
     struct IVisitor;
 
     using VectorOfExprLinks = std::vector<loli::Link<Expression>>;
@@ -85,6 +86,7 @@ namespace loli {
         virtual ReturnResult visitBodyExpression (BodyExpression& value) = 0;
         virtual ReturnResult visitForExpression (ForExpression& value) = 0;
         virtual ReturnResult visitCallExpression (CallExpression& value) = 0;
+        virtual ReturnResult visitWhereExpression (WhereExpression& value) = 0;
     };
     
     struct ICaller {
@@ -167,6 +169,7 @@ namespace loli {
         private:
             IdentifierExpression _idetifier;
             Expression*          _body;
+            std::vector<Expression*> _where{};
             std::vector<IdentifierExpression> _args{};
 
         public:
@@ -184,6 +187,10 @@ namespace loli {
             [[nodiscard]] std::vector<IdentifierExpression>& args() const { return const_cast<std::vector<IdentifierExpression>&>(_args); }
             [[nodiscard]] IdentifierExpression& identifier() const { return const_cast<IdentifierExpression&>(_idetifier); }
             [[nodiscard]] Expression*           body () const { return _body; }
+            [[nodiscard]] const std::vector<Expression*>& where () const { return _where; }
+            
+            void                                where (const std::vector<Expression*>& where) { _where = where; }
+            bool                                hasWhereBlock () const{ return _where.size() > 0;}
 
             LambdaExpression(const IdentifierExpression& identifier, Expression* body);
             LambdaExpression(const IdentifierExpression& identifier, const std::vector<IdentifierExpression>& args, Expression* body);
@@ -334,6 +341,18 @@ namespace loli {
 
             ReturnResult visit (IVisitor* visitor) override {
                 return visitor->visitCallExpression(*this);
+            }
+    };
+
+    class WhereExpression : public Expression {
+        LambdaExpression* _func; 
+        std::vector<Expression*> _args{};
+        public:
+            std::vector<Expression*>& args() const {return const_cast<std::vector<Expression*>&>(_args);}
+            LambdaExpression* func () const {return _func;}
+            WhereExpression(LambdaExpression* func, const std::vector<Expression*> args) : _func(func), _args(args){} 
+            ReturnResult visit (IVisitor* visitor) override {
+                return visitor->visitWhereExpression(*this);
             }
     };
 

@@ -45,6 +45,16 @@ namespace loli {
             return newLink<class CallExpression>(id, args);
         }
 
+        static class CallExpression*  CallWithoutArgsRaw(const std::string& idetifier) {
+            std::vector<Expression*> args{};
+            IdentifierExpression id (idetifier);
+            return new class CallExpression(id, args);
+        }
+
+        static class CallExpression*  CallRaw(const std::string& idetifier, const std::vector<Expression*>& args) {
+            IdentifierExpression id (idetifier);
+            return new class CallExpression(id, args);
+        }
         static Link<class NumberExpression> Number(float value) {
             return newLink<class NumberExpression>(value);
         }

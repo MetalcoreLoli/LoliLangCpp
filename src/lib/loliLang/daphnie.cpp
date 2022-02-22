@@ -16,7 +16,7 @@ bool loli::Daphnie::IsClosing(const loli::Token& value) {
             {
                 loli::Forma::RPAREN, loli::Forma::RCURL, 
                 loli::Forma::ELSE, loli::Forma::SEMI,
-                loli::Forma::END
+                loli::Forma::END, loli::Forma::WHERE
             });
 }
 
@@ -116,7 +116,6 @@ loli::Expression* loli::Daphnie::growTree () {
         throw std::runtime_error{message};
     }
     auto result = expressionsStack.top();
-    expressionsStack.pop();
     return result;
 }
 
@@ -149,12 +148,23 @@ loli::Expression* loli::Daphnie::LambdaExpr (std::stack<Expression*> &expression
 
     auto name = *(identifiers.end() - 1);
     auto body = MoveToNext().growTree();
+    LambdaExpression* result = nullptr;
 
     if (identifiers.size() > 1) {
         auto args = std::vector<class IdentifierExpression>(identifiers.begin(), identifiers.end() - 1);
-        return new loli::LambdaExpression(name, args, body);
+        result = new loli::LambdaExpression(name, args, body);
+    } else  {
+        result = new loli::LambdaExpression(name, body);
     }
-    return new loli::LambdaExpression(name, body);
+
+    if (_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::WHERE))
+    {
+        Expression* where = nullptr;
+        expressionsStack.push(result);
+        where = MoveToNext().WhereExpr(expressionsStack);
+        return where;
+    }
+    return result;
 }
 
 loli::Expression* loli::Daphnie::UnaryExpression (std::stack<Expression*> &expressionsStack) {
@@ -328,4 +338,30 @@ loli::Expression* loli::Daphnie::CallExpr (std::stack<Expression*>& expressionsS
     class IdentifierExpression n (name);
     return  new CallExpression (n, args);
     //return  ExpressionFactory::Call (name, args).get();
+}
+
+loli::Expression* loli::Daphnie::WhereExpr (std::stack<Expression*>& expressionsStack) {
+    if (expressionsStack.empty()) {
+        throw std::runtime_error {"There is nothing before `where` or something goes wrong"};
+    }
+    Expression* lambda = expressionsStack.top();
+    auto typeHashCode = typeid(*lambda).hash_code();
+    auto typeName = std::string(typeid(*lambda).name());
+    if (typeHashCode != typeid(LambdaExpression).hash_code()){
+        throw std::runtime_error{"The keyword `where` must be in lambdas only, but was `"+ typeName+"`"};
+    }
+    expressionsStack.pop();
+    
+    std::vector<Expression*> args{};
+    auto current = PeekNext();
+    while (!IsClosing(current) && !IsEnd()) {
+        auto line = growTree();
+        args.push_back (line);
+        current = MoveToNext().Peek();
+    }
+    if (args.empty()) {
+        throw std::runtime_error{"There is nothing after `where` keyword"};
+    }
+
+    return new WhereExpression(dynamic_cast<LambdaExpression*>(lambda), args); 
 }

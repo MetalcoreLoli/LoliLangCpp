@@ -2,15 +2,25 @@
 #define __LOLI_DAPHNIE_TESTS__
 
 #include <exception>
-#include <stdexcept>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
 #include <gtest/gtest.h>
-#include <loliLang/common.h>
 #include <string>
+#include <stdexcept>
+#include <loliLang/common.h>
+
+#include "loliLang/memory.h"
+#include "mockCommon.hpp"
+
 class DaphnieTests : public ::testing::Test {
     protected:
         loli::Lexer _lex{};
         loli::ASTAsString _ast{};
 
+        size_t _stdfloatHashCode = typeid(float).hash_code();
+        size_t _whereExprHashCode = typeid(loli::WhereExpression).hash_code();
+
+        std::string _whereExprName = typeid(loli::WhereExpression).name();
         void SetUp () override {
         }
 
@@ -173,9 +183,13 @@ TEST_F(DaphnieTests, CallExpr_WithValiCallExpression_ReturnsVaildTree) {
 }
 
 TEST_F (DaphnieTests, LambdaExpr_WithWhereKeyword) {
-
+    auto env = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy{&env};
     loli::Daphnie d {"add => a where a => 4"};
-    
+
     //act 
+    auto where = d.growTree();
+
+    //assert 
+    ASSERT_STREQ(_whereExprName.c_str(), typeid(*where).name());
 }
 #endif // __LOLI_DAPHNIE_TESTS__

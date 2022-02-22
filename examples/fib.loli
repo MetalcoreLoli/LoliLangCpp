@@ -2,6 +2,6 @@ fibHelper a b n =>
     if (0 < n) fibHelper (a + b) a (n - 1) else a
 
 fib n => helper 0 1 n
-    where helper a b n => if (0 < n) fibHelper (a + b) a (n - 1) else a
+    where helper a b n => if (0 < n) helper (a + b) a (n - 1) else a
 
 fib 10

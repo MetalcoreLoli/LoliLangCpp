@@ -2,8 +2,15 @@
 #define __LEXY_TESTS__
 
 #include "loliLang/expression.h"
+#include "loliLang/expressionFactory.hpp"
+#include "loliLang/lexy.h"
+#include "loliLang/memory.h"
+#include "mockCommon.hpp"
 #include <cmath>
 #include <exception>
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
 #include <stack>
 #include <stdexcept>
 #include <string>
@@ -15,6 +22,8 @@
 class LexyTests : public ::testing::Test {
     protected:
         loli::Lexy _lex{};
+        const size_t _loliLambdaHashCode = typeid(loli::LambdaExpression).hash_code();
+        const size_t _stdfloatHashCode = typeid(float).hash_code();
 };
 
 class MockCaller : public loli::ICaller {
@@ -66,5 +75,38 @@ TEST_F (LexyTests, visitLambdaExpression_WithValidOnePlusOne_ReturnsTwo) {
 
     //assert
     ASSERT_EQ(2.0f, result);
+}
+
+TEST_F(LexyTests, visitLambdaExpression_WithCallExpressionWithoutArgs) {
+    auto env =loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    loli::ExpressionFactory::LambdaRaw("b", new loli::NumberExpression(1))->visit(&lexy);
+
+    auto l = 
+        loli::ExpressionFactory::LambdaRaw("a", new loli::IdentifierExpression("b"));
+    //act 
+    l->visit(&lexy);
+    auto result = (new loli::IdentifierExpression("a"))->visit(&lexy); 
+
+    //assert 
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ(1.0f, result.Unwrap<float>());
+}
+
+TEST_F(LexyTests, visitWhereExpression_WithLambdaExpression_EvalsIt) {
+    auto env =loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    auto where = loli::WhereExpression(
+            loli::ExpressionFactory::LambdaRaw("a", new loli::IdentifierExpression("b")), {
+                loli::ExpressionFactory::LambdaRaw("b", new loli::NumberExpression(1))
+            });
+    
+    //act
+    where.visit(&lexy);
+    auto result = 
+        (new loli::IdentifierExpression("a"))
+            ->visit(&lexy);
+
+    // assert
+    ASSERT_EQ(_stdfloatHashCode, result.TypeHashCode());
+    ASSERT_FLOAT_EQ(1.0f, result.Unwrap<float>());
 }
 #endif //__LEXY_TESTS__

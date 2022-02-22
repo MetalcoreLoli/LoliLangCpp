@@ -29,14 +29,18 @@ namespace loli {
         ReturnResult visitWhereExpression (WhereExpression& value) override;
 
         Lexy& PushIntoMainStack (Expression* expression);
+        mem::IEnvironment* LocalEnvironment() const { return _localEnv; } 
 
-        explicit Lexy () : _globalEnv(&mem::GlobalEnvironment){
+        explicit Lexy () : _globalEnv(&mem::GlobalEnvironment), _localEnv(new mem::LocalEnvironment){
         }
 
-        Lexy(mem::IEnvironment* env) : _globalEnv(env) {}
+        Lexy(mem::IEnvironment* env) : _globalEnv(env), _localEnv(new mem::LocalEnvironment) {}
+        Lexy(mem::IEnvironment* env, mem::IEnvironment* local) : _globalEnv(env), _localEnv(local) {}
+
+        ~Lexy() {_localEnv = nullptr;}
         private:
             mem::IEnvironment* _globalEnv{};
-            mem::LocalEnvironment _localEnv{};
+            mem::IEnvironment* _localEnv{};
     };
 };
 #endif // __LEXY_H__

@@ -196,6 +196,7 @@ namespace loli {
             ReturnResult visitBodyExpression (BodyExpression& value) override;
             ReturnResult visitForExpression (ForExpression& value) override;
             ReturnResult visitCallExpression (CallExpression& value) override;
+            ReturnResult visitWhereExpression (WhereExpression& value) override;
 
             template<typename TGetRequest> requires std::is_base_of<ITypeMethodGetRequest, TGetRequest>::value
             static IMethod* GetMethod (mem::IEnvironment* env, Expression* expression, const std::string& methodName) {

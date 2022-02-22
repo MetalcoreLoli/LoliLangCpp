@@ -99,3 +99,7 @@ bool loli::FloatTypeRequestHandler::ContainsMethod (std::string_view methodName)
 loli::IMethod* loli::FloatTypeRequestHandler::GetMethod (std::string_view methodName) {
     return _table.at(methodName); 
 } 
+loli::ReturnResult loli::TypeChecker::visitWhereExpression (WhereExpression& value) {
+    ThrowHelper::Throw_NotImplemented("loli::Lexy::visitWhereExpression");
+    return loli::ReturnResult::Empty();
+}

@@ -2,10 +2,10 @@
 #include "loliLang/memory.h"
 #include <string>
 
-loli::Call& loli::Call::Validate (const loli::CallExpression& value) {
+loli::Call& loli::Call::Validate (const loli::CallExpression& value, mem::IEnvironment* local) {
     Expression* out = nullptr;
     auto nameSpec = ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value());
-    if (!_globalEnv->TryFind(nameSpec, &out)) {
+    if (!_globalEnv->TryFind(nameSpec, &out) && !local->TryFind(nameSpec, &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value()); 
     }
     _lambda = *(dynamic_cast <LambdaExpression*>(out));
