@@ -117,10 +117,14 @@ namespace loli {
         loli::ReturnResult visitWhereExpression (WhereExpression& value) override {
             std::string res = "(where ";
             res.append(value.func()->visit(this).Unwrap<std::string>()).append(" (");
-            for (auto arg : value.args()) {
-                res.append(" ").append(arg->visit(this).Unwrap<std::string>());
+            for (size_t i = 0; i < value.args().size(); i++) {
+                auto arg = value.args()[i];
+                res.append(arg->visit(this).Unwrap<std::string>());
+                if (i != value.args().size() - 1) {
+                    res.append(" ");
+                }
             }
-            return loli::ReturnResult::New(res.append(")"));
+            return loli::ReturnResult::New(res.append("))"));
         }
         
         loli::ReturnResult  visitCallExpression(loli::CallExpression& value) override {
