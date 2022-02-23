@@ -33,6 +33,7 @@ namespace loli {
         [[nodiscard]] loli::Token Peek() const;
         [[nodiscard]] loli::Token PeekNext() const;
         [[nodiscard]] loli::Token PeekPrev() const;
+        [[nodiscard]] loli::Token PeekAt(size_t i) const;
 
         [[nodiscard]] bool IsBinary (const loli::Token& value);
         [[nodiscard]] bool IsCall (const loli::Token& value);

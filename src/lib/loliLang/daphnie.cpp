@@ -64,6 +64,11 @@ loli::Token loli::Daphnie::PeekPrev() const {
     return Peek();
 }
         
+loli::Token loli::Daphnie::PeekAt(size_t i) const {
+    if (_current != _source.size()) return _source[i];
+    return Peek();
+}
+
 bool loli::Daphnie::IsEnd() const {
     return _current >= _source.size() ||  _source[_current].forma() == Forma::EOF_;
 }
@@ -192,11 +197,20 @@ loli::Expression* loli::Daphnie::StringExpression (std::stack<Expression*> &expr
 loli::Expression* loli::Daphnie::IdentifierExpression (std::stack<Expression*> &expressionsStack) {
     auto current = Peek();
     auto expr = new class IdentifierExpression(current.lexeme());
-    if (
-            !_grammarChecker->TryFindTokenWithForma(_current, loli::Forma::LAMBDA_ARROW) &&
-            IsCall(PeekNext())) {
+    size_t lastPos = _current;
+    auto c = MoveToNext().Peek();
+    if (IsCall(c)) {
+        while (!IsEnd() && !IsClosing(c)) {
+            if (IsMatchTo(c.forma(), {Forma::LAMBDA_ARROW})) {
+                _current = lastPos;
+                return expr;
+            }
+            c = MoveToNext().Peek();
+        }
+        _current = lastPos;
         return CallExpr(expressionsStack);
     }
+    _current = lastPos;
     return expr;
 }
 
@@ -245,8 +259,6 @@ loli::Expression* loli::Daphnie::IfExpression (std::stack<Expression*>& expressi
     
     return new loli::IfExpression(condition, thenBranch, elseBranch);
 }
-
-
 
 loli::Expression* loli::Daphnie::ClassExpression (std::stack<Expression*>& expressionsStack) {
     _grammarChecker->TryFindTokenWithFormaOrThrow(
@@ -333,11 +345,9 @@ loli::Expression* loli::Daphnie::CallExpr (std::stack<Expression*>& expressionsS
         }
         current = MoveToNext().Peek();
     }
-    _current--;
-    //utils::ThrowHelper::Throw_NotImplemented("loli::Daphnie::CallExpr");
+     _current--;
     class IdentifierExpression n (name);
     return  new CallExpression (n, args);
-    //return  ExpressionFactory::Call (name, args).get();
 }
 
 loli::Expression* loli::Daphnie::WhereExpr (std::stack<Expression*>& expressionsStack) {

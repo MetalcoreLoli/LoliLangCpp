@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <loliLang/common.h>
 
+#include "loliLang/expression.h"
 #include "loliLang/memory.h"
 #include "mockCommon.hpp"
 
@@ -184,12 +185,19 @@ TEST_F(DaphnieTests, CallExpr_WithValiCallExpression_ReturnsVaildTree) {
 
 TEST_F (DaphnieTests, LambdaExpr_WithWhereKeyword) {
     auto env = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy{&env};
-    loli::Daphnie d {"add => a where a => 4"};
+    loli::Daphnie d {"add c => num 4 c where num a b => a + b"};
 
     //act 
     auto where = d.growTree();
+    auto ast = where->visit(&_ast).Unwrap<std::string>();
+    where->visit(&lexy);
+    auto result = 
+        loli::ExpressionFactory::Call("add", {new loli::NumberExpression(1)})
+        ->visit(&lexy); 
 
     //assert 
-    ASSERT_STREQ(_whereExprName.c_str(), typeid(*where).name());
+    ASSERT_STREQ (ast.c_str(), "(where (define (add c) (call num 4.000000 c)) ((define (num a b) (+ b a))))");    
+    ASSERT_EQ(typeid(float).hash_code(), result.TypeHashCode());
+    ASSERT_FLOAT_EQ(4.0f, result.Unwrap<float>());
 }
 #endif // __LOLI_DAPHNIE_TESTS__
