@@ -192,7 +192,7 @@ TEST_F (DaphnieTests, LambdaExpr_WithWhereKeyword) {
     auto ast = where->visit(&_ast).Unwrap<std::string>();
     where->visit(&lexy);
     auto result = 
-        loli::ExpressionFactory::Call("add", {new loli::NumberExpression(1)})
+        loli::ExpressionFactory::Call("add", {new loli::NumberExpression(0)})
         ->visit(&lexy); 
 
     //assert 
