@@ -86,5 +86,19 @@ namespace loli {
             }
         }
     };
+
+#define LOLI_NUM(num) loli::NumberExpression((num))
+#define LOLI_NUMPTR(num) new LOLI_NUM(num)
+
+#define LOLI_IDN(name) loli::IdentifierExpression((name))
+#define LOLI_IDNPTR(name) new loli::IdentifierExpression((name))
+
+#define LOLI_OP(op, left, right) loli::BinaryExpression((op), (left), (right))
+#define LOLI_OPPTR(op, left, right) new LOLI_OP(op, left, right) 
+
+#define LOLI_IF(condition, thn, els) loli::IfExpression((condition), (thn), (els))
+#define LOLI_IFPTR(condition, thn, els) new LOLI_IF(condition, thn, els)
+
+#define LOLI_FUNCPTR (name, args, body) loli::ExpressionFactory::LambdaRaw((name), (args), (body)) 
 }
 #endif //__LOLI_EXPRESSION_FACTORY_H__
