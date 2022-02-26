@@ -35,26 +35,19 @@ TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityF
 }
 
 TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
-    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
-
-    EXPECT_CALL(env, TryFind(testing::_,testing::_)).Times(3);
-    ON_CALL(env, TryFind)
-        .WillByDefault([](auto s, loli::Expression **out) {
-                auto a = loli::IdentifierExpression("a");
-                auto b = loli::IdentifierExpression("b");
-                auto c = loli::IdentifierExpression("c"); 
-                auto zero = loli::NumberExpression(0);
-                auto aghtzero = loli::BinaryExpression("!=", &a, &zero);
-                auto bghtzero = loli::BinaryExpression("!=", &b, &zero);
-                *out = loli::ExpressionFactory::LambdaRaw(
-                        "id", 
-                        {c,b,a},
-                        new loli::IfExpression(
-                            &aghtzero, &a, new loli::IfExpression(&bghtzero, &b, &c)));
-                 return true;
-                });
+    auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    auto a = loli::IdentifierExpression("a");
+    auto b = loli::IdentifierExpression("b");
+    auto c = loli::IdentifierExpression("c");
+    auto body = loli::IfExpression(
+            new loli::BinaryExpression("==", &a, new loli::NumberExpression(1)), 
+            &a, 
+            new loli::IfExpression(new loli::BinaryExpression("==", &b, new loli::NumberExpression(2)), &b, &c)
+            );
+    auto id = loli::ExpressionFactory::LambdaRaw("id", {c, b, a}, &body);
 
     //act
+    id->visit(&lexy);
     auto resultA = 
          (loli::ExpressionFactory::Call("id", {loli::ExpressionFactory::NumberRaw(1), loli::ExpressionFactory::NumberRaw(2), loli::ExpressionFactory::NumberRaw(3)}).get()->visit(&lexy)).Unwrap<float>();
     auto resultB = 
@@ -70,22 +63,13 @@ TEST_F (CallTests, Call_With3Args_ReturnsRigthValue) {
 
 
 TEST_F (CallTests, Call_FuncWithOneArgInWhichPassedOneUndUsedInsideFuncsBody_ReturnsTen) {
-    auto env  = MockEnvironment(); auto lexy = loli::Lexy(&env);
+    auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    auto a = LOLI_IDN("a");
 
-    EXPECT_CALL(env, TryFind(testing::_,testing::_)).Times(1);
-    ON_CALL(env, TryFind)
-        .WillByDefault([](auto s, loli::Expression **out) {
-                *out = loli::ExpressionFactory::LambdaRaw(
-                        "id", 
-                        {loli::IdentifierExpression("a")}, 
-                        new loli::BinaryExpression(
-                            "+", 
-                            new loli::IdentifierExpression("a"), new loli::NumberExpression(1)));
-                 return true;
-                });
-
-    auto name = loli::IdentifierExpression("id");
+    auto name = LOLI_IDN("id");
+    auto id = loli::ExpressionFactory::LambdaRaw("id", {a}, LOLI_OPPTR("+", &a, LOLI_NUMPTR(1)));
     //act 
+    id->visit(&lexy);
     auto result = loli::CallExpression(name, {loli::ExpressionFactory::NumberRaw(9)}).visit(&lexy).Unwrap<float>();
 
     //assert 
