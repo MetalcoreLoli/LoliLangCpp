@@ -36,6 +36,11 @@ loli::Call& loli::Call::FillLocalStackFrame(loli::Lexy& global) {
         auto result =  (a->body()->visit(&global));
         _local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));
     }
+    if (_lambda.hasWhereBlock()) {
+        for (auto arg: _lambda.where()) {
+            _local.PushIntoMainStack(arg);
+        }
+    }
     return *this;
 }
 loli::ReturnResult loli::Call::Execute() {
