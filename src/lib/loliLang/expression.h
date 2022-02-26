@@ -15,6 +15,11 @@
 #include "utils.h"
 
 namespace loli {
+#define LOLI_EXPRESSION_CLASS(name)                            \
+            ReturnResult visit (IVisitor* visitor) override {   \
+                return visitor->visit##name##Expression(*this);   \
+            }                                                   \
+
     using namespace utils;
     class Expression;
     class CallableExpression;
@@ -173,11 +178,9 @@ namespace loli {
             std::vector<IdentifierExpression> _args{};
 
         public:
-            LambdaExpression (const LambdaExpression &) = default;
+            LOLI_EXPRESSION_CLASS(Lambda)
 
-            ReturnResult visit (IVisitor* visitor) override {
-                return visitor->visitLambdaExpression(*this);
-            }
+            LambdaExpression (const LambdaExpression &) = default;
             
             ReturnResult call (
                     ICaller* caller, std::stack<Expression*>& stackFrame) override {
@@ -202,9 +205,7 @@ namespace loli {
             Expression* _then; 
             Expression* _else;
         public:
-            ReturnResult visit (IVisitor* visitor) override {
-                return visitor->visitIfExpression(*this);
-            }
+            LOLI_EXPRESSION_CLASS(If)
 
             [[nodiscard]] Expression* condition() const { return _condition; }
             [[nodiscard]] Expression* then () const { return _then; }
@@ -218,12 +219,8 @@ namespace loli {
         private:
             Expression* _expression;
         public:
+            LOLI_EXPRESSION_CLASS(Grouping)
             [[nodiscard]] Expression* expression () const { return _expression; }
-        
-            loli::ReturnResult visit (IVisitor * visitor) override {
-                return visitor->visitGroupingExpression(*this);
-            }
-
             explicit GroupingExpression (Expression* expr) : _expression(expr){}
     };
 
@@ -231,11 +228,7 @@ namespace loli {
         private:
             bool _value = false;
         public:
-
-
-            loli::ReturnResult visit (IVisitor * visitor) override {
-                return visitor->visitBoolExpression(*this);
-            }
+            LOLI_EXPRESSION_CLASS(Bool)
 
             [[nodiscard]] bool value () const { return _value; }
             BoolExpression (bool value) : _value(value) {}
@@ -247,10 +240,7 @@ namespace loli {
             NumberExpression *_value;
         
         public:
-
-            ReturnResult visit (IVisitor* visitor) override {
-                return visitor->visitUnaryExpression(*this);
-            }
+            LOLI_EXPRESSION_CLASS(Unary)
 
             [[nodiscard]] float value() const { return _value->value(); }
             [[nodiscard]] std::string operand() const { return _operand; }
@@ -266,9 +256,7 @@ namespace loli {
             loli::Link<BodyExpression> _body;
 
         public: 
-            ReturnResult visit (IVisitor* visitor) override {
-                return visitor->visitClassExpression(*this);
-            }
+            LOLI_EXPRESSION_CLASS(Class)
 
             [[nodiscard]] std::string name () const { return _name; }
             [[nodiscard]] Link<BodyExpression> body() const { return _body; }
@@ -288,12 +276,9 @@ namespace loli {
             std::vector<Expression*>_lines {};
 
         public:
+            LOLI_EXPRESSION_CLASS(Body)
             std::vector<Expression*> lines () const { return _lines; } 
             
-            ReturnResult visit (IVisitor* visitor) override {
-                return visitor->visitBodyExpression(*this);
-            }
-
             explicit BodyExpression (const std::vector<Expression*>& ls) 
                 : _lines (ls){}
     };
