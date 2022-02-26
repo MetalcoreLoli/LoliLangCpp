@@ -94,7 +94,6 @@ loli::Lexy& loli::Lexy::PushIntoMainStack (loli::Expression* expression) {
 }
 
 loli::ReturnResult loli::Lexy::visitCallExpression (loli::CallExpression& value) {
-    auto env = mem::Or(_globalEnv, _localEnv); 
     return Call::Create(_globalEnv).Validate(value, _localEnv).Map().FillLocalStackFrame(*this).Execute();  
 }
 
