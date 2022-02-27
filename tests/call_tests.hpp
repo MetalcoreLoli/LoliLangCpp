@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 #include <loliLang/common.h>
 
+#include "loliLang/daphnie.h"
 #include "loliLang/expression.h"
 #include "loliLang/expressionFactory.hpp"
 #include "mockCommon.hpp"
@@ -16,6 +17,21 @@ class CallTests : public ::testing::Test {
     protected:
         loli::Lexy _lexy{};
 };
+
+TEST_F(CallTests, Call_FunctionWithWhere) {
+    auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);
+    auto fib = "fib n => helper 0 1 n where helper a b n => if (0 < n) helper (a + b) a (n - 1) else a";
+
+    //act 
+    loli::Daphnie {fib}.growTree()->visit(&lexy);
+    auto result = 
+        LOLI_CALLFUNC_WA("fib", LOLI_NUMPTR(10))
+            ->visit(&lexy); 
+
+    //assert 
+    ASSERT_EQ(result.TypeHashCode(),typeid(float).hash_code());
+    ASSERT_FLOAT_EQ(55.0f, result.Unwrap<float>()); 
+}
 
 TEST_F (CallTests, Call_FibNumberTenWithRecursiveHelperFunctionCall_ReturnsFityFive) {
     auto env  = loli::mem::LocalEnvironment(); auto lexy = loli::Lexy(&env);

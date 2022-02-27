@@ -32,6 +32,7 @@ loli::Call& loli::Call::Map () {
 }
 
 loli::Call& loli::Call::FillLocalStackFrame(loli::Lexy& global) {
+    _local.PushIntoMainStack(&_lambda);
     for (auto a : _mappedArgs) {
         auto result =  (a->body()->visit(&global));
         _local.PushIntoMainStack(ExpressionFactory::LambdaRaw(a->identifier().value(), ExpressionFactory::FromReturnResult(result)));

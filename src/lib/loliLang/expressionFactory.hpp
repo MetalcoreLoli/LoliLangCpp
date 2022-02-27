@@ -100,5 +100,8 @@ namespace loli {
 #define LOLI_IFPTR(condition, thn, els) new LOLI_IF(condition, thn, els)
 
 #define LOLI_FUNCPTR (name, args, body) loli::ExpressionFactory::LambdaRaw((name), (args), (body)) 
+
+#define LOLI_CALLFUNC(name) loli::ExpressionFactory::CallWithoutArgs((name))
+#define LOLI_CALLFUNC_WA(name, args...) loli::ExpressionFactory::Call((name), {(args)})
 }
 #endif //__LOLI_EXPRESSION_FACTORY_H__
