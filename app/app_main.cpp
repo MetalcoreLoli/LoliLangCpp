@@ -65,9 +65,17 @@ int main (int argc, char** argv) {
         }
     }    
     {
+#ifdef LOLI_LOG_STD
+        for (auto& line : lines) {
+            std::cout << line << std::endl;
+        }
+#endif
         for (auto& line : lines) {
             loli::Daphnie d {line};
+#ifdef LOLI_LOG_STD
             std::cout << d.growTree()-> visit(&ast).Unwrap<std::string>() << std::endl;
+#endif
+            
             auto res = inter.AnswerOn(line);
             if (res.RawResult().TypeHashCode() == typeid(float).hash_code()) {
                 std::cout << res.As<float>() << std::endl;
