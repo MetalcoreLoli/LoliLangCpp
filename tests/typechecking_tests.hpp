@@ -2,12 +2,16 @@
 #define __TYPECHECKING_TESTS__
 
 
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock-spec-builders.h>
 #include <gtest/gtest_pred_impl.h>
 #include <stdexcept>
 #include <string>
 #include <gtest/gtest.h>
 
 #include <loliLang/common.h>
+#include "loliLang/expressionFactory.hpp"
+#include "loliLang/types.h"
 #include "mockCommon.hpp"
 
 
@@ -172,5 +176,23 @@ TEST_F (TypecheckingTests, IdentifierExpression_WithFloatValue_ReturnsFloatType)
 
     //assert 
     ASSERT_EQ(type.TypeHashCode(), _floatTypeHashCode);
+}
+
+TEST_F (TypecheckingTests, CallExpression_With2Floats_ReturnsFloatType) {
+    auto mockEnv        = MockEnvironment();
+    auto typeChecker    = loli::TypeChecker(&mockEnv);
+    auto a = LOLI_FUNCAPTR ("a", LOLI_NUMPTR(1));
+
+    EXPECT_CALL(mockEnv, TryFind(testing::_, testing::_)).Times(1);
+    ON_CALL(mockEnv, TryFind)
+        .WillByDefault([&a](const auto& spec, loli::Expression **out) {
+                    *out = a;
+                    return true;
+                });
+    //act 
+    auto type = LOLI_CALLFUNC("a")->visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
 }
 #endif //__TYPECHECKING_TESTS__

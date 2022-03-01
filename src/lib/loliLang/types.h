@@ -179,10 +179,13 @@ namespace loli {
 
     class TypeChecker : public IVisitor {
         private: 
-            mem::IEnvironment* _env;
+            mem::IEnvironment* _global;
+            mem::IEnvironment* _local;
         public:
-            TypeChecker () : _env (&mem::GlobalEnvironment) {}
-            TypeChecker (mem::IEnvironment* env) : _env (env) {}
+            TypeChecker () : _global(&mem::GlobalEnvironment), _local(new mem::LocalEnvironment) {}
+            TypeChecker (mem::IEnvironment* env) : _global(env), _local(new mem::LocalEnvironment){}
+            TypeChecker (mem::IEnvironment* env, mem::IEnvironment* local) :
+                _global(env), _local(local){}
             ReturnResult visitBinaryExpression (BinaryExpression& value) override;
             ReturnResult visitNumberExpression (NumberExpression& value) override;
             ReturnResult visitLambdaExpression (LambdaExpression& value) override;

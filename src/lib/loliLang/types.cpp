@@ -26,7 +26,8 @@ loli::ReturnResult loli::TypeChecker::visitIdentifierExpression (IdentifierExpre
 
     Expression* out = nullptr;
     auto spec = loli::ExpressionSpecFactory::LambdaExpressionNameSpec(value.value());
-    if (!mem::GlobalEnvironment.TryFind(spec, &out) && !_env->TryFind(spec, &out)) {
+    auto mem = mem::Or(_global, _local);
+    if (!mem.TryFind(spec, &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.value());  
     }
     return out->visit(this);
@@ -71,6 +72,17 @@ loli::ReturnResult loli::TypeChecker::visitForExpression (ForExpression& value) 
     return ReturnResult::Empty();
 } 
 loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value) {
+    Expression* out = nullptr;
+    auto spec = loli::ExpressionSpecFactory::LambdaExpressionNameSpec(value.idetifier().value());
+    auto mem = mem::Or(_global, _local);
+    if (!mem.TryFind(spec, &out)) {
+        utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value());  
+    }
+
+    if (value.args().empty()) {
+        return out->visit(this);
+    }
+
     utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitCallExpression");
     return ReturnResult::Empty();
 } 
