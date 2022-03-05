@@ -1,7 +1,11 @@
 #include "loliLang/types.h"
+#include "loliLang/call.h"
 #include "loliLang/expression.h"
+#include "loliLang/expressionFactory.hpp"
 #include "loliLang/memory.h"
 #include "loliLang/utils.h"
+#include "loliLang/ast.cpp"
+#include <string>
 
 loli::ReturnResult loli::TypeChecker::visitBinaryExpression (BinaryExpression& value) {
 //    utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitBinaryExpression");
@@ -78,13 +82,18 @@ loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value
     if (!mem.TryFind(spec, &out)) {
         utils::ThrowHelper::Throw_ThereIsNo(value.idetifier().value());  
     }
-
     if (value.args().empty()) {
         return out->visit(this);
     }
+    auto func = dynamic_cast<LambdaExpression*>(out);
 
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeChecker::visitCallExpression");
-    return ReturnResult::Empty();
+    //mapping
+    for (size_t i = 0; i < value.args().size(); i++) {
+        auto arg = value.args()[i];
+        _local->Push(LOLI_FUNCAPTR(func->args()[i].value(), arg));
+    }
+     
+    return func->visit(this);
 } 
 
 loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) {

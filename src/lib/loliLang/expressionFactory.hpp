@@ -99,7 +99,7 @@ namespace loli {
 #define LOLI_IF(condition, thn, els) loli::IfExpression((condition), (thn), (els))
 #define LOLI_IFPTR(condition, thn, els) new LOLI_IF(condition, thn, els)
 
-#define LOLI_FUNCPTR (name, args, body) loli::ExpressionFactory::LambdaRaw((name), (args), (body)) 
+#define LOLI_FUNCPTR(name, args, body) loli::ExpressionFactory::LambdaRaw((name), args, (body)) 
 #define LOLI_FUNCAPTR(name, body) loli::ExpressionFactory::LambdaRaw((name), (body)) 
 
 #define LOLI_CALLFUNC(name) loli::ExpressionFactory::CallWithoutArgs((name))

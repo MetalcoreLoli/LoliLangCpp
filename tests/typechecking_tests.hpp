@@ -178,7 +178,7 @@ TEST_F (TypecheckingTests, IdentifierExpression_WithFloatValue_ReturnsFloatType)
     ASSERT_EQ(type.TypeHashCode(), _floatTypeHashCode);
 }
 
-TEST_F (TypecheckingTests, CallExpression_With2Floats_ReturnsFloatType) {
+TEST_F (TypecheckingTests, CallExpression_WithoutArgsButWithFloatInside_ReturnsFloatType) {
     auto mockEnv        = MockEnvironment();
     auto typeChecker    = loli::TypeChecker(&mockEnv);
     auto a = LOLI_FUNCAPTR ("a", LOLI_NUMPTR(1));
@@ -191,6 +191,20 @@ TEST_F (TypecheckingTests, CallExpression_With2Floats_ReturnsFloatType) {
                 });
     //act 
     auto type = LOLI_CALLFUNC("a")->visit(&typeChecker);
+
+    //assert 
+    ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
+}
+
+TEST_F (TypecheckingTests, CallExpression_With1Float_ReturnsFloatType) {
+    auto mockEnv        = loli::mem::LocalEnvironment();
+    auto typeChecker    = loli::TypeChecker(&mockEnv);
+    auto a = LOLI_FUNCPTR("a", {LOLI_IDN("b")}, LOLI_OPPTR("+", LOLI_IDNPTR("b"), LOLI_IDNPTR("b")));
+    auto callA= LOLI_CALLFUNC_WA("a", LOLI_NUMPTR(1));
+    mockEnv.Push(a);
+    
+    //act 
+    auto type = callA->visit(&typeChecker);
 
     //assert 
     ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
