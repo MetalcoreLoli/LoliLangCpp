@@ -15,7 +15,11 @@
 #include "./expression.h"
 #include "./gramm.h"
 
+#define LOLI_LINETOTREE(line)\
+    loli::Daphnie{(line)}.growTree()
+
 namespace loli { 
+
     class Daphnie {
         
         loli::Link<IGrammarChecker> _grammarChecker;
