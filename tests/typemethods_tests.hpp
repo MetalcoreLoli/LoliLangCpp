@@ -32,7 +32,7 @@ class TypeMethodsTests : public ::testing::Test {
         virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
  * */
 struct MockTypeMethodGetRequest : public loli::ITypeMethodGetRequest {
-    MOCK_METHOD (loli::IMethod*, GetMethodOfBoolType, (const loli::BoolType& type, std::string_view methodNameHashCode), (override));
+    MOCK_METHOD (loli::IMethod*, GetMethodOfBoolType, (loli::ITypeRequestHander* type, std::string_view methodNameHashCode), (override));
     MOCK_METHOD (loli::IMethod*, GetMethodOfFloatType, (loli::ITypeRequestHander*  type, std::string_view methodNameHashCode), (override));
     MOCK_METHOD (loli::IMethod*, GetMethodOfStringType, (const loli::StringType& type, std::string_view methodNameHashCode), (override));
 };
@@ -66,7 +66,7 @@ TEST_F (TypeMethodsTests, BoolType_GetMethod_WithAMethodHashCode_ReturnsPtrToMet
 
     EXPECT_CALL(dummyGetter,GetMethodOfBoolType(testing::_, testing::_)).Times(1);
     ON_CALL(dummyGetter, GetMethodOfBoolType)
-        .WillByDefault([](const loli::BoolType& t, auto c) { return new MockMethod();});
+        .WillByDefault([](loli::ITypeRequestHander* t, auto c) { return new MockMethod();});
 
     //act 
     auto method = type.GetMethod(&dummyGetter, "");

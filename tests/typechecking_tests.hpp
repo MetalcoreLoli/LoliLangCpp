@@ -209,4 +209,35 @@ TEST_F (TypecheckingTests, CallExpression_With1Float_ReturnsFloatType) {
     //assert 
     ASSERT_EQ(_floatTypeHashCode, type.TypeHashCode());
 }
+
+
+TEST_F (TypecheckingTests, BinaryExpression_WithCallExpressionAndNumber_ReturnsNumber) {
+    auto env = loli::mem::LocalEnvironment(); auto typeChecker = loli::TypeChecker (&env);;
+    
+    auto aFunc = LOLI_FUNCAPTR("a", new loli::IfExpression(
+                LOLI_OPPTR("==", LOLI_NUMPTR(1), LOLI_NUMPTR(1)), LOLI_NUMPTR(1), LOLI_NUMPTR(0)));
+
+    auto op = LOLI_OP("+", LOLI_CALLFUNC("a").get(), LOLI_NUMPTR(1));
+    
+    env.Push(aFunc);
+
+    //act 
+    auto result = op.visit(&typeChecker);
+    
+    //assert
+    ASSERT_EQ(_floatTypeHashCode, result.TypeHashCode());
+}
+
+
+TEST_F (TypecheckingTests, IfExpression_With2FloatsInCondition_) {
+    auto env = loli::mem::LocalEnvironment(); auto typeChecker = loli::TypeChecker (&env);;
+
+    auto ifExpr = new loli::IfExpression (LOLI_OPPTR("==", LOLI_NUMPTR(1), LOLI_NUMPTR(1)), LOLI_NUMPTR(1), LOLI_NUMPTR(0));
+    
+    //act 
+    auto result = ifExpr->visit(&typeChecker);
+
+    //assert
+    ASSERT_EQ(_floatTypeHashCode, result.TypeHashCode());
+}
 #endif //__TYPECHECKING_TESTS__

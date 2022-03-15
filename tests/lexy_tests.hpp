@@ -1,6 +1,7 @@
 #ifndef __LEXY_TESTS__
 #define __LEXY_TESTS__
 
+#include "loliLang/daphnie.h"
 #include "loliLang/expression.h"
 #include "loliLang/expressionFactory.hpp"
 #include "loliLang/lexy.h"
@@ -50,7 +51,9 @@ TEST_F (LexyTests, visitIfExpression_WithOneSubOneLtOne_ReturnsTrue) {
     std::string code = "if ((1-1) < 1) true else false;";
 
     //act 
-    auto result =  (loli::Daphnie{code}.growTree()->visit(&_lex)).Unwrap<bool>();
+    auto tree = loli::Daphnie{code}.growTree(); 
+    auto resultOfTreeEval = tree->visit(&_lex);
+    auto result =  resultOfTreeEval.Unwrap<bool>();
 
     //assert
     ASSERT_TRUE(result);

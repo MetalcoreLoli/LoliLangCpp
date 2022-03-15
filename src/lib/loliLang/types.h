@@ -29,97 +29,98 @@ namespace loli {
     };
 
     struct ITypeMethodGetRequest  {
-        virtual IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) = 0;
+        virtual IMethod* GetMethodOfBoolType (ITypeRequestHander*  type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfFloatType (ITypeRequestHander* type, std::string_view methodNameHashCode) = 0;
         virtual IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) = 0;
     };
 
     struct TypeMethodGetRequest: public ITypeMethodGetRequest {
-        IMethod* GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) override;
+        IMethod* GetMethodOfBoolType (ITypeRequestHander* type, std::string_view methodNameHashCode) override;
         IMethod* GetMethodOfFloatType (ITypeRequestHander* type, std::string_view methodNameHashCode) override;
         IMethod* GetMethodOfStringType (const StringType& type, std::string_view methodNameHashCode) override;
 
         private: 
+               
     }; 
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct AddMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
-            T sum;
+            TTypeOfArg sum;
             for (auto arg: args) {
-                sum += arg.Unwrap<T>();
+                sum += arg.Unwrap<TTypeOfArg>();
             }
             return ReturnResult::New(sum);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct SubMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l - r);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct MulMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l * r);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct DivMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l / r);
         }
     };
 
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct GTMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l > r);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct LTMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l < r);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct NotEqMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l != r);
         }
     };
 
-    template<typename T>
+    template<typename TTypeOfArg>
     struct EqMethodImpl : public IMethod {
         ReturnResult Invoke (const std::vector<ReturnResult>& args) override {
             auto v = std::vector<ReturnResult>(args);
-            auto l = v.at(0).Unwrap<T>();
-            auto r = v.at(1).Unwrap<T>();
+            auto l = v.at(0).Unwrap<TTypeOfArg>();
+            auto r = v.at(1).Unwrap<TTypeOfArg>();
             return ReturnResult::New(l == r);
         }
     };
@@ -150,6 +151,27 @@ namespace loli {
 
     };
 
+    struct BoolTypesRequestHandler : public ITypeRequestHander {
+        bool ContainsMethod (std::string_view methodName) override; 
+        IMethod* GetMethod (std::string_view methodName)  override;
+
+        BoolTypesRequestHandler(BoolTypesRequestHandler&) =default; 
+        BoolTypesRequestHandler(BoolTypesRequestHandler&&) =default; 
+        
+        static BoolTypesRequestHandler& Instance() {
+            static BoolTypesRequestHandler handler;
+            return handler;
+        } 
+        private:
+            BoolTypesRequestHandler() {
+                _table.insert({">", new GTMethodImpl<float>});
+                _table.insert({"<", new LTMethodImpl<float>});
+                _table.insert({"!=", new NotEqMethodImpl<float>});
+                _table.insert({"==", new EqMethodImpl<float>});
+            }
+            std::map <std::string_view, IMethod*> _table {};
+    };
+
     struct IType {
         virtual IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodName) = 0;
     };
@@ -166,7 +188,7 @@ namespace loli {
     class BoolType : public IType {
         public: 
             IMethod* GetMethod(ITypeMethodGetRequest* getter, std::string_view methodNameHashCode) override {
-                return getter->GetMethodOfBoolType(*this, methodNameHashCode);
+                return getter->GetMethodOfBoolType(&BoolTypesRequestHandler::Instance(), methodNameHashCode);
             } 
     };
     class StringType : public IType {
@@ -175,7 +197,6 @@ namespace loli {
                 return getter->GetMethodOfStringType(*this, methodNameHashCode);
             } 
     };
-
 
     class TypeChecker : public IVisitor {
         private: 
@@ -211,5 +232,6 @@ namespace loli {
 
     
     static FloatTypeRequestHandler& FloatTypeRequestHandler = FloatTypeRequestHandler::Instance();
+    static BoolTypesRequestHandler& BoolTypesRequestHandler = BoolTypesRequestHandler::Instance();
 }
 #endif // __LOLI_TYPES__

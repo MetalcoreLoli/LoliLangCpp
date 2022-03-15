@@ -15,6 +15,10 @@ loli::ReturnResult loli::TypeChecker::visitBinaryExpression (BinaryExpression& v
     if (left.TypeHashCode() != right.TypeHashCode()) {
         throw std::runtime_error {"type of left value is not the same as type of right value"};
     }
+    std::vector <std::string> _ops = {"==", "!=", ">", "<", "<=", ">="};
+    if (std::find(_ops.begin(), _ops.end(), value.operand()) != _ops.end()) {
+        return ReturnResult::New(BoolType());
+    }
     return left;
 } 
 
@@ -88,6 +92,10 @@ loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value
     auto func = dynamic_cast<LambdaExpression*>(out);
 
     //mapping
+    for (auto f: func->where()) {
+        _local->Push(f);    
+    }
+
     for (size_t i = 0; i < value.args().size(); i++) {
         auto arg = value.args()[i];
         _local->Push(LOLI_FUNCAPTR(func->args()[i].value(), arg));
@@ -96,9 +104,11 @@ loli::ReturnResult loli::TypeChecker::visitCallExpression (CallExpression& value
     return func->visit(this);
 } 
 
-loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfBoolType (const BoolType& type, std::string_view methodNameHashCode) {
-    utils::ThrowHelper::Throw_NotImplemented("loli::TypeMethodGetRequest::GetMethodOfBoolType "); 
-    return nullptr;
+loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfBoolType (loli::ITypeRequestHander* type, std::string_view methodName) {
+    if (!type->ContainsMethod(methodName)) {
+        utils::ThrowHelper::Throw_OperationIsNotImplementedForType(std::string(methodName), "Bool");
+    }
+    return type->GetMethod(methodName);
 } 
 
 loli::IMethod* loli::TypeMethodGetRequest::GetMethodOfFloatType(loli::ITypeRequestHander* type, std::string_view methodName){
@@ -118,6 +128,14 @@ bool loli::FloatTypeRequestHandler::ContainsMethod (std::string_view methodName)
 } 
 
 loli::IMethod* loli::FloatTypeRequestHandler::GetMethod (std::string_view methodName) {
+    return _table.at(methodName); 
+} 
+
+bool loli::BoolTypesRequestHandler::ContainsMethod (std::string_view methodName) {
+    return _table.contains(methodName);
+} 
+
+loli::IMethod* loli::BoolTypesRequestHandler::GetMethod (std::string_view methodName) {
     return _table.at(methodName); 
 } 
 loli::ReturnResult loli::TypeChecker::visitWhereExpression (WhereExpression& value) {
